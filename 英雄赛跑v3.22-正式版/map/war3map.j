@@ -77,10 +77,10 @@ constant boolean LIBRARY_YDWEGetUnitsInRangeOfLocMatchingNull=true
 //endglobals from YDWEGetUnitsInRangeOfLocMatchingNull
 //globals from YDWEGetUnitsInRectMatchingNull:
 constant boolean LIBRARY_YDWEGetUnitsInRectMatchingNull=true
-group yd_NullTempGroup
 //endglobals from YDWEGetUnitsInRectMatchingNull
 //globals from YDWEGetUnitsOfPlayerMatchingNull:
 constant boolean LIBRARY_YDWEGetUnitsOfPlayerMatchingNull=true
+group yd_NullTempGroup
 //endglobals from YDWEGetUnitsOfPlayerMatchingNull
 //globals from YDWEGetUnitsOfTypeIdAllNull:
 constant boolean LIBRARY_YDWEGetUnitsOfTypeIdAllNull=true
@@ -239,7 +239,7 @@ constant boolean LIBRARY_YDWEGetUnitsOfPlayerAllNull=true
 //endglobals from YDWEGetUnitsOfPlayerAllNull
 //globals from YDWEJumpTimer:
 constant boolean LIBRARY_YDWEJumpTimer=true
-//ï¿½ï¿½Ô¾ÏµÍ³ï¿½ï¿½ï¿½È¼ï¿½
+//ÌøÔ¾ÏµÍ³ÓÅÏÈ¼¶
 integer MoveMoreLevel_JumpTimer=3
 //endglobals from YDWEJumpTimer
 //globals from YDWELocalVariable:
@@ -578,7 +578,6 @@ string gg_snd_Elliot_Hsu___Hop_Start
 string gg_snd_B3LLA___Couple_N___Akihabara
 string gg_snd_B3LLA__Couple_N___Kimii___Shinjuku
 trigger gg_trg________________u= null
-trigger gg_trg_Initial_at_00s= null
 trigger gg_trg_Initial_at_0s= null
 trigger gg_trg_Name_setting= null
 trigger gg_trg_CPU_setting= null
@@ -1247,6 +1246,19 @@ unit gg_unit_nzlc_0019= null
 destructable gg_dest_LTbr_0750= null
 destructable gg_dest_LTbs_0753= null
 destructable gg_dest_DTes_0754= null
+rect gg_rct______________088= null
+rect gg_rct______________089= null
+rect gg_rct______________090= null
+rect gg_rct______________091= null
+rect gg_rct_dead_body_006= null
+rect gg_rct_dead_body_007= null
+rect gg_rct_dead_body_008= null
+rect gg_rct_dead_body_009= null
+rect gg_rct_dead_body_010= null
+rect gg_rct_Finish_Map_2= null
+rect gg_rct_ganran_2= null
+rect gg_rct_border_map_2_right= null
+rect gg_rct_soul_map_2= null
 integer NS= 31536000
 integer LS= 31622400
 integer BJTIME= 28800
@@ -2458,7 +2470,7 @@ endfunction
         endfunction
         
 //Implemented from module MaxSpeed___O:
-        function s__ModSpeed_MaxSpeed___O__onInit takes nothing returns nothing
+        function s__ModSpeed_MaxSpeed___O___onInit takes nothing returns nothing
             call TimerStart(CreateTimer(), MaxSpeed___PERIOD, true, function s__ModSpeed_iterate)
         endfunction
     
@@ -3930,7 +3942,7 @@ endfunction
 //library YDWETriggerEvent:
 	
 //===========================================================================  
-//ï¿½ï¿½ï¿½âµ¥Î»ï¿½Ëºï¿½ï¿½Â¼ï¿½ 
+//ÈÎÒâµ¥Î»ÉËº¦ÊÂ¼þ 
 //===========================================================================
 function YDWEAnyUnitDamagedTriggerAction takes nothing returns nothing
     local integer i= 0
@@ -3977,7 +3989,7 @@ function YDWESyStemAnyUnitDamagedRegistTrigger takes trigger trg returns nothing
     set YDWETriggerEvent__DamageEventNumber=YDWETriggerEvent__DamageEventNumber + 1
 endfunction
 //===========================================================================  
-//ï¿½Æ¶ï¿½ï¿½ï¿½Æ·ï¿½Â¼ï¿½ 
+//ÒÆ¶¯ÎïÆ·ÊÂ¼þ 
 //===========================================================================  
 function YDWESyStemItemUnmovableTriggerAction takes nothing returns nothing
     local integer i= 0
@@ -4050,7 +4062,7 @@ endfunction
 //library YDWEWakePlayerUnitsNull ends
 //library MeatHook:
 //****************************//
-//* ï¿½ï¿½ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ Fetrix_saiï¿½ï¿½ï¿½ï¿½ *//
+//* ¼¼ÄÜ-¹³×Ó Fetrix_saiÐÞÕý *//
 //****************************//
     
     function MeatHook__GetUnitZ takes unit u returns real
@@ -4066,10 +4078,10 @@ endfunction
         loop
             set f=FirstOfGroup(g)
             exitwhen f == null
-            //* key ï¿½Ä¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½ï¿½Ð¶Ï¹ï¿½ï¿½Ð£ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Õ¼ï¿½ï¿½ï¿½ë·½ï¿½ï¿½; ï¿½ï¿½ï¿½Ðµï¿½Î»ï¿½È³æµ¥Î»,ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Öµ'noMeatHook'=1ï¿½Äµï¿½Î»ï¿½ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½ 
+            //* key ¸Ä¹ý£¬ÓÃÅÐ¶ÏÆ½Ãæ¾àÀëµÄ·½·¨ÅÐ¶Ï¹³ÖÐ£¬È¡´úÒÔÇ°¿Õ¼ä¾àÀë·½·¨; ·ÉÐÐµ¥Î»»È³æµ¥Î»,µ¥Î»µÄÕûÊý×Ô¶¨ÒåÖµ'noMeatHook'=1µÄµ¥Î»²»»á±»¹³ÖÐ 
             if GetWidgetLife(f) > 0.405 and not ( IsUnitType(f, UNIT_TYPE_STRUCTURE) ) and not ( IsUnitInGroup(f, MeatHook__Except) ) and f != pudge and not ( IsUnitType(f, UNIT_TYPE_FLYING) ) and GetUnitAbilityLevel(f, 'Aloc') == 0 and ( ( LoadInteger(YDHT, GetHandleId(f), 0xA14C499E) != 1 ) ) then
                 if ( GetUnitX(f) - x ) * ( GetUnitX(f) - x ) + ( GetUnitY(f) - y ) * ( GetUnitY(f) - y ) < 14400 then
-                    //* ï¿½ï¿½ï¿½Ò±ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½ï¿½Ë£ï¿½Í´ï¿½ï¿½Øºï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½ï¿½
+                    //* ²»ÐÒ±»¹³×Ó¹´ÖÐÁË£¬Í´¿àµØº°³öÒ»Éù¡°ÑÅóºµû~¡±
                     set bj_lastAbilityTargetUnit=f
                     call YDWESyStemAbilityCastingOverTriggerAction(pudge , 4)
                     call SaveInteger(YDHT, StringHash((key )), StringHash(( "Switch" )), ( 2)) // INLINED!!
@@ -5206,9 +5218,9 @@ endfunction
 //library YDWESetUnitFacingToFaceUnitTimedNull ends
 //library YDWETimerPattern:
 //***************************************************
-//* ï¿½ï¿½ - Matrix ï¿½ï¿½ï¿½ï¿½Ä£ï¿½åº¯ï¿½ï¿½
+//* ¡Æ - Matrix ÍòÄÜÄ£°åº¯Êý
 //*--------------------
-//* ï¿½ï¿½ï¿½ß£ï¿½Warft_TigerCN  ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½Fetrix_sai
+//* ×÷Õß£ºWarft_TigerCN  ´úÂëÓÅ»¯£ºFetrix_sai
 //***************************************************
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     //                                       Timer Pattern Union                                              //
@@ -5585,7 +5597,7 @@ function YDWETimerSystem__DeleteTaskIndex takes integer index returns nothing
 	set YDWETimerSystem__TaskListIdle[index]=YDWETimerSystem__TaskListIdleHead
 	set YDWETimerSystem__TaskListIdleHead=index
 endfunction
-//ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½
+//¸Ãº¯ÊýÐòÁÐ´¦Àí
 function YDWETimerSystem__NewTask takes real time,trigger proc returns integer
  local integer index= YDWETimerSystem__NewTaskIndex()
  local integer h= YDWETimerSystem__TaskListHead
@@ -5611,7 +5623,7 @@ endfunction
 function YDWETimerSystemGetCurrentTask takes nothing returns integer
 	return YDWETimerSystem__CurrentIndex
 endfunction
-//É¾ï¿½ï¿½ï¿½ï¿½Î»
+//É¾³ýµ¥Î»
 function YDWETimerSystem__RemoveUnit_CallBack takes nothing returns nothing
     call RemoveUnit(LoadUnitHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5619,7 +5631,7 @@ endfunction
 function YDWETimerRemoveUnit takes real time,unit u returns nothing
     call SaveUnitHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnRemoveUnit), u)
 endfunction
-//ï¿½Ý»Ù¼ï¿½Ê±ï¿½ï¿½
+//´Ý»Ù¼ÆÊ±Æ÷
 function YDWETimerSystem__DestroyTimer_CallBack takes nothing returns nothing
     call DestroyTimer(LoadTimerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5627,7 +5639,7 @@ endfunction
 function YDWETimerDestroyTimer takes real time,timer t returns nothing
     call SaveTimerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnDestroyTimer), t)
 endfunction
-//É¾ï¿½ï¿½ï¿½ï¿½Æ·
+//É¾³ýÎïÆ·
 function YDWETimerSystem__RemoveItem_CallBack takes nothing returns nothing
     call RemoveItem(LoadItemHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5635,7 +5647,7 @@ endfunction
 function YDWETimerRemoveItem takes real time,item it returns nothing
     call SaveItemHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnRemoveItem), it)
 endfunction
-//É¾ï¿½ï¿½ï¿½ï¿½Ð§
+//É¾³ýÌØÐ§
 function YDWETimerSystem__DestroyEffect_CallBack takes nothing returns nothing
     call h__DestroyEffect(LoadEffectHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5643,7 +5655,7 @@ endfunction
 function YDWETimerDestroyEffect takes real time,effect e returns nothing
     call SaveEffectHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnDestroyEffect), e)
 endfunction
-//É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
+//É¾³ýÉÁµçÌØÐ§
 function YDWETimerSystem__DestroyLightning_CallBack takes nothing returns nothing
     call DestroyLightning(LoadLightningHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5652,7 +5664,7 @@ function YDWETimerDestroyLightning takes real time,lightning lt returns nothing
  local integer i= YDWETimerSystem__NewTask(time , YDWETimerSystem__fnDestroyLightning)
     call SaveLightningHandle(YDHT, YDWETimerSystem__TimerHandle, i, lt)
 endfunction
-//ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½
+//ÔËÐÐ´¥·¢Æ÷
 function YDWETimerSystem__RunTrigger_CallBack takes nothing returns nothing
     call TriggerExecute(LoadTriggerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5660,7 +5672,7 @@ endfunction
 function YDWETimerRunTrigger takes real time,trigger trg returns nothing
     call SaveTriggerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnRunTrigger), trg)
 endfunction
-//É¾ï¿½ï¿½Æ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//É¾³ýÆ¯¸¡ÎÄ×Ö
 function YDWETimerDestroyTextTag takes real time,texttag tt returns nothing
     local integer N=0
     local integer i=0
@@ -5671,7 +5683,7 @@ function YDWETimerDestroyTextTag takes real time,texttag tt returns nothing
     call SetTextTagLifespan(tt, time)
     call SetTextTagFadepoint(tt, time)
 endfunction
-//ï¿½ï¿½ï¿½Ä¼ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//ÖÐÐÄ¼ÆÊ±Æ÷Ö÷º¯Êý
 function YDWETimerSystem__Main takes nothing returns nothing
  local integer h= YDWETimerSystem__TaskListHead
  local integer p
@@ -5685,7 +5697,7 @@ function YDWETimerSystem__Main takes nothing returns nothing
 	endloop
 	set YDWETimerSystem__CurrentTime=YDWETimerSystem__CurrentTime + 1
 endfunction
-//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//³õÊ¼»¯º¯Êý
 function YDWETimerSystem__Init takes nothing returns nothing
     set YDWETimerSystem__Timer=CreateTimer()
 	set YDWETimerSystem__TimerHandle=GetHandleId(YDWETimerSystem__Timer)
@@ -5711,7 +5723,7 @@ function YDWETimerSystem__Init takes nothing returns nothing
 	
     call TimerStart(YDWETimerSystem__Timer, 0.01, true, function YDWETimerSystem__Main)
 endfunction
-//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+//Ñ­»·ÀàÈÔÓÃ¶ÀÁ¢¼ÆÊ±Æ÷
 function YDWETimerSystemGetRunIndex takes nothing returns integer
     return YDWETimerSystem__TimerSystem_RunIndex
 endfunction
@@ -5791,7 +5803,7 @@ endfunction
 // 
 //   Warcraft III map script
 //   Generated by the Warcraft III World Editor
-//   Date: Wed Jan 02 17:04:15 2019
+//   Date: Fri Jan 04 15:36:03 2019
 //   Map Author: key
 // 
 //===========================================================================
@@ -6381,15 +6393,8 @@ endfunction
 //***************************************************************************
 function CreateAllItems takes nothing returns nothing
     local integer itemID
-    call CreateItem('I00J', - 8465.3, 22045.2)
-    call CreateItem('I00K', - 6979.7, 15562.7)
+    call CreateItem('I00K', - 8639.1, 16261.4)
     call CreateItem('I00K', 4185.2, 22802.3)
-    call CreateItem('rhe2', - 1523.9, 19860.5)
-    call CreateItem('rhe2', - 1528.5, 18822.1)
-    call CreateItem('rhe2', - 1004.3, 19335.1)
-    call CreateItem('rhe2', - 1030.0, 20386.8)
-    call CreateItem('rhe2', - 486.8, 19846.1)
-    call CreateItem('rhe2', - 484.8, 18822.1)
 endfunction
 //***************************************************************************
 //*
@@ -6403,14 +6408,14 @@ function CreateUnitsForPlayer0 takes nothing returns nothing
     local integer unitID
     local trigger t
     local real life
-    set u=CreateUnit(p, 'e01K', - 7781.6, 29139.7, 0.000)
-    set u=CreateUnit(p, 'e01K', - 7155.2, 28895.0, 0.000)
-    set u=CreateUnit(p, 'e01K', - 7714.5, 28657.3, 0.000)
-    set u=CreateUnit(p, 'e01K', - 7099.0, 28444.2, 0.000)
-    set u=CreateUnit(p, 'e01K', - 7649.7, 28219.2, 0.000)
-    set u=CreateUnit(p, 'e01K', - 6710.0, 29174.5, 0.000)
-    set u=CreateUnit(p, 'e01K', - 6642.9, 28692.1, 0.000)
-    set u=CreateUnit(p, 'e01K', - 6578.0, 28253.9, 0.000)
+    set u=CreateUnit(p, 'e01K', - 8261.3, 29241.1, 0.000)
+    set u=CreateUnit(p, 'e01K', - 7634.8, 28996.3, 0.000)
+    set u=CreateUnit(p, 'e01K', - 8194.1, 28758.7, 0.000)
+    set u=CreateUnit(p, 'e01K', - 7578.7, 28545.6, 0.000)
+    set u=CreateUnit(p, 'e01K', - 8129.3, 28320.5, 0.000)
+    set u=CreateUnit(p, 'e01K', - 7189.7, 29275.8, 0.000)
+    set u=CreateUnit(p, 'e01K', - 7122.5, 28793.4, 0.000)
+    set u=CreateUnit(p, 'e01K', - 7057.7, 28355.2, 0.000)
 endfunction
 //===========================================================================
 function CreateBuildingsForPlayer11 takes nothing returns nothing
@@ -6421,13 +6426,7 @@ function CreateBuildingsForPlayer11 takes nothing returns nothing
     local real life
     set gg_unit_n00P_0043=CreateUnit(p, 'n00P', - 28544.0, 15488.0, 270.000)
     set gg_unit_n00P_0044=CreateUnit(p, 'n00P', - 29824.0, 15168.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', 1152.0, 25472.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', 1152.0, 25344.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', 384.0, 25344.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', 384.0, 25472.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', - 384.0, 25088.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', 128.0, 24576.0, 270.000)
-    set u=CreateUnit(p, 'hgtw', 704.0, 24576.0, 270.000)
+    set u=CreateUnit(p, 'etrp', - 11616.0, 27744.0, 270.000)
 endfunction
 //===========================================================================
 function CreateUnitsForPlayer11 takes nothing returns nothing
@@ -6457,7 +6456,10 @@ function CreateUnitsForPlayer11 takes nothing returns nothing
     set gg_unit_n00V_0038=CreateUnit(p, 'n00V', - 18283.8, 21514.1, 90.000)
     set gg_unit_n00T_0041=CreateUnit(p, 'n00T', - 23342.7, 16171.8, 34.970)
     set gg_unit_n00U_0042=CreateUnit(p, 'n00U', - 27395.8, 15332.5, 0.000)
-    set u=CreateUnit(p, 'uabo', - 6729.5, 15604.5, 284.644)
+    set u=CreateUnit(p, 'uabo', 1701.4, 14602.5, 47.564)
+    set u=CreateUnit(p, 'uske', 5052.4, 26629.2, 266.905)
+    set u=CreateUnit(p, 'uske', 4915.8, 26476.4, 283.461)
+    set u=CreateUnit(p, 'uske', 5168.7, 26458.1, 250.517)
 endfunction
 //===========================================================================
 function CreateNeutralPassiveBuildings takes nothing returns nothing
@@ -6466,7 +6468,7 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     local integer unitID
     local trigger t
     local real life
-    set u=CreateUnit(p, 'n01S', - 7936.0, 23424.0, 270.000)
+    set u=CreateUnit(p, 'n01S', - 11584.0, 27392.0, 270.000)
     set u=CreateUnit(p, 'nmg1', - 24192.0, 19840.0, 270.000)
     set u=CreateUnit(p, 'nmg0', - 15296.0, 23680.0, 270.000)
     set u=CreateUnit(p, 'nmg0', - 15296.0, 22720.0, 270.000)
@@ -6475,7 +6477,8 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     set gg_unit_n01S_0045=CreateUnit(p, 'n01S', - 29760.0, 14848.0, 270.000)
     set u=CreateUnit(p, 'n01U', - 28000.0, 27488.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(12))
-    set u=CreateUnit(p, 'nshp', 4608.0, 29248.0, 270.000)
+    set u=CreateUnit(p, 'nfh0', - 64.0, 27520.0, 270.000)
+    set u=CreateUnit(p, 'n02R', 4608.0, 29248.0, 270.000)
     set u=CreateUnit(p, 'n01V', - 28000.0, 27168.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(12))
     set u=CreateUnit(p, 'n01W', - 27680.0, 27488.0, 270.000)
@@ -6494,7 +6497,6 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     call SetUnitColor(u, ConvertPlayerColor(12))
     set u=CreateUnit(p, 'n022', - 26720.0, 27168.0, 270.000)
     call SetUnitColor(u, ConvertPlayerColor(12))
-    set u=CreateUnit(p, 'nwgt', - 2048.0, 19520.0, 270.000)
 endfunction
 //===========================================================================
 function CreateNeutralPassive takes nothing returns nothing
@@ -6503,7 +6505,7 @@ function CreateNeutralPassive takes nothing returns nothing
     local integer unitID
     local trigger t
     local real life
-    set u=CreateUnit(p, 'nvul', - 20175.3, 18546.2, 10.514)
+    set u=CreateUnit(p, 'nvul', - 20175.3, 18546.2, 15.514)
     set u=CreateUnit(p, 'nalb', - 16310.0, 15805.8, 35.487)
     set u=CreateUnit(p, 'nalb', - 22557.0, 21313.0, 31.598)
     set u=CreateUnit(p, 'nvul', - 26045.4, 18508.3, 10.514)
@@ -6516,10 +6518,10 @@ function CreateNeutralPassive takes nothing returns nothing
     set u=CreateUnit(p, 'nskk', - 26590.9, 25541.8, 224.798)
     set u=CreateUnit(p, 'nalb', - 22036.1, 15793.3, 31.598)
     set u=CreateUnit(p, 'nalb', - 18728.0, 24437.4, 31.598)
-    set u=CreateUnit(p, 'hmtt', - 3998.6, 28111.6, 90.000)
-    set u=CreateUnit(p, 'hmtt', - 3559.4, 28153.1, 90.000)
-    set u=CreateUnit(p, 'hmtt', - 3782.3, 28130.9, 90.000)
-    set u=CreateUnit(p, 'hmtt', - 3295.8, 28133.7, 90.000)
+    set u=CreateUnit(p, 'hmtt', - 3979.3, 27350.2, 90.000)
+    set u=CreateUnit(p, 'hmtt', - 3543.2, 27365.9, 90.000)
+    set u=CreateUnit(p, 'hmtt', - 3762.9, 27369.5, 90.000)
+    set u=CreateUnit(p, 'hmtt', - 3276.4, 27372.3, 90.000)
 endfunction
 //===========================================================================
 function CreatePlayerBuildings takes nothing returns nothing
@@ -6601,9 +6603,9 @@ function CreateRegions takes nothing returns nothing
     set gg_rct______________u=Rect(- 24096.0, 14336.0, - 23872.0, 17536.0)
     set gg_rct_final=Rect(- 30080.0, 14400.0, - 28256.0, 17376.0)
     set gg_rct_border_left=Rect(- 30464.0, 13792.0, - 30176.0, 30560.0)
-    set gg_rct_border_down=Rect(- 30528.0, 13952.0, - 14368.0, 14304.0)
-    set gg_rct_border_right=Rect(- 15104.0, 14048.0, - 14912.0, 29952.0)
-    set gg_rct_border_up=Rect(- 30720.0, 29760.0, - 14624.0, 29952.0)
+    set gg_rct_border_down=Rect(- 30528.0, 13952.0, 10240.0, 14304.0)
+    set gg_rct_border_right=Rect(- 15104.0, 14048.0, - 12096.0, 29952.0)
+    set gg_rct_border_up=Rect(- 30720.0, 29760.0, 10016.0, 29952.0)
     set gg_rct_death_earth_01=Rect(- 19456.0, 20224.0, - 18720.0, 20800.0)
     set gg_rct_weak_00=Rect(- 21312.0, 23136.0, - 15136.0, 23840.0)
     set gg_rct_CANT_JUMP=Rect(- 19616.0, 27072.0, - 19328.0, 27936.0)
@@ -6634,13 +6636,34 @@ function CreateRegions takes nothing returns nothing
     set gg_rct_Snow=Rect(- 17056.0, 14688.0, - 15104.0, 15936.0)
     set we=AddWeatherEffect(gg_rct_Snow, 'SNbs')
     call EnableWeatherEffect(we, true)
+    set gg_rct______________088=Rect(- 5024.0, 14048.0, - 64.0, 16480.0)
+    set we=AddWeatherEffect(gg_rct______________088, 'RAhr')
+    call EnableWeatherEffect(we, true)
+    set gg_rct______________089=Rect(3136.0, 24032.0, 5536.0, 28000.0)
+    set we=AddWeatherEffect(gg_rct______________089, 'LRma')
+    call EnableWeatherEffect(we, true)
+    set gg_rct______________090=Rect(- 1920.0, 29056.0, - 1152.0, 29696.0)
+    set we=AddWeatherEffect(gg_rct______________090, 'LRma')
+    call EnableWeatherEffect(we, true)
+    set gg_rct______________091=Rect(3808.0, 15872.0, 4096.0, 16192.0)
+    set we=AddWeatherEffect(gg_rct______________091, 'LRma')
+    call EnableWeatherEffect(we, true)
+    set gg_rct_dead_body_006=Rect(- 4192.0, 15616.0, - 3840.0, 15936.0)
+    set gg_rct_dead_body_007=Rect(3840.0, 17184.0, 4160.0, 17536.0)
+    set gg_rct_dead_body_008=Rect(4832.0, 24704.0, 5088.0, 25024.0)
+    set gg_rct_dead_body_009=Rect(- 1056.0, 28992.0, - 768.0, 29280.0)
+    set gg_rct_dead_body_010=Rect(- 10112.0, 29248.0, - 9856.0, 29472.0)
+    set gg_rct_Finish_Map_2=Rect(- 11712.0, 27264.0, - 11456.0, 27520.0)
+    set gg_rct_ganran_2=Rect(- 11776.0, 27200.0, - 11328.0, 27648.0)
+    set gg_rct_border_map_2_right=Rect(5696.0, 13920.0, 5984.0, 30688.0)
+    set gg_rct_soul_map_2=Rect(- 10080.0, 27264.0, - 9824.0, 27488.0)
 endfunction
 //***************************************************************************
 //*
 //*  Custom Script Code
 //*
 //***************************************************************************
-//TESH.scrollpos=73
+//TESH.scrollpos=0
 //TESH.alwaysfold=0
 
 function InitArray takes nothing returns nothing
@@ -6781,20 +6804,6 @@ endfunction
 //*
 //***************************************************************************
 //===========================================================================
-// Trigger: Initial at 00s
-//===========================================================================
-function Trig_Initial_at_00sActions takes nothing returns nothing
-   
-    call DisplayTimedTextToForce(GetPlayersAll(), 5, "è¿™æ˜¯ä¸€ä¸ªæµ‹è¯•æ¶ˆæ¯")
-    call DestroyTrigger(GetTriggeringTrigger())
-endfunction
-//===========================================================================
-function InitTrig_Initial_at_00s takes nothing returns nothing
-    set gg_trg_Initial_at_00s=CreateTrigger()
-    call TriggerRegisterTimerEventSingle(gg_trg_Initial_at_00s, 0.00)
-    call TriggerAddAction(gg_trg_Initial_at_00s, function Trig_Initial_at_00sActions)
-endfunction
-//===========================================================================
 // Trigger: å¯¹æˆ˜åˆå§‹åŒ–
 //
 // å¯¹æ‰€æœ‰çŽ©å®¶è¿›è¡Œé»˜è®¤çš„å¯¹æˆ˜æ¸¸æˆåˆå§‹åŒ–
@@ -6824,7 +6833,7 @@ function Trig_Initial_at_0sActions takes nothing returns nothing
     // æ˜¯å¦æœ‰ç”µè„‘
     call DisplayTimedTextToForce(GetPlayersAll(), 30, "|cffc3dbffæœ¬å›¾ç‰ˆæœ¬ï¼šv3.22-æ­£å¼ç‰ˆ|R
 |cfffeba0eåœ°å›¾ä½œè€…ï¼škey|R
-|cff20c000æ›´æ–°æ—¥æœŸï¼š2019å¹´1æœˆ2æ—¥|R
+|cff20c000æ›´æ–°æ—¥æœŸï¼š2019å¹´1æœˆ4æ—¥|R
 ä½œè€…ç•™è¨€ï¼š9102å•¦
 Qç¾¤ï¼š223664278")
     call DestroyTrigger(GetTriggeringTrigger())
@@ -10452,44 +10461,47 @@ endfunction
 //===========================================================================
 // Trigger: Buy hero
 //===========================================================================
-function Trig_Buy_heroFunc001Func004Func001Func002A takes nothing returns nothing
+function Trig_Buy_heroConditions takes nothing returns boolean
+    return ( ( GetUnitTypeId(GetBuyingUnit()) == 'e002' ) )
+endfunction
+function Trig_Buy_heroFunc002Func004Func001Func002A takes nothing returns nothing
     if ( ( LoadPlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xA03B70ED) == Player(PLAYER_NEUTRAL_PASSIVE) ) ) then
         call SavePlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xA03B70ED, GetEnumPlayer())
     else
         call DoNothing()
     endif
 endfunction
-function Trig_Buy_heroFunc001Func004Func001Func006A takes nothing returns nothing
+function Trig_Buy_heroFunc002Func004Func001Func006A takes nothing returns nothing
     if ( ( LoadPlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xA03B70ED) == Player(PLAYER_NEUTRAL_PASSIVE) ) ) then
         call SavePlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xA03B70ED, GetEnumPlayer())
     else
         call DoNothing()
     endif
 endfunction
-function Trig_Buy_heroFunc001Func004Func007Func012A takes nothing returns nothing
+function Trig_Buy_heroFunc002Func004Func007Func012A takes nothing returns nothing
     call SetPlayerTechMaxAllowedSwap(GetUnitTypeId(udg_HERO), 0, GetEnumPlayer())
 endfunction
-function Trig_Buy_heroFunc001Func004Func007Func025A takes nothing returns nothing
+function Trig_Buy_heroFunc002Func004Func007Func025A takes nothing returns nothing
     call SetPlayerTechMaxAllowedSwap(GetUnitTypeId(udg_HERO), 0, GetEnumPlayer())
 endfunction
-function Trig_Buy_heroFunc001Func008001001 takes nothing returns boolean
+function Trig_Buy_heroFunc002Func008001001 takes nothing returns boolean
     return ( ( GetFilterPlayer() != GetOwningPlayer(udg_Buyer) ) )
 endfunction
-function Trig_Buy_heroFunc001Func013Func001Func014Func003T takes nothing returns nothing
+function Trig_Buy_heroFunc002Func013Func001Func014Func003T takes nothing returns nothing
     call SetPlayerStateBJ(GetOwningPlayer(LoadUnitHandle(YDLOC, GetHandleId(GetExpiredTimer()), 0xAF0F9588)), PLAYER_STATE_RESOURCE_GOLD, 1)
     call FlushChildHashtable(YDLOC, GetHandleId(GetExpiredTimer()))
     call DestroyTimer(GetExpiredTimer())
 endfunction
-function Trig_Buy_heroFunc001Func013Func001Func014A takes nothing returns nothing
+function Trig_Buy_heroFunc002Func013Func001Func014A takes nothing returns nothing
     local timer ydl_timer
     call SaveUnitHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xAF0F9588, GetEnumUnit())
     call SetPlayerStateBJ(GetOwningPlayer(LoadUnitHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xAF0F9588)), PLAYER_STATE_RESOURCE_GOLD, 0)
     set ydl_timer=CreateTimer()
     call SaveUnitHandle(YDLOC, GetHandleId(ydl_timer), 0xAF0F9588, LoadUnitHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * LoadInteger(YDLOC, GetHandleId(GetTriggeringTrigger()), 0xECE825E7), 0xAF0F9588))
-    call TimerStart(ydl_timer, 0.50, false, function Trig_Buy_heroFunc001Func013Func001Func014Func003T)
+    call TimerStart(ydl_timer, 0.50, false, function Trig_Buy_heroFunc002Func013Func001Func014Func003T)
     set ydl_timer=null
 endfunction
-function Trig_Buy_heroFunc001Func013Func003A takes nothing returns nothing
+function Trig_Buy_heroFunc002Func013Func003A takes nothing returns nothing
     if ( ( GetUnitTypeId(GetEnumUnit()) == GetUnitTypeId(udg_HERO) ) ) then
         call GroupRemoveUnit(udg_Hero_UnitGroup[1], GetEnumUnit())
         call RemoveUnit(GetEnumUnit())
@@ -10508,7 +10520,7 @@ function Trig_Buy_heroActions takes nothing returns nothing
     if ( ( udg_Hero_mode_result != 5 ) ) then
         set udg_HERO=GetSoldUnit()
         set udg_Buyer=GetBuyingUnit()
-        call DisplayTimedTextToForce(YDWEGetPlayersMatchingNull(Condition(function Trig_Buy_heroFunc001Func008001001)), 5.00, ( udg_H_name[GetConvertedPlayerId(GetOwningPlayer(udg_Buyer))] + ( " é€‰æ‹©äº† " + ( "|cffd55bb0" + ( GetUnitName(udg_HERO) + "|r" ) ) ) ))
+        call DisplayTimedTextToForce(YDWEGetPlayersMatchingNull(Condition(function Trig_Buy_heroFunc002Func008001001)), 5.00, ( udg_H_name[GetConvertedPlayerId(GetOwningPlayer(udg_Buyer))] + ( " é€‰æ‹©äº† " + ( "|cffd55bb0" + ( GetUnitName(udg_HERO) + "|r" ) ) ) ))
         call TriggerExecute(gg_trg_Hero_pick_process)
         // é€‰æ‹©è‹±é›„è¿‡ç¨‹
         call TriggerExecute(gg_trg_Give_bonus_items)
@@ -10526,13 +10538,13 @@ function Trig_Buy_heroActions takes nothing returns nothing
                 // 4æ¨¡å¼ä¸‹ä¸èƒ½å†ä¹°åŒæ ·çš„è‹±é›„
                 call SaveUnitHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0x76E341F5, GetSellingUnit())
                 call SaveGroupHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0x214C62CC, YDWEGetUnitsOfTypeIdAllNull('e002'))
-                call h__ForGroupBJ(LoadGroupHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0x214C62CC), function Trig_Buy_heroFunc001Func013Func001Func014A)
+                call h__ForGroupBJ(LoadGroupHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0x214C62CC), function Trig_Buy_heroFunc002Func013Func001Func014A)
                 call h__DestroyGroup(LoadGroupHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0x214C62CC))
                 // é¿å…åŒæ—¶é€‰è‹±é›„å¯¼è‡´é€‰é”™
             else
                 call DoNothing()
             endif
-            call h__ForGroupBJ(udg_Hero_UnitGroup[1], function Trig_Buy_heroFunc001Func013Func003A)
+            call h__ForGroupBJ(udg_Hero_UnitGroup[1], function Trig_Buy_heroFunc002Func013Func003A)
             // 34æ¨¡å¼ä¸‹åˆ é™¤å•ä½ç»„1çš„åŒç±»å•ä½
         else
             // 12æ¨¡å¼ä¸‹ä¸èƒ½å†ä¹°åŒæ ·çš„è‹±é›„ï¼Œç”¨CD
@@ -10560,7 +10572,7 @@ function Trig_Buy_heroActions takes nothing returns nothing
                 call SetUnitScalePercent(GetLastCreatedUnit(), 150.00, 150.00, 150.00)
                 call SetUnitVertexColor(GetLastCreatedUnit(), 255, 0, 0, 200)
                 call GroupAddUnit(udg_Hero_UnitGroup[3], GetLastCreatedUnit())
-                call ForForce(GetPlayersAll(), function Trig_Buy_heroFunc001Func004Func007Func025A)
+                call ForForce(GetPlayersAll(), function Trig_Buy_heroFunc002Func004Func007Func025A)
                 call UnitPoolRemoveUnitType(udg_Hero_Group, GetUnitTypeId(udg_HERO))
                 call UnitPoolRemoveUnitType(udg_Noob_Hero_Group, GetUnitTypeId(udg_HERO))
                 call h__RemoveLocation(LoadLocationHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0xDEFC4000))
@@ -10576,7 +10588,7 @@ function Trig_Buy_heroActions takes nothing returns nothing
                 call SetUnitScalePercent(GetLastCreatedUnit(), 150.00, 150.00, 150.00)
                 call SetUnitVertexColor(GetLastCreatedUnit(), 255, 0, 0, 200)
                 call GroupAddUnit(udg_Hero_UnitGroup[3], GetLastCreatedUnit())
-                call ForForce(GetPlayersAll(), function Trig_Buy_heroFunc001Func004Func007Func012A)
+                call ForForce(GetPlayersAll(), function Trig_Buy_heroFunc002Func004Func007Func012A)
                 call UnitPoolRemoveUnitType(udg_Hero_Group, GetUnitTypeId(udg_HERO))
                 call UnitPoolRemoveUnitType(udg_Noob_Hero_Group, GetUnitTypeId(udg_HERO))
                 call h__RemoveLocation(LoadLocationHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0xDEFC4000))
@@ -10589,13 +10601,13 @@ function Trig_Buy_heroActions takes nothing returns nothing
         else
             if ( ( IsUnitAlly(udg_Buyer, Player(0)) == true ) ) then
                 call SavePlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0xA03B70ED, Player(PLAYER_NEUTRAL_PASSIVE))
-                call ForForce(udg_Player_Horde_Pick, function Trig_Buy_heroFunc001Func004Func001Func006A)
+                call ForForce(udg_Player_Horde_Pick, function Trig_Buy_heroFunc002Func004Func001Func006A)
                 call ForceRemovePlayer(udg_Player_Horde_Pick, LoadPlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0xA03B70ED))
                 // é˜Ÿé•¿ä¹°è‹±é›„ç»™äºˆçš„çŽ©å®¶
                 call DisplayTimedTextToForce(GetPlayersAll(), 5.00, ( udg_H_name[GetConvertedPlayerId(GetOwningPlayer(udg_Buyer))] + ( "(|CFFFF0000éƒ¨è½é˜Ÿé•¿|r) é€‰æ‹©äº† " + ( "|cffd55bb0" + ( GetUnitName(udg_HERO) + "|r" ) ) ) ))
             else
                 call SavePlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0xA03B70ED, Player(PLAYER_NEUTRAL_PASSIVE))
-                call ForForce(udg_Player_Union_Pick, function Trig_Buy_heroFunc001Func004Func001Func002A)
+                call ForForce(udg_Player_Union_Pick, function Trig_Buy_heroFunc002Func004Func001Func002A)
                 call ForceRemovePlayer(udg_Player_Union_Pick, LoadPlayerHandle(YDLOC, GetHandleId(GetTriggeringTrigger()) * ydl_localvar_step, 0xA03B70ED))
                 // é˜Ÿé•¿ä¹°è‹±é›„ç»™äºˆçš„çŽ©å®¶
                 call DisplayTimedTextToForce(GetPlayersAll(), 5.00, ( udg_H_name[GetConvertedPlayerId(GetOwningPlayer(udg_Buyer))] + ( "(|Cff0000ffè”ç›Ÿé˜Ÿé•¿|r) é€‰æ‹©äº† " + ( "|cffd55bb0" + ( GetUnitName(udg_HERO) + "|r" ) ) ) ))
@@ -10617,6 +10629,7 @@ endfunction
 function InitTrig_Buy_hero takes nothing returns nothing
     set gg_trg_Buy_hero=CreateTrigger()
     call TriggerRegisterAnyUnitEventBJ(gg_trg_Buy_hero, EVENT_PLAYER_UNIT_SELL)
+    call TriggerAddCondition(gg_trg_Buy_hero, Condition(function Trig_Buy_heroConditions))
     call TriggerAddAction(gg_trg_Buy_hero, function Trig_Buy_heroActions)
 endfunction
 //===========================================================================
@@ -51920,7 +51933,6 @@ endfunction
 function InitCustomTriggers takes nothing returns nothing
     call InitTrig________________u()
     call InitTrig_Initial_at_0s()
-    call InitTrig_Initial_at_00s()
     call InitTrig_Name_setting()
     call InitTrig_CPU_setting()
     call InitTrig_Skill_Intialization()
@@ -52833,7 +52845,7 @@ endfunction
 //***************************************************************************
 //===========================================================================
 function main takes nothing returns nothing
-    call SetCameraBounds(- 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), - 5760.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), - 5760.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
+    call SetCameraBounds(- 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 13312.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 13312.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     call SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     call SetWaterBaseColor(255, 255, 150, 255)
     call NewSoundEnvironment("Default")
@@ -52847,7 +52859,7 @@ function main takes nothing returns nothing
     call CreateAllUnits()
     call InitBlizzard()
 
-call ExecuteFunc("jasshelper__initstructs431541203")
+call ExecuteFunc("jasshelper__initstructs599040843")
 call ExecuteFunc("YDTriggerSaveLoadSystem__Init")
 call ExecuteFunc("InitializeYD")
 call ExecuteFunc("YDWEGeneralBounsSystem__Initialize")
@@ -52866,7 +52878,11 @@ endfunction
 //***************************************************************************
 function config takes nothing returns nothing
     call SetMapName("è‹±é›„èµ›è·‘v3.22-æ­£å¼ç‰ˆ")
-    call SetMapDescription("èµ›è·‘å›¾ï¼Œé€‰ä½ å–œæ¬¢çš„è‹±é›„åŽå°±å¼€å§‹è·‘å§~~~~\n\nåœ°å›¾ä½œè€…ï¼škey\nä½œè€…QQï¼š249252503\nåœ°å›¾ä¸“ç¾¤ï¼š223664278")
+    call SetMapDescription("èµ›è·‘å›¾ï¼Œé€‰ä½ å–œæ¬¢çš„è‹±é›„åŽå°±å¼€å§‹è·‘å§~~~~
+
+åœ°å›¾ä½œè€…ï¼škey
+ä½œè€…QQï¼š249252503
+åœ°å›¾ä¸“ç¾¤ï¼š223664278")
     call SetPlayers(10)
     call SetTeams(10)
     call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)
@@ -52885,20 +52901,20 @@ function config takes nothing returns nothing
     call InitCustomTeams()
     call InitAllyPriorities()
 endfunction
+//library ValueIndexing initializer Init requires YDWEBase
 //===========================================================================  
 //===========================================================================  
-//ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ 
+//×Ô¶¨ÒåÊÂ¼þ 
 //===========================================================================
 //===========================================================================   
-//===========================================================================
-//ä¿®æ”¹ç”Ÿå‘½
-//===========================================================================
-//library ValueIndexing initializer Init requires YDWEBase
 //===========================================================================
 //ÏµÍ³-TimerSystem
 //===========================================================================
 //===========================================================================
-//ï¿½ï¿½Ô¾ÏµÍ³ 
+//ÌøÔ¾ÏµÍ³ 
+//===========================================================================
+//===========================================================================
+//ä¿®æ”¹ç”Ÿå‘½
 //===========================================================================
 
 
@@ -53012,7 +53028,7 @@ function sa___prototype211_MemoryLeakHelper__ASE takes nothing returns boolean
     return true
 endfunction
 
-function jasshelper__initstructs431541203 takes nothing returns nothing
+function jasshelper__initstructs599040843 takes nothing returns nothing
     set st__ModSpeed_destroy=CreateTrigger()
     call TriggerAddCondition(st__ModSpeed_destroy,Condition( function sa__ModSpeed_destroy))
     set st__MemoryLeakHelper__GTable_onDestroy[3]=CreateTrigger()
@@ -53072,7 +53088,7 @@ function jasshelper__initstructs431541203 takes nothing returns nothing
     call TriggerAddAction(st___prototype211[1],function sa___prototype211_MemoryLeakHelper__ASE)
     call TriggerAddCondition(st___prototype211[1],Condition(function sa___prototype211_MemoryLeakHelper__ASE))
 
-call ExecuteFunc("s__ModSpeed_MaxSpeed___O__onInit")
+call ExecuteFunc("s__ModSpeed_MaxSpeed___O___onInit")
 
 
 
