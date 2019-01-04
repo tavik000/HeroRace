@@ -239,7 +239,7 @@ constant boolean LIBRARY_YDWEGetUnitsOfPlayerAllNull=true
 //endglobals from YDWEGetUnitsOfPlayerAllNull
 //globals from YDWEJumpTimer:
 constant boolean LIBRARY_YDWEJumpTimer=true
-//Ã¯‘æœµÕ≥”≈œ»º∂
+//ÔøΩÔøΩ‘æœµÕ≥ÔøΩÔøΩÔøΩ»ºÔøΩ
 integer MoveMoreLevel_JumpTimer=3
 //endglobals from YDWEJumpTimer
 //globals from YDWELocalVariable:
@@ -502,6 +502,19 @@ rect gg_rct_moneyQRcode_01= null
 rect gg_rct_leading_line= null
 rect gg_rct_ganRan= null
 rect gg_rct_Snow= null
+rect gg_rct______________088= null
+rect gg_rct______________089= null
+rect gg_rct______________090= null
+rect gg_rct______________091= null
+rect gg_rct_dead_body_006= null
+rect gg_rct_dead_body_007= null
+rect gg_rct_dead_body_008= null
+rect gg_rct_dead_body_009= null
+rect gg_rct_dead_body_010= null
+rect gg_rct_Finish_Map_2= null
+rect gg_rct_ganran_2= null
+rect gg_rct_border_map_2_right= null
+rect gg_rct_soul_map_2= null
 sound gg_snd_TheHornOfCenarius= null
 sound gg_snd_Rescue= null
 sound gg_snd_ArrangedTeamInvitation= null
@@ -1142,6 +1155,7 @@ trigger gg_trg_tips_02= null
 trigger gg_trg_________________________d= null
 trigger gg_trg_________________________d_mode_2= null
 trigger gg_trg_BLLM_in_hero_pick_words= null
+trigger gg_tri_LimitationOfBuyingBoatInMap2 = null
 trigger gg_trg_Guaji_setting= null
 trigger gg_trg_Guaji_outgame_u= null
 trigger gg_trg_Finish_Music= null
@@ -1246,19 +1260,6 @@ unit gg_unit_nzlc_0019= null
 destructable gg_dest_LTbr_0750= null
 destructable gg_dest_LTbs_0753= null
 destructable gg_dest_DTes_0754= null
-rect gg_rct______________088= null
-rect gg_rct______________089= null
-rect gg_rct______________090= null
-rect gg_rct______________091= null
-rect gg_rct_dead_body_006= null
-rect gg_rct_dead_body_007= null
-rect gg_rct_dead_body_008= null
-rect gg_rct_dead_body_009= null
-rect gg_rct_dead_body_010= null
-rect gg_rct_Finish_Map_2= null
-rect gg_rct_ganran_2= null
-rect gg_rct_border_map_2_right= null
-rect gg_rct_soul_map_2= null
 integer NS= 31536000
 integer LS= 31622400
 integer BJTIME= 28800
@@ -2470,7 +2471,7 @@ endfunction
         endfunction
         
 //Implemented from module MaxSpeed___O:
-        function s__ModSpeed_MaxSpeed___O___onInit takes nothing returns nothing
+        function s__ModSpeed_MaxSpeed___O__onInit takes nothing returns nothing
             call TimerStart(CreateTimer(), MaxSpeed___PERIOD, true, function s__ModSpeed_iterate)
         endfunction
     
@@ -3942,7 +3943,7 @@ endfunction
 //library YDWETriggerEvent:
 	
 //===========================================================================  
-//»Œ“‚µ•Œª…À∫¶ ¬º˛ 
+//ÔøΩÔøΩÔøΩ‚µ•ŒªÔøΩÀ∫ÔøΩÔøΩ¬ºÔøΩ 
 //===========================================================================
 function YDWEAnyUnitDamagedTriggerAction takes nothing returns nothing
     local integer i= 0
@@ -3989,7 +3990,7 @@ function YDWESyStemAnyUnitDamagedRegistTrigger takes trigger trg returns nothing
     set YDWETriggerEvent__DamageEventNumber=YDWETriggerEvent__DamageEventNumber + 1
 endfunction
 //===========================================================================  
-//“∆∂ØŒÔ∆∑ ¬º˛ 
+//ÔøΩ∆∂ÔøΩÔøΩÔøΩ∆∑ÔøΩ¬ºÔøΩ 
 //===========================================================================  
 function YDWESyStemItemUnmovableTriggerAction takes nothing returns nothing
     local integer i= 0
@@ -4062,7 +4063,7 @@ endfunction
 //library YDWEWakePlayerUnitsNull ends
 //library MeatHook:
 //****************************//
-//* ººƒ‹-π≥◊” Fetrix_sai–ﬁ’˝ *//
+//* ÔøΩÔøΩÔøΩÔøΩ-ÔøΩÔøΩÔøΩÔøΩ Fetrix_saiÔøΩÔøΩÔøΩÔøΩ *//
 //****************************//
     
     function MeatHook__GetUnitZ takes unit u returns real
@@ -4078,10 +4079,10 @@ endfunction
         loop
             set f=FirstOfGroup(g)
             exitwhen f == null
-            //* key ∏ƒπ˝£¨”√≈–∂œ∆Ω√Êæ‡¿Îµƒ∑Ω∑®≈–∂œπ≥÷–£¨»°¥˙“‘«∞ø’º‰æ‡¿Î∑Ω∑®; ∑…––µ•Œªª»≥Êµ•Œª,µ•Œªµƒ’˚ ˝◊‘∂®“Â÷µ'noMeatHook'=1µƒµ•Œª≤ªª·±ªπ≥÷– 
+            //* key ÔøΩƒπÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ–∂ÔøΩ∆ΩÔøΩÔøΩÔøΩÔøΩÔøΩƒ∑ÔøΩÔøΩÔøΩÔøΩ–∂œπÔøΩÔøΩ–£ÔøΩ»°ÔøΩÔøΩÔøΩÔøΩ«∞ÔøΩ’ºÔøΩÔøΩÔøΩÎ∑ΩÔøΩÔøΩ; ÔøΩÔøΩÔøΩ–µÔøΩŒªÔøΩ»≥Êµ•Œª,ÔøΩÔøΩŒªÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ‘∂ÔøΩÔøΩÔøΩ÷µ'noMeatHook'=1ÔøΩƒµÔøΩŒªÔøΩÔøΩÔøΩ·±ªÔøΩÔøΩÔøΩÔøΩ 
             if GetWidgetLife(f) > 0.405 and not ( IsUnitType(f, UNIT_TYPE_STRUCTURE) ) and not ( IsUnitInGroup(f, MeatHook__Except) ) and f != pudge and not ( IsUnitType(f, UNIT_TYPE_FLYING) ) and GetUnitAbilityLevel(f, 'Aloc') == 0 and ( ( LoadInteger(YDHT, GetHandleId(f), 0xA14C499E) != 1 ) ) then
                 if ( GetUnitX(f) - x ) * ( GetUnitX(f) - x ) + ( GetUnitY(f) - y ) * ( GetUnitY(f) - y ) < 14400 then
-                    //* ≤ª–“±ªπ≥◊”π¥÷–¡À£¨Õ¥ø‡µÿ∫∞≥ˆ“ª…˘°∞—≈Û∫µ˚~°±
+                    //* ÔøΩÔøΩÔøΩ“±ÔøΩÔøΩÔøΩÔøΩ”πÔøΩÔøΩÔøΩÔøΩÀ£ÔøΩÕ¥ÔøΩÔøΩÿ∫ÔøΩÔøΩÔøΩ“ªÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ~ÔøΩÔøΩ
                     set bj_lastAbilityTargetUnit=f
                     call YDWESyStemAbilityCastingOverTriggerAction(pudge , 4)
                     call SaveInteger(YDHT, StringHash((key )), StringHash(( "Switch" )), ( 2)) // INLINED!!
@@ -5218,9 +5219,9 @@ endfunction
 //library YDWESetUnitFacingToFaceUnitTimedNull ends
 //library YDWETimerPattern:
 //***************************************************
-//* °∆ - Matrix ÕÚƒ‹ƒ£∞Â∫Ø ˝
+//* ÔøΩÔøΩ - Matrix ÔøΩÔøΩÔøΩÔøΩƒ£ÔøΩÂ∫ØÔøΩÔøΩ
 //*--------------------
-//* ◊˜’ﬂ£∫Warft_TigerCN  ¥˙¬Î”≈ªØ£∫Fetrix_sai
+//* ÔøΩÔøΩÔøΩﬂ£ÔøΩWarft_TigerCN  ÔøΩÔøΩÔøΩÔøΩÔøΩ≈ªÔøΩÔøΩÔøΩFetrix_sai
 //***************************************************
     //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     //                                       Timer Pattern Union                                              //
@@ -5597,7 +5598,7 @@ function YDWETimerSystem__DeleteTaskIndex takes integer index returns nothing
 	set YDWETimerSystem__TaskListIdle[index]=YDWETimerSystem__TaskListIdleHead
 	set YDWETimerSystem__TaskListIdleHead=index
 endfunction
-//∏√∫Ø ˝–Ú¡–¥¶¿Ì
+//ÔøΩ√∫ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ–¥ÔøΩÔøΩÔøΩ
 function YDWETimerSystem__NewTask takes real time,trigger proc returns integer
  local integer index= YDWETimerSystem__NewTaskIndex()
  local integer h= YDWETimerSystem__TaskListHead
@@ -5623,7 +5624,7 @@ endfunction
 function YDWETimerSystemGetCurrentTask takes nothing returns integer
 	return YDWETimerSystem__CurrentIndex
 endfunction
-//…æ≥˝µ•Œª
+//…æÔøΩÔøΩÔøΩÔøΩŒª
 function YDWETimerSystem__RemoveUnit_CallBack takes nothing returns nothing
     call RemoveUnit(LoadUnitHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5631,7 +5632,7 @@ endfunction
 function YDWETimerRemoveUnit takes real time,unit u returns nothing
     call SaveUnitHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnRemoveUnit), u)
 endfunction
-//¥›ªŸº∆ ±∆˜
+//ÔøΩ›ªŸºÔøΩ ±ÔøΩÔøΩ
 function YDWETimerSystem__DestroyTimer_CallBack takes nothing returns nothing
     call DestroyTimer(LoadTimerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5639,7 +5640,7 @@ endfunction
 function YDWETimerDestroyTimer takes real time,timer t returns nothing
     call SaveTimerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnDestroyTimer), t)
 endfunction
-//…æ≥˝ŒÔ∆∑
+//…æÔøΩÔøΩÔøΩÔøΩ∆∑
 function YDWETimerSystem__RemoveItem_CallBack takes nothing returns nothing
     call RemoveItem(LoadItemHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5647,7 +5648,7 @@ endfunction
 function YDWETimerRemoveItem takes real time,item it returns nothing
     call SaveItemHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnRemoveItem), it)
 endfunction
-//…æ≥˝Ãÿ–ß
+//…æÔøΩÔøΩÔøΩÔøΩ–ß
 function YDWETimerSystem__DestroyEffect_CallBack takes nothing returns nothing
     call h__DestroyEffect(LoadEffectHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5655,7 +5656,7 @@ endfunction
 function YDWETimerDestroyEffect takes real time,effect e returns nothing
     call SaveEffectHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnDestroyEffect), e)
 endfunction
-//…æ≥˝…¡µÁÃÿ–ß
+//…æÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ–ß
 function YDWETimerSystem__DestroyLightning_CallBack takes nothing returns nothing
     call DestroyLightning(LoadLightningHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5664,7 +5665,7 @@ function YDWETimerDestroyLightning takes real time,lightning lt returns nothing
  local integer i= YDWETimerSystem__NewTask(time , YDWETimerSystem__fnDestroyLightning)
     call SaveLightningHandle(YDHT, YDWETimerSystem__TimerHandle, i, lt)
 endfunction
-//‘À––¥•∑¢∆˜
+//ÔøΩÔøΩÔøΩ–¥ÔøΩÔøΩÔøΩÔøΩÔøΩ
 function YDWETimerSystem__RunTrigger_CallBack takes nothing returns nothing
     call TriggerExecute(LoadTriggerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex))
     call RemoveSavedHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__CurrentIndex)
@@ -5672,7 +5673,7 @@ endfunction
 function YDWETimerRunTrigger takes real time,trigger trg returns nothing
     call SaveTriggerHandle(YDHT, YDWETimerSystem__TimerHandle, YDWETimerSystem__NewTask(time , YDWETimerSystem__fnRunTrigger), trg)
 endfunction
-//…æ≥˝∆Ø∏°Œƒ◊÷
+//…æÔøΩÔøΩ∆ØÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 function YDWETimerDestroyTextTag takes real time,texttag tt returns nothing
     local integer N=0
     local integer i=0
@@ -5683,7 +5684,7 @@ function YDWETimerDestroyTextTag takes real time,texttag tt returns nothing
     call SetTextTagLifespan(tt, time)
     call SetTextTagFadepoint(tt, time)
 endfunction
-//÷––ƒº∆ ±∆˜÷˜∫Ø ˝
+//ÔøΩÔøΩÔøΩƒºÔøΩ ±ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 function YDWETimerSystem__Main takes nothing returns nothing
  local integer h= YDWETimerSystem__TaskListHead
  local integer p
@@ -5697,7 +5698,7 @@ function YDWETimerSystem__Main takes nothing returns nothing
 	endloop
 	set YDWETimerSystem__CurrentTime=YDWETimerSystem__CurrentTime + 1
 endfunction
-//≥ı ºªØ∫Ø ˝
+//ÔøΩÔøΩ ºÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 function YDWETimerSystem__Init takes nothing returns nothing
     set YDWETimerSystem__Timer=CreateTimer()
 	set YDWETimerSystem__TimerHandle=GetHandleId(YDWETimerSystem__Timer)
@@ -5723,7 +5724,7 @@ function YDWETimerSystem__Init takes nothing returns nothing
 	
     call TimerStart(YDWETimerSystem__Timer, 0.01, true, function YDWETimerSystem__Main)
 endfunction
-//—≠ª∑¿‡»‘”√∂¿¡¢º∆ ±∆˜
+//—≠ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ√∂ÔøΩÔøΩÔøΩÔøΩÔøΩ ±ÔøΩÔøΩ
 function YDWETimerSystemGetRunIndex takes nothing returns integer
     return YDWETimerSystem__TimerSystem_RunIndex
 endfunction
@@ -5803,7 +5804,7 @@ endfunction
 // 
 //   Warcraft III map script
 //   Generated by the Warcraft III World Editor
-//   Date: Fri Jan 04 15:36:03 2019
+//   Date: Fri Jan 04 20:27:59 2019
 //   Map Author: key
 // 
 //===========================================================================
@@ -6456,7 +6457,6 @@ function CreateUnitsForPlayer11 takes nothing returns nothing
     set gg_unit_n00V_0038=CreateUnit(p, 'n00V', - 18283.8, 21514.1, 90.000)
     set gg_unit_n00T_0041=CreateUnit(p, 'n00T', - 23342.7, 16171.8, 34.970)
     set gg_unit_n00U_0042=CreateUnit(p, 'n00U', - 27395.8, 15332.5, 0.000)
-    set u=CreateUnit(p, 'uabo', 1701.4, 14602.5, 47.564)
     set u=CreateUnit(p, 'uske', 5052.4, 26629.2, 266.905)
     set u=CreateUnit(p, 'uske', 4915.8, 26476.4, 283.461)
     set u=CreateUnit(p, 'uske', 5168.7, 26458.1, 250.517)
@@ -43002,6 +43002,43 @@ function InitTrig_BLLM_in_hero_pick_words takes nothing returns nothing
     set gg_trg_BLLM_in_hero_pick_words=CreateTrigger()
     call TriggerAddAction(gg_trg_BLLM_in_hero_pick_words, function Trig_BLLM_in_hero_pick_wordsActions)
 endfunction
+
+//===========================================================================
+// Category: Map 2 Other
+//===========================================================================
+
+//===========================================================================
+// Trigger: Limitation of buying boat in Map2
+//===========================================================================
+
+function Trig_LimitationOfBuyingBoatInMap2Action takes nothing returns nothing
+    call YDWESetLocalVariableUnit( "boat", GetSoldUnit() )
+    call YDWESetLocalVariableUnit( "buyer", GetBuyingUnit() )
+    if ((GetUnitTypeId(YDWEGetLocalVariableUnit("boat")) == 'n02Q')) then
+        if ((CountUnitsInGroup(GetUnitsOfPlayerAndTypeId(GetOwningPlayer(YDWEGetLocalVariableUnit("buyer")), 'n02Q')) >= 2)) then
+            call DisplayTextToPlayer( GetOwningPlayer(YDWEGetLocalVariableUnit("buyer")), 0.50, 0.05, "|cffffcc00Âè™ËÉΩÊã•Êúâ‰∏ÄËâòËøêËæìËàπ|r" )
+            call RemoveUnit( YDWEGetLocalVariableUnit("boat") )
+        else
+        endif
+    else
+    endif
+    call YDWELocalVariableEnd()
+endfunction
+
+//===========================================================================
+function InitTrig_Trig_LimitationOfBuyingBoatInMap2 takes nothing returns nothing
+    set gg_tri_LimitationOfBuyingBoatInMap2 = CreateTrigger()
+    call TriggerRegisterAnyUnitEventBJ( gg_tri_LimitationOfBuyingBoatInMap2, EVENT_PLAYER_UNIT_SELL )
+    call TriggerAddAction(gg_tri_LimitationOfBuyingBoatInMap2, function Trig_LimitationOfBuyingBoatInMap2Action)
+endfunction
+
+
+
+
+//===========================================================================
+// Category: Other
+//===========================================================================
+
 //===========================================================================
 // Trigger: Guaji setting
 //===========================================================================
@@ -52494,6 +52531,7 @@ function InitCustomTriggers takes nothing returns nothing
     call InitTrig_________________________d()
     call InitTrig_________________________d_mode_2()
     call InitTrig_BLLM_in_hero_pick_words()
+    call InitTrig_Trig_LimitationOfBuyingBoatInMap2()
     call InitTrig_Guaji_setting()
     call InitTrig_Guaji_outgame_u()
     call InitTrig_Finish_Music()
@@ -52845,7 +52883,7 @@ endfunction
 //***************************************************************************
 //===========================================================================
 function main takes nothing returns nothing
-    call SetCameraBounds(- 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 13312.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 13312.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
+    call SetCameraBounds(- 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 14592.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 29952.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 29696.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 5504.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 14592.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     call SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     call SetWaterBaseColor(255, 255, 150, 255)
     call NewSoundEnvironment("Default")
@@ -52859,7 +52897,7 @@ function main takes nothing returns nothing
     call CreateAllUnits()
     call InitBlizzard()
 
-call ExecuteFunc("jasshelper__initstructs599040843")
+call ExecuteFunc("jasshelper__initstructs616557687")
 call ExecuteFunc("YDTriggerSaveLoadSystem__Init")
 call ExecuteFunc("InitializeYD")
 call ExecuteFunc("YDWEGeneralBounsSystem__Initialize")
@@ -52904,14 +52942,14 @@ endfunction
 //library ValueIndexing initializer Init requires YDWEBase
 //===========================================================================  
 //===========================================================================  
-//◊‘∂®“Â ¬º˛ 
+//ÔøΩ‘∂ÔøΩÔøΩÔøΩÔøΩ¬ºÔøΩ 
 //===========================================================================
 //===========================================================================   
 //===========================================================================
 //œµÕ≥-TimerSystem
 //===========================================================================
 //===========================================================================
-//Ã¯‘æœµÕ≥ 
+//ÔøΩÔøΩ‘æœµÕ≥ 
 //===========================================================================
 //===========================================================================
 //‰øÆÊîπÁîüÂëΩ
@@ -53028,7 +53066,7 @@ function sa___prototype211_MemoryLeakHelper__ASE takes nothing returns boolean
     return true
 endfunction
 
-function jasshelper__initstructs599040843 takes nothing returns nothing
+function jasshelper__initstructs616557687 takes nothing returns nothing
     set st__ModSpeed_destroy=CreateTrigger()
     call TriggerAddCondition(st__ModSpeed_destroy,Condition( function sa__ModSpeed_destroy))
     set st__MemoryLeakHelper__GTable_onDestroy[3]=CreateTrigger()
@@ -53088,7 +53126,7 @@ function jasshelper__initstructs599040843 takes nothing returns nothing
     call TriggerAddAction(st___prototype211[1],function sa___prototype211_MemoryLeakHelper__ASE)
     call TriggerAddCondition(st___prototype211[1],Condition(function sa___prototype211_MemoryLeakHelper__ASE))
 
-call ExecuteFunc("s__ModSpeed_MaxSpeed___O___onInit")
+call ExecuteFunc("s__ModSpeed_MaxSpeed___O__onInit")
 
 
 
