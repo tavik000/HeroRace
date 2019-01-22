@@ -1,0 +1,37 @@
+[CustomSkin]
+CommandButtonCooldown=interface\cooldown ui.mdx
+IdlePeon=ReplaceableTextures\CommandButtons\BTNWisp.blp
+InfoPanelIconFood=ReplaceableTextures\Selection\SpellAreaOfEffect.blp
+MinimapHeroTexture=war3mapImported\minimap-hero.blp
+SupplyIcon=ReplaceableTextures\Selection\SpellAreaOfEffect.blp
+ToolTipSupplyIcon=ReplaceableTextures\Selection\SpellAreaOfEffect.blp
+[FrameDef]
+ALLIES=玩家
+ALLY_RESOURCES= 
+CHEATENABLED=秘籍？不存在的
+COLON_FOOD=时间：
+COLON_FOOD_MAX=分
+COLON_FOOD_TOTAL=秒
+COLON_GOLD_INCOME_RATE=bug反馈及地图建议→请联系我。|c31303538
+DAMAGETIP_SIEGE=攻城攻击对加强型和无护甲造成额外伤害，对中型护甲和英雄护甲造成较少伤害。
+IDLE_PEON=选择英雄 (|Cfffed312F8|R)
+IDLE_PEON_DESC=请选择英雄
+KEY_ALLIES=|Cff00ff00玩家|r (|Cfffed312F11|R)
+KEY_CHAT=|Cff00ff00聊天|r (|Cfffed312F12|R)
+KEY_MENU=|Cff00ff00菜单|r (|Cfffed312F10|R)
+KEY_QUESTS=|Cff00ff00游戏帮助|r (|Cfffed312F9|R)
+MISS=Miss
+OVERVIEW_COLUMN2= 
+QUESTNOTDISCOVERED=游戏帮助
+QUESTS=游戏帮助
+QUESTSMAIN=游戏帮助
+QUESTSOPTIONAL=游戏帮助
+RESOURCES_COLUMN4= 
+RESOURCE_UBERTIP_SUPPLY=时间显示，分别对应“分”/“秒”
+RESOURCE_UBERTIP_UPKEEP=|Cff808080联系QQ：249252503|r
+RESOURCE_UBERTIP_UPKEEP_INFO= 
+RESOURCE_UBERTIP_UPKEEP_INFO_WOOD= 
+REVIVE_AT_ALTAR=等待复活...
+UNDISCOVERED_QUEST=游戏帮助
+UPKEEP_NONE=Q群：223664278
+UPPER_BUTTON_QUEST_TIP=游戏帮助 (|Cfffed312F9|R)
