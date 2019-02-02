@@ -10,6 +10,9 @@ and search "`英雄赛跑`" in search bar in RPG part of the platform.
 
 Author: key
 
+## Release
+- [Release Page](https://github.com/tavik000/HeroRace/releases/tag/v3.22)
+
 ## Game Video:
 [![VIDEO](https://www.youtube.com/yt/about/media/images/brand-resources/icons/YouTube-icon-our_icon.png)](https://www.youtube.com/watch?v=asVtDiF6zI0&t=8s)
 
@@ -37,7 +40,7 @@ Author: key
 -----
 
 ## Sponsorship
-Feel free to support me for no reasons via Wechat Pay or Alipay with QR code below
+Feel free to support me via Wechat Pay or Alipay with QR code below
 
 
 
