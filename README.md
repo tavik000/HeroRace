@@ -17,7 +17,7 @@
 * [Introduction](#introduction)
 * [Release](#release)
 * [Author](#author)
-* [Game Video](#gamevideo)
+* [Gameplay Video](#gameplay-video)
 * [Screenshots](#screenshots)
 * [Contact](#contact)
 * [License](#license)
@@ -33,6 +33,7 @@ Two team run in a race and battle with each other. More early you reach the goal
 Playable through the Netease Warcraft III Battle Platform [Map Detail in Chinese](http://dz.163.com/rpgmaps/detail/8477)
 
 Download [Warcraft III Battle Platform](http://dz.163.com/minisite/guide) <br>
+
 Launch it and search "`英雄赛跑`" in Arcade part of the platform. 
 
 
@@ -43,10 +44,10 @@ Launch it and search "`英雄赛跑`" in Arcade part of the platform.
 - <img src="https://github.com/favicon.ico" width="24">[Key](https://github.com/tavik000) <br>
 
 
-## Game Video:
+## Gameplay Video:
 [![VIDEO](https://www.youtube.com/yt/about/media/images/brand-resources/icons/YouTube-icon-our_icon.png)](https://www.youtube.com/watch?v=asVtDiF6zI0&t=8s)
 
-## Screenshot:
+## Screenshots:
 ![scr03](https://github.com/tavik000/HeroRace/raw/master/Screenshots/scr03.jpg)
 ![scr04](https://github.com/tavik000/HeroRace/raw/master/Screenshots/scr04.jpg)
 ![scr01](https://github.com/tavik000/HeroRace/raw/master/Screenshots/scr01.jpg)
