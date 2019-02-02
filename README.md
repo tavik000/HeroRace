@@ -1,17 +1,47 @@
-﻿# Hero_Race
-This is a WarcraftIII RPG map written by YDWE1.31.8 + DZAPI
+﻿<p align="center">
+  <h1 align="center">Hero Race</h1>
+  <p align="center">A WarcraftIII Custom Map written by YDWE1.31.8 + DZAPI + W3x2lni + Visual Studio Code</p>
+</p> 
+
+[![License](https://img.shields.io/npm/l/@angular/cli.svg)](/LICENSE) 
+
+
+
+### Keyword
+> `Warcraft3` `Custom Map` `Hero Race` 
+
+
+
+## Contents 
+<!-- toc -->
+* [Introduction](#introduction)
+* [Release](#release)
+* [Author](#author)
+* [Game Video](#gamevideo)
+* [Screenshots](#screenshots)
+* [Contact](#contact)
+* [License](#license)
+
+<!-- toc stop -->
+
+
+
+## Introduction
 
 Two team run in a race and battle with each other. More early you reach the goal, more score your team earns.
 
-Lastest version please refer to http://dz.163.com/rpgmaps/detail/8477
+Playable through the Netease Warcraft III Battle Platform [Map Detail in Chinese](http://dz.163.com/rpgmaps/detail/8477)
 
-If you want to play now you may download War3 battle platform here http://dz.163.com/minisite/guide 
-and search "`英雄赛跑`" in search bar in RPG part of the platform. 
+Download [Warcraft III Battle Platform](http://dz.163.com/minisite/guide) <br>
+Launch it and search "`英雄赛跑`" in Arcade part of the platform. 
 
-Author: key
 
 ## Release
-- [Release Page](https://github.com/tavik000/HeroRace/releases/tag/v3.22)
+- [Release Page](https://github.com/tavik000/HeroRace/releases/tag/v3.22) <br>
+
+## Author
+- <img src="https://github.com/favicon.ico" width="24">[Key](https://github.com/tavik000) <br>
+
 
 ## Game Video:
 [![VIDEO](https://www.youtube.com/yt/about/media/images/brand-resources/icons/YouTube-icon-our_icon.png)](https://www.youtube.com/watch?v=asVtDiF6zI0&t=8s)
@@ -39,25 +69,8 @@ Author: key
 
 -----
 
-## Sponsorship
-Feel free to support me via Wechat Pay or Alipay with QR code below
-
-
-
-![wechat pay](https://github.com/tavik000/HeroRace/raw/master/Screenshots/wechatpay.png)
-![alipay](https://github.com/tavik000/HeroRace/raw/master/Screenshots/alipay.jpg)
-
-
-
-
 ## Contact
-
-QQ: 249252503 
-QQ group: 223664278
-
-Email: 249252503@qq.com 
-or     tavik002@gmail.com
-
+Email:  Key <tavik002@gmail.com>
 -----
 
 ## License
@@ -82,5 +95,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+[⬆ Back to top](#contents)
 
 **All Copyright Reserved**
