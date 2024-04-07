@@ -45,7 +45,7 @@ Launch it and search "`英雄赛跑`" in Arcade part of the platform.
 
 
 ## Gameplay Video:
-[![VIDEO](https://www.youtube.com/yt/about/media/images/brand-resources/icons/YouTube-icon-our_icon.png)](https://www.youtube.com/watch?v=asVtDiF6zI0&t=8s)
+[![VIDEO](https://t3.ftcdn.net/jpg/04/03/98/64/360_F_403986499_hB7zfgOXezReA0sKkxl34RoT9TbNkbpH.jpg)](https://www.youtube.com/watch?v=asVtDiF6zI0&t=8s)
 
 ## Screenshots:
 ![scr03](https://github.com/tavik000/HeroRace/raw/master/Screenshots/scr03.jpg)
