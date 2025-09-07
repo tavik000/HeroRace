@@ -1,0 +1,13 @@
+//JCSTEMPSYS !Remove this comment if you edit the script
+function Init()
+{
+var int MenuItem
+Menu.CreateRoot(MenuItem, "New \"else-if\"", "&Templates")
+Menu.Shortcut(MenuItem, "Ctrl+E")
+Menu.OnClick(MenuItem, Click)
+}
+function Click()
+{
+JassCraft.SelText("\r\nelse if  then")
+JassCraft.SelStart(JassCraft.SelStart(-1)-5)
+}

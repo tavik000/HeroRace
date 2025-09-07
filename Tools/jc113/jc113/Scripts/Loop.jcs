@@ -1,0 +1,13 @@
+//JCSTEMPSYS !Remove this comment if you edit the script
+function Init()
+{
+var int MenuItem
+Menu.CreateRoot(MenuItem, "New \"loop\"", "&Templates")
+Menu.Shortcut(MenuItem, "Ctrl+L")
+Menu.OnClick(MenuItem, Click)
+}
+function Click()
+{
+JassCraft.SelText("\r\nloop\r\n    exitwhen \r\nendloop")
+JassCraft.SelStart(JassCraft.SelStart(-1)-9)
+}

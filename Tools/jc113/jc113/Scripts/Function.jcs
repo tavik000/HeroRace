@@ -1,0 +1,13 @@
+//JCSTEMPSYS !Remove this comment if you edit the script
+function Init()
+{
+var int MenuItem
+Menu.CreateRoot(MenuItem, "New Function", "&Templates")
+Menu.Shortcut(MenuItem, "Ctrl+U")
+Menu.OnClick(MenuItem, Click)
+}
+function Click()
+{
+JassCraft.SelText("\r\nfunction  takes  returns nothing\r\n\r\n    //return\r\nendfunction")
+JassCraft.SelStart(JassCraft.SelStart(-1)-52)
+}

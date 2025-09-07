@@ -1,0 +1,13 @@
+//JCSTEMPSYS !Remove this comment if you edit the script
+function Init()
+{
+var int MenuItem
+Menu.CreateRoot(MenuItem, "New Trigger", "&Templates")
+Menu.Shortcut(MenuItem, "Ctrl+T")
+Menu.OnClick(MenuItem, Click)
+}
+function Click()
+{
+JassCraft.SelText("\r\nfunction Trig_NewTrigger_Conditions takes nothing returns boolean\r\n    \r\n    return \r\nendfunction\r\n\r\nfunction Trig_NewTrigger_Actions takes nothing returns nothing\r\n    \r\nendfunction\r\n\r\n//==== Init Trigger NewTrigger ====\r\nfunction InitTrig_NewTrigger takes nothing returns nothing\r\n    set gg_trg_NewTrigger = CreateTrigger()\r\n    //call TriggerRegister__(gg_trg_NewTrigger, )\r\n    call TriggerAddCondition(gg_trg_NewTrigger, Condition(function Trig_NewTrigger_Conditions))\r\n    call TriggerAddAction(gg_trg_NewTrigger, function Trig_NewTrigger_Actions)\r\nendfunction\r\n")
+JassCraft.SelStart(JassCraft.SelStart(-1)-400)
+}

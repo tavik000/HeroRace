@@ -1,0 +1,270 @@
+输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.48.w3x
+输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.48_slk.w3x
+输入格式：Mpq
+输出模式：slk
+结果：0 个错误，3 条警告
+用时：4.921 秒
+==========================
+警告 (3)
+==========================
+魔法书 'A062' [Spell Book] 会被合并 - 基础命令ID 'spellbook' 不存在
+魔法书 'Aspb' [Spell Book] 会被合并 - 基础命令ID 'spellbook' 不存在
+魔法书 'A0C2' [Spell Book] 会被合并 - 基础命令ID 'spellbook' 不存在
+
+==========================
+没有SLK化的数据 (26)
+==========================
+--------------------------------------------
+数据超过了4级
+--------------------------------------------
+技能 A06Z 神圣之箭 - Cost 
+技能 A00L 火炮-majia - DataA 
+技能 A04Y 魔魂袭击 - Cost 
+技能 A08R 掘地穿刺 - DataA 
+技能 A0CY 锯齿飞轮 - DataA 
+技能 A05W Finger of Death - DataC 
+技能 A08P 巨力挥舞 - Dur 
+技能 A0HW 冰冻 - Dur 
+技能 A08A 风暴巨锤 - Cost 
+技能 A0HJ 眩晕 - Dur 
+技能 A01T 狙击 - DataA 
+--------------------------------------------
+字符串可以被转换为数字
+--------------------------------------------
+可破坏物 LTbr Barrel - EditorSuffix "-竖着"
+可破坏物 LTbx Barrel - EditorSuffix "-横着"
+
+==========================
+移除未引用对象 (5)
+==========================
+简化时没有找到对象 'FontHeights' - 必须保留的'FontHeights'[<unknown>]引用了它
+简化时没有找到对象 'InfoPanel' - 必须保留的'InfoPanel'[<unknown>]引用了它
+简化时没有找到对象 'PingColor' - 必须保留的'PingColor'[<unknown>]引用了它
+简化时没有找到对象 'QuestIndicatorTimeout' - 必须保留的'QuestIndicatorTimeout'[<unknown>]引用了它
+简化时没有找到对象 'SelectionCircle' - 必须保留的'SelectionCircle'[<unknown>]引用了它
+-------------------------------------------
+简化掉的对象数: 2594/4395
+---------------------------------------------------------------------
+保留的默认对象数: 390/2821
+---------------------------------------------------------------------
+单位 'hphx' Phoenix - 脚本里的'hpea'[Peasant]引用了它
+单位 'hpea' Peasant - 脚本里的'hpea'[Peasant]引用了它
+单位 'Hamg' Archmage - 脚本里的'hpea'[Peasant]引用了它
+单位 'hbar' Barracks - 脚本里的'hpea'[Peasant]引用了它
+单位 'hmtm' Mortar Team - 脚本里的'hpea'[Peasant]引用了它
+单位 'etoe' Tree of Eternity - 脚本里的'E006'[Demon Hunter]引用了它
+单位 'nmdm' Medivh - 脚本里的'Amrf'[Crow Form]引用了它
+单位 'halt' Altar of Kings - 脚本里的'hpea'[Peasant]引用了它
+单位 'hwt2' Water Elemental - 脚本里的'hpea'[Peasant]引用了它
+单位 'htow' Town Hall - 脚本里的'hpea'[Peasant]引用了它
+技能 'Amls' Aerial Shackles - 脚本里的'hpea'[Peasant]引用了它
+技能 'SCae' Endurance Aura - 脚本里的'noga'[Stonemaul Warchief]引用了它
+技能 'AHwe' Summon Water Elemental - 脚本里的'hpea'[Peasant]引用了它
+技能 'Aphx' Phoenix Morphing (Egg Related) - 脚本里的'hpea'[Peasant]引用了它
+技能 'ACce' Cleaving Attack - 脚本里的'nfgb'[Bloodfiend]引用了它
+技能 'Apxf' Phoenix Fire - 脚本里的'hpea'[Peasant]引用了它
+技能 'Aivs' Invisibility - 脚本里的'hpea'[Peasant]引用了它
+技能 'Aihn' Unit Inventory - 脚本里的'hpea'[Peasant]引用了它
+技能 'Abun' Cargo Hold (Orc Burrow) - 脚本里的'Abun'[Cargo Hold (Orc Burrow)]引用了它
+技能 'Amic' Call To Arms - 脚本里的'hpea'[Peasant]引用了它
+物品 'stwp' Scroll of Town Portal - 脚本里的'hpea'[Peasant]引用了它
+物品 'tsct' Ivory Tower - 脚本里的'hpea'[Peasant]引用了它
+物品 'ofir' Orb of Fire - 脚本里的'hpea'[Peasant]引用了它
+物品 'phea' Potion of Healing - 脚本里的'hpea'[Peasant]引用了它
+物品 'sreg' Scroll of Regeneration - 脚本里的'hpea'[Peasant]引用了它
+物品 'plcl' Lesser Clarity Potion - 脚本里的'hpea'[Peasant]引用了它
+物品 'pman' Potion of Mana - 脚本里的'hpea'[Peasant]引用了它
+物品 'mcri' Mechanical Critter - 脚本里的'hpea'[Peasant]引用了它
+物品 'ssan' Staff of Sanctuary - 脚本里的'hpea'[Peasant]引用了它
+魔法效果 'XHfs' Flame Strike (Effect) - 脚本里的'hpea'[Peasant]引用了它
+魔法效果 'BUan' Animate Dead - 脚本里的'BUan'[Animate Dead]引用了它
+魔法效果 'Bpoi' Poison - 脚本里的'n01T'[中立-1]引用了它
+魔法效果 'Bphx' Phoenix - 脚本里的'hpea'[Peasant]引用了它
+魔法效果 'Bsta' Stasis Trap - 脚本里的'n029'[测试商店]引用了它
+魔法效果 'BOmi' Mirror Image - 脚本里的'n01T'[中立-1]引用了它
+魔法效果 'Beng' Ensnare - 脚本里的'N003'[狼骑士]引用了它
+魔法效果 'Bdbm' Siphon Mana - 脚本里的'hpea'[Peasant]引用了它
+魔法效果 'Bdef' Scroll of Protection - 脚本里的'I017'[Scroll of Protection]引用了它
+魔法效果 'Bply' Polymorph - 脚本里的'hpea'[Peasant]引用了它
+科技 'Rhst' Sorceress Adept Training - 脚本里的'hpea'[Peasant]引用了它
+科技 'Rhhb' Storm Hammers - 脚本里的'hpea'[Peasant]引用了它
+科技 'Rgfo' Glyph of Fortification - 脚本里的'hpea'[Peasant]引用了它
+可破坏物 'CTtc' Felwood Canopy Tree - 脚本里的'CTtc'[Felwood Canopy Tree]引用了它
+可破坏物 'ITtc' Icecrown Canopy Tree - 脚本里的'ITtc'[Icecrown Canopy Tree]引用了它
+可破坏物 'NTtc' Northrend Canopy Tree - 脚本里的'NTtc'[Northrend Canopy Tree]引用了它
+装饰物 'ZWsw' Seaweed - 地图上放置的'ZWsw'[Seaweed]引用了它
+装饰物 'LOwb' Wheelbarrow - 地图上放置的'LOwb'[Wheelbarrow]引用了它
+装饰物 'LOtz' Torch Glowing - 地图上放置的'LOtz'[Torch Glowing]引用了它
+---------------------------------------------------------------------
+简化掉的自定义对象数: 163/1574
+---------------------------------------------------------------------
+单位 'nnsa' Shrine of Azshara
+单位 'nmpe' 小白鱼
+单位 'uubs' Undead Battleship
+单位 'u01R' 显隐
+单位 'nnfm' Coral Bed
+单位 'zmar' 人族守卫者
+单位 'nnsu' Summoner
+单位 'ncp2' Circle of Power
+单位 'u029' 冰封世界
+单位 'nntg' Tidal Guardian
+技能 'AIcy' Cyclone
+技能 'ACen' Ensnare
+技能 'A0HD' 冰封世界
+技能 'A0BK' 蛛网触碰
+技能 'A0GG' 无敌守卫
+技能 'A07C' 束缚击
+技能 'A04P' Spiked Carapace
+技能 'A088' Mana Burn
+技能 'A0C9' 生命之书
+技能 'A06S' 强力击
+物品 'pnvu' Potion of Invulnerability
+物品 'I00N' 加速神符(单人)
+物品 'I014' 加速神符(神符英雄-部落)
+物品 'pghe' Potion of Greater Healing
+物品 'I01I' 加速神符(神符英雄-联盟)
+物品 'pgma' Potion of Greater Mana
+物品 'spsh' Amulet of Spell Shield
+物品 'I02F' Gold Coins
+物品 'wcyc' Wand of the Wind
+物品 'bspd' Boots of Speed
+魔法效果 'X000' 流星坠落(目标)
+魔法效果 'B00H' Endurance Aura
+魔法效果 'Bbsk' Berserk
+魔法效果 'B01I' 邪恶觉醒
+魔法效果 'B020' 阴影传送
+魔法效果 'B02N' 加速
+魔法效果 'B02Q' 加速
+魔法效果 'B01C' Roar
+魔法效果 'B02O' 守卫
+科技 'R001' 
+科技 'R002' 
+科技 'R000' 
+可破坏物 'LTba' Barricade
+可破坏物 'ZTg3' 码头
+装饰物 'DSp0' Wall Barred Small
+装饰物 'D00P' 0.9
+装饰物 'GSp0' Wall Barred Small
+
+==========================
+保存到wts中的文本 (3)
+==========================
+w3i里的文本长度超过1023字符 - 文本保存在wts中会导致加载速度变慢: 
+赛跑有很多BGM，开启背景音乐试试（所有音乐获授权）
+|Cff00ff00模式1：队伍有N-1个人（N为队内玩家数）进入终点为胜利|r
+|Cffffff00模式2：团队分高的队伍胜利（类似跑跑卡丁车）|r
+终点在左下方
+英雄进入终点后将出现灵魂状态（英雄呈现半透明），此时可以帮助其他队友冲向终点以及阻止敌人进入终点
+地图作者：key
+地图专群：223664278 （加入可找到更多人玩）...
+-------------------------
+脚本里的文本长度超过1023字符 - 文本保存在wts中会导致加载速度变慢: 
+游戏命令：
+
+|Cff00ff00++|r
+镜头提高100。
+|Cff00ff00--|r
+镜头降低100。
+|Cff00ff00-h|r或|Cff00ff00-swap|r
+输入可跟队友交换英雄。
+|Cff00ff00-roll xxx|r
+输入后获得一个随机数，最大值为输入的“xxx”，“xxx”为1-99999的一个数字。
+|Cff00ff00-ms|r
+输入后你将能知道自己英雄的移动速度。
+|Cff00ff00-卡海里了/-卡树里了|r
+若你卡在海里或树里了，输入该命令系统能帮助你出来。
+|Cff00ff00-查询队伍|r
+输入后可以获知自己所属的队伍。
+|Cff00ff00-QQ|r
+输入后将显示地图专群的QQ号码和作者的QQ号码。
+|Cff00ff00-sc|r
+输入后可以查询你的战绩数据（网易平台有效）。
+|Cff00ff00-sc2|r
+输入后可以查询你的详细战绩数据（网易平台有效）。
+|Cff00ff00-time|r
+输入后可以显示当前时间（网易平台有效）。
+|Cff00ff00-data|r
+输入后可以查询本回合对敌英雄造成的伤害量与击杀死亡数。
+|C...
+-------------------------
+脚本里的文本长度超过1023字符 - 文本保存在wts中会导致加载速度变慢: 
+赛道设定
+1.野怪掉落道具都是随机的（与杀人掉落的随机物品一致），只有野怪“橙鱼”是掉落速度之靴，巨魔或巫师掉落恢复神符
+2.主动施法减速或投石的野怪被阻止施法（以魔免状态进入）时，该野怪魔法值扣为0
+3.橙鱼野怪在有领先英雄跑过一定距离时攻击扣为0，有领先英雄跑超过更多距离时橙鱼开始自动扣血；青金傀儡在有人进入终点附近时攻击扣为0，有人进入终点时开始自动扣血
+4.进入一条明显的线后会出现炸弹人来炸进入的英雄，有概率出现高能炸弹人（秒杀）（概率随名次递减），而当领先英雄跑过一定距离时后面过线的英雄只会出现低能炸弹人（低伤害）来炸他们
+5.游戏开始一定时间后会出现神符君，神符君打中英雄时会死亡并加速和无敌周围范围的英雄，被神符君加过速的英雄，之后的每次死亡都有概率增加周围敌人（死�...
+-------------------------
+
+==========================
+脚本优化 (751)
+==========================
+--------------------------------------------------
+未引用的全局变量 (123)
+--------------------------------------------------
+LIBRARY_YDWEWakePlayerUnitsNull - 第[132]行：
+LIBRARY_MeatHook - 第[135]行：
+LIBRARY_MemoryLeakHelper - 第[143]行：
+MemoryLeakHelper___HASH_DECAY_TIME - 第[144]行：
+MemoryLeakHelper___CLEAR_HASH_COUNT - 第[145]行：
+MemoryLeakHelper___HashNumber - 第[146]行：
+MemoryLeakHelper___HashData - 第[147]行：
+MemoryLeakHelper___HashHash - 第[148]行：
+MemoryLeakHelper___HashPlace - 第[149]行：
+MemoryLeakHelper___CreationTime - 第[150]行：
+MemoryLeakHelper___TempHashNumber - 第[152]行：
+MemoryLeakHelper___TempHashHash - 第[153]行：
+MemoryLeakHelper___TempHashPlace - 第[154]行：
+MemoryLeakHelper___TempHashData - 第[155]行：
+MemoryLeakHelper___TempCreationTime - 第[156]行：
+MemoryLeakHelper___LastHashedValue - 第[158]行：
+MemoryLeakHelper___LastIndex - 第[159]行：
+MemoryLeakHelper___key - 第[163]行：
+MemoryLeakHelper___MAX_INSTANCES - 第[165]行：
+MemoryLeakHelper___CLEAN_UP_INTERVAL - 第[171]行：
+--------------------------------------------------
+未引用的函数 (605)
+--------------------------------------------------
+YDWEGetTimerByInteger - 第[3457]-[3459]行
+YDWEGetTimerByString - 第[3460]-[3462]行
+YDWESaveTriggerByInteger - 第[3464]-[3466]行
+YDWESaveTriggerByString - 第[3467]-[3469]行
+YDWEGetTriggerByInteger - 第[3470]-[3472]行
+YDWEGetTriggerByString - 第[3473]-[3475]行
+YDWESaveLocationByInteger - 第[3477]-[3479]行
+YDWESaveLocationByString - 第[3480]-[3482]行
+YDWEGetLocationByInteger - 第[3483]-[3485]行
+YDWEGetLocationByString - 第[3486]-[3488]行
+YDWESaveGroupByInteger - 第[3490]-[3492]行
+YDWESaveGroupByString - 第[3493]-[3495]行
+YDWEGetGroupByInteger - 第[3496]-[3498]行
+YDWEGetGroupByString - 第[3499]-[3501]行
+YDWESaveMultiboardByInteger - 第[3503]-[3505]行
+YDWESaveMultiboardByString - 第[3506]-[3508]行
+YDWEGetMultiboardByInteger - 第[3509]-[3511]行
+YDWEGetMultiboardByString - 第[3512]-[3514]行
+YDWESaveMultiboardItemByInteger - 第[3516]-[3518]行
+YDWESaveMultiboardItemByString - 第[3519]-[3521]行
+--------------------------------------------------
+未引用的局部变量 (23)
+--------------------------------------------------
+s__YDWETimerPattern___Parabola_create - 第[6255]行：[vy]
+s__YDWETimerPattern___Parabola_create - 第[6256]行：[vz]
+s__YDWETimerPattern___Deceleration_create - 第[6409]行：[vx]
+s__YDWETimerPattern___Deceleration_create - 第[6410]行：[vy]
+s__YDWETimerPattern___Deceleration_create - 第[6411]行：[l]
+YDWETimerDestroyTextTag - 第[6573]行：[N]
+YDWETimerDestroyTextTag - 第[6574]行：[i]
+YDWETimerSystem___Main - 第[6585]行：[p]
+CreateAllDestructables - 第[7302]行：[life]
+CreateBuildingsForPlayer11 - 第[7319]行：[unitID]
+CreateBuildingsForPlayer11 - 第[7321]行：[life]
+CreateUnitsForPlayer11 - 第[7333]行：[unitID]
+CreateUnitsForPlayer11 - 第[7335]行：[life]
+CreateNeutralPassiveBuildings - 第[7366]行：[unitID]
+CreateNeutralPassiveBuildings - 第[7368]行：[life]
+CreateNeutralPassive - 第[7404]行：[unitID]
+CreateNeutralPassive - 第[7406]行：[life]
+Time_UpdateDate - 第[7597]行：[totalDayBase]
+Time_UpdateDate - 第[7598]行：[totalMonDay]
+Trig_Blood_rite_00Func007T - 第[25348]行：[ydul_i]

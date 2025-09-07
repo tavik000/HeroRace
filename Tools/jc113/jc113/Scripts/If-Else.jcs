@@ -1,0 +1,13 @@
+//JCSTEMPSYS !Remove this comment if you edit the script
+function Init()
+{
+var int MenuItem
+Menu.CreateRoot(MenuItem, "New \"if-else\"", "&Templates")
+Menu.Shortcut(MenuItem, "Shift+Ctrl+I")
+Menu.OnClick(MenuItem, Click)
+}
+function Click()
+{
+JassCraft.SelText("\r\nif  then\r\n\r\nelse\r\n\r\nendif")
+JassCraft.SelStart(JassCraft.SelStart(-1)-22)
+}
