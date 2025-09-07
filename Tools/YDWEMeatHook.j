@@ -33,7 +33,7 @@ library MeatHook requires YDWEBase
             //* key 改过，用判断平面距离的方法判断钩中，取代以前空间距离方法; 飞行单位蝗虫单位,单位的整数自定义值'noMeatHook'=1的单位不会被钩中 
             if GetWidgetLife(f) > 0.405 and not(IsUnitType(f, UNIT_TYPE_STRUCTURE)) and not(IsUnitInGroup(f, Except)) and f != pudge and not(IsUnitType(f, UNIT_TYPE_FLYING)) and GetUnitAbilityLevel(f, 'Aloc') == 0 and ((YDUserDataGet(unit, f, "noMeatHook", integer) != 1)) then
                 if (GetUnitX(f)-x)*(GetUnitX(f)-x)+(GetUnitY(f)-y)*(GetUnitY(f)-y) < 14400 then
-                    //* 不幸被钩子勾中了，痛苦地喊出一声“雅蠛蝶~”
+                    //*被钩子勾中了   
                     set bj_lastAbilityTargetUnit = f
                     call YDWESyStemAbilityCastingOverTriggerAction(pudge, 4) 
                     call YDWESaveIntegerByString(key, "Switch", 2)
