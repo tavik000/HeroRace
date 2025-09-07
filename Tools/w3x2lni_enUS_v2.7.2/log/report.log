@@ -1,9 +1,9 @@
-输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.48.w3x
-输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.48_slk.w3x
+输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.49.w3x
+输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.49_slk.w3x
 输入格式：Mpq
 输出模式：slk
 结果：0 个错误，3 条警告
-用时：4.921 秒
+用时：4.011 秒
 ==========================
 警告 (3)
 ==========================
@@ -43,7 +43,7 @@
 简化时没有找到对象 'QuestIndicatorTimeout' - 必须保留的'QuestIndicatorTimeout'[<unknown>]引用了它
 简化时没有找到对象 'SelectionCircle' - 必须保留的'SelectionCircle'[<unknown>]引用了它
 -------------------------------------------
-简化掉的对象数: 2594/4395
+简化掉的对象数: 2596/4395
 ---------------------------------------------------------------------
 保留的默认对象数: 390/2821
 ---------------------------------------------------------------------
@@ -96,7 +96,7 @@
 装饰物 'LOwb' Wheelbarrow - 地图上放置的'LOwb'[Wheelbarrow]引用了它
 装饰物 'LOtz' Torch Glowing - 地图上放置的'LOtz'[Torch Glowing]引用了它
 ---------------------------------------------------------------------
-简化掉的自定义对象数: 163/1574
+简化掉的自定义对象数: 165/1574
 ---------------------------------------------------------------------
 单位 'nnsa' Shrine of Azshara
 单位 'nmpe' 小白鱼
@@ -116,8 +116,8 @@
 技能 'A07C' 束缚击
 技能 'A04P' Spiked Carapace
 技能 'A088' Mana Burn
+技能 'A0C7' 生命之书
 技能 'A0C9' 生命之书
-技能 'A06S' 强力击
 物品 'pnvu' Potion of Invulnerability
 物品 'I00N' 加速神符(单人)
 物品 'I014' 加速神符(神符英雄-部落)
@@ -197,74 +197,74 @@ w3i里的文本长度超过1023字符 - 文本保存在wts中会导致加载速�
 -------------------------
 
 ==========================
-脚本优化 (751)
+脚本优化 (755)
 ==========================
 --------------------------------------------------
-未引用的全局变量 (123)
+未引用的全局变量 (127)
 --------------------------------------------------
-LIBRARY_YDWEWakePlayerUnitsNull - 第[132]行：
-LIBRARY_MeatHook - 第[135]行：
-LIBRARY_MemoryLeakHelper - 第[143]行：
-MemoryLeakHelper___HASH_DECAY_TIME - 第[144]行：
-MemoryLeakHelper___CLEAR_HASH_COUNT - 第[145]行：
-MemoryLeakHelper___HashNumber - 第[146]行：
-MemoryLeakHelper___HashData - 第[147]行：
-MemoryLeakHelper___HashHash - 第[148]行：
-MemoryLeakHelper___HashPlace - 第[149]行：
-MemoryLeakHelper___CreationTime - 第[150]行：
-MemoryLeakHelper___TempHashNumber - 第[152]行：
-MemoryLeakHelper___TempHashHash - 第[153]行：
-MemoryLeakHelper___TempHashPlace - 第[154]行：
-MemoryLeakHelper___TempHashData - 第[155]行：
-MemoryLeakHelper___TempCreationTime - 第[156]行：
-MemoryLeakHelper___LastHashedValue - 第[158]行：
-MemoryLeakHelper___LastIndex - 第[159]行：
-MemoryLeakHelper___key - 第[163]行：
-MemoryLeakHelper___MAX_INSTANCES - 第[165]行：
-MemoryLeakHelper___CLEAN_UP_INTERVAL - 第[171]行：
+gg_trg_test_11_________________u - 第[1231]行：
+gg_trg_test_12________________2_u - 第[1232]行：
+gg_trg_test_13___________u - 第[1233]行：
+gg_trg_test_14____________________u - 第[1234]行：
+gg_trg_test_15______________u - 第[1235]行：
+gg_trg_test_16_______________________u - 第[1236]行：
+gg_trg_test_17______________u - 第[1237]行：
+gg_trg_test_17_____________________u - 第[1238]行：
+gg_trg_test_18______________u - 第[1239]行：
+gg_trg_test_19______________u - 第[1240]行：
+gg_trg_test_20______________u - 第[1241]行：
+gg_trg_test_21______________u - 第[1242]行：
+gg_trg_test_22______________u - 第[1243]行：
+gg_trg_test_23______________u - 第[1244]行：
+gg_trg_test_24______________u - 第[1245]行：
+gg_trg_test_25___________u - 第[1246]行：
+gg_trg_test_26____________________u - 第[1247]行：
+gg_trg_test_27____________________u - 第[1248]行：
+gg_trg____________________001 - 第[1270]行：
+udg_bIsInit - 第[1277]行：
 --------------------------------------------------
 未引用的函数 (605)
 --------------------------------------------------
-YDWEGetTimerByInteger - 第[3457]-[3459]行
-YDWEGetTimerByString - 第[3460]-[3462]行
-YDWESaveTriggerByInteger - 第[3464]-[3466]行
-YDWESaveTriggerByString - 第[3467]-[3469]行
-YDWEGetTriggerByInteger - 第[3470]-[3472]行
-YDWEGetTriggerByString - 第[3473]-[3475]行
-YDWESaveLocationByInteger - 第[3477]-[3479]行
-YDWESaveLocationByString - 第[3480]-[3482]行
-YDWEGetLocationByInteger - 第[3483]-[3485]行
-YDWEGetLocationByString - 第[3486]-[3488]行
-YDWESaveGroupByInteger - 第[3490]-[3492]行
-YDWESaveGroupByString - 第[3493]-[3495]行
-YDWEGetGroupByInteger - 第[3496]-[3498]行
-YDWEGetGroupByString - 第[3499]-[3501]行
-YDWESaveMultiboardByInteger - 第[3503]-[3505]行
-YDWESaveMultiboardByString - 第[3506]-[3508]行
-YDWEGetMultiboardByInteger - 第[3509]-[3511]行
-YDWEGetMultiboardByString - 第[3512]-[3514]行
-YDWESaveMultiboardItemByInteger - 第[3516]-[3518]行
-YDWESaveMultiboardItemByString - 第[3519]-[3521]行
+DzF2I - 第[2532]-[2534]行
+DzI2F - 第[2535]-[2537]行
+DzK2I - 第[2538]-[2540]行
+DzI2K - 第[2541]-[2543]行
+DzTriggerRegisterMallItemSyncData - 第[2544]-[2546]行
+DzTriggerRegisterMallItemConsumeEvent - 第[2548]-[2550]行
+DzTriggerRegisterMallItemRemoveEvent - 第[2552]-[2554]行
+DzGetTriggerMallItemPlayer - 第[2555]-[2557]行
+DzGetTriggerMallItem - 第[2558]-[2560]行
+DzAPI_Map_SaveServerValue - 第[2573]-[2575]行
+DzAPI_Map_GetServerValue - 第[2577]-[2579]行
+DzAPI_Map_GetGameStartTime - 第[2581]-[2583]行
+DzAPI_Map_IsRPGLadder - 第[2585]-[2587]行
+DzAPI_Map_GetMatchType - 第[2589]-[2591]行
+DzAPI_Map_Stat_SetStat - 第[2593]-[2595]行
+DzAPI_Map_Ladder_SetStat - 第[2597]-[2599]行
+DzAPI_Map_Ladder_SetPlayerStat - 第[2601]-[2603]行
+DzAPI_Map_GetServerValueErrorCode - 第[2605]-[2607]行
+DzAPI_Map_GetLadderLevel - 第[2609]-[2611]行
+KKApiPlayerIdentityType - 第[2613]-[2615]行
 --------------------------------------------------
 未引用的局部变量 (23)
 --------------------------------------------------
-s__YDWETimerPattern___Parabola_create - 第[6255]行：[vy]
-s__YDWETimerPattern___Parabola_create - 第[6256]行：[vz]
-s__YDWETimerPattern___Deceleration_create - 第[6409]行：[vx]
-s__YDWETimerPattern___Deceleration_create - 第[6410]行：[vy]
-s__YDWETimerPattern___Deceleration_create - 第[6411]行：[l]
-YDWETimerDestroyTextTag - 第[6573]行：[N]
-YDWETimerDestroyTextTag - 第[6574]行：[i]
-YDWETimerSystem___Main - 第[6585]行：[p]
-CreateAllDestructables - 第[7302]行：[life]
-CreateBuildingsForPlayer11 - 第[7319]行：[unitID]
-CreateBuildingsForPlayer11 - 第[7321]行：[life]
-CreateUnitsForPlayer11 - 第[7333]行：[unitID]
-CreateUnitsForPlayer11 - 第[7335]行：[life]
-CreateNeutralPassiveBuildings - 第[7366]行：[unitID]
-CreateNeutralPassiveBuildings - 第[7368]行：[life]
-CreateNeutralPassive - 第[7404]行：[unitID]
-CreateNeutralPassive - 第[7406]行：[life]
-Time_UpdateDate - 第[7597]行：[totalDayBase]
-Time_UpdateDate - 第[7598]行：[totalMonDay]
-Trig_Blood_rite_00Func007T - 第[25348]行：[ydul_i]
+YDWEGeneralBounsSystem__SetUnitMaxState - 第[4114]行：[s]
+YDWEGeneralBounsSystem__SetUnitMaxState - 第[4118]行：[a]
+s__YDWETimerPattern__Parabola_create - 第[6492]行：[vx]
+s__YDWETimerPattern__Parabola_create - 第[6493]行：[vy]
+s__YDWETimerPattern__Parabola_create - 第[6494]行：[vz]
+s__YDWETimerPattern__Deceleration_create - 第[6647]行：[vx]
+s__YDWETimerPattern__Deceleration_create - 第[6648]行：[vy]
+s__YDWETimerPattern__Deceleration_create - 第[6649]行：[l]
+YDWETimerDestroyTextTag - 第[6811]行：[N]
+YDWETimerDestroyTextTag - 第[6812]行：[i]
+YDWETimerSystem__Main - 第[6823]行：[p]
+CreateAllDestructables - 第[7540]行：[life]
+CreateBuildingsForPlayer11 - 第[7557]行：[unitID]
+CreateBuildingsForPlayer11 - 第[7559]行：[life]
+CreateUnitsForPlayer11 - 第[7571]行：[unitID]
+CreateUnitsForPlayer11 - 第[7573]行：[life]
+CreateNeutralPassiveBuildings - 第[7604]行：[unitID]
+CreateNeutralPassiveBuildings - 第[7606]行：[life]
+CreateNeutralPassive - 第[7642]行：[unitID]
+CreateNeutralPassive - 第[7644]行：[life]
