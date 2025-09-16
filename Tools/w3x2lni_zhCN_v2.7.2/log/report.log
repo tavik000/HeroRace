@@ -1,9 +1,9 @@
-输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.55.w3x
-输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.55_slk.w3x
+输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.56.w3x
+输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.56_slk.w3x
 输入格式：Mpq
 输出模式：slk
 结果：0 个错误，3 条警告
-用时：3.785 秒
+用时：3.795 秒
 ==========================
 警告 (3)
 ==========================
@@ -196,52 +196,55 @@ w3i里的文本长度超过1023字符 - 文本保存在wts中会导致加载速�
 --------------------------------------------------
 未引用的全局变量 (135)
 --------------------------------------------------
-LIBRARY_MaxSpeed - 第[9]行：
-LIBRARY_YDTriggerSaveLoadSystem - 第[13]行：
-LIBRARY_YDWEBase - 第[18]行：
-bj_AllString - 第[20]行：
-bj_lastCreatedUnitPool - 第[25]行：
-bj_lastPoolAbstractedItem - 第[26]行：
-bj_lastCreatedItemPool - 第[27]行：
-LIBRARY_YDWEEnumDestructablesInCircleBJFilterNull - 第[41]行：
-LIBRARY_YDWEGeneralBounsSystem - 第[44]行：
-LIBRARY_YDWEGetForceOfPlayerNull - 第[59]行：
-LIBRARY_YDWEGetItemOfTypeFromUnitBJNull - 第[62]行：
-LIBRARY_YDWEGetPlayersAlliesNull - 第[66]行：
-LIBRARY_YDWEGetPlayersByMapControlNull - 第[70]行：
-LIBRARY_YDWEGetPlayersEnemiesNull - 第[73]行：
-LIBRARY_YDWEGetPlayersMatchingNull - 第[76]行：
-LIBRARY_YDWEGetUnitsInRangeOfLocMatchingNull - 第[79]行：
-LIBRARY_YDWEGetUnitsInRectMatchingNull - 第[82]行：
-LIBRARY_YDWEGetUnitsOfPlayerMatchingNull - 第[85]行：
-LIBRARY_YDWEGetUnitsOfTypeIdAllNull - 第[89]行：
-LIBRARY_YDWEPauseAllUnitsBJNull - 第[92]行：
+LIBRARY_YDWEGetUnitsOfPlayerAllNull - 第[246]行：
+LIBRARY_YDWEJumpTimer - 第[249]行：
+LIBRARY_YDWELocalVariable - 第[254]行：
+LIBRARY_YDWESetUnitFacingToFaceUnitTimedNull - 第[257]行：
+LIBRARY_YDWETimerPattern - 第[260]行：
+LIBRARY_YDWETimerSystem - 第[267]行：
+udg_TX - 第[297]行：
+gg_trg_MaxSpeed - 第[739]行：
+gg_trg_Elector - 第[765]行：
+gg_trg_MeatHook_04 - 第[851]行：
+gg_trg_MeatHook_00_______u - 第[1067]行：
+gg_trg_____________Z - 第[1188]行：
+gg_trg_____________Z_001 - 第[1189]行：
+gg_trg_test_00________u - 第[1230]行：
+gg_trg_test_01________u - 第[1231]行：
+gg_trg_test_02______________u - 第[1232]行：
+gg_trg_test_03___________u - 第[1233]行：
+gg_trg_test_04________________u - 第[1234]行：
+gg_trg_test_05___________________u - 第[1235]行：
+gg_trg_test_06______________u - 第[1236]行：
 --------------------------------------------------
 未引用的函数 (605)
 --------------------------------------------------
-DzTriggerRegisterWindowResizeEventByCode - 第[1487]行：
-DzIsWindowActive - 第[1488]行：
-DzDestructablePosition - 第[1489]行：
-DzSetUnitPosition - 第[1490]行：
-DzExecuteFunc - 第[1491]行：
-DzGetUnitUnderMouse - 第[1492]行：
-DzSetUnitTexture - 第[1493]行：
-DzSetMemory - 第[1494]行：
-DzSetUnitID - 第[1495]行：
-DzSetUnitModel - 第[1496]行：
-DzSetWar3MapMap - 第[1497]行：
-DzGetLocale - 第[1498]行：
-DzGetUnitNeededXP - 第[1499]行：
-DzTriggerRegisterSyncData - 第[1500]行：
-DzSyncData - 第[1501]行：
-DzGetTriggerSyncPrefix - 第[1502]行：
-DzGetTriggerSyncData - 第[1503]行：
-DzGetTriggerSyncPlayer - 第[1504]行：
-DzSyncBuffer - 第[1505]行：
-DzSyncDataImmediately - 第[1506]行：
+YDWES2I - 第[3804]-[3806]行
+YDWESaveAbilityHandleBJ - 第[3807]-[3809]行
+YDWESaveAbilityHandle - 第[3810]-[3812]行
+YDWELoadAbilityHandleBJ - 第[3813]-[3815]行
+YDWELoadAbilityHandle - 第[3816]-[3818]行
+YDWECoordinateX - 第[3823]-[3825]行
+YDWECoordinateY - 第[3826]-[3828]行
+YDWEId2S - 第[3851]-[3866]行
+YDWES2Id - 第[3867]-[3889]行
+YDWES2UnitId - 第[3890]-[3892]行
+YDWES2ItemId - 第[3893]-[3895]行
+GetLastAbilityCastingUnit - 第[3896]-[3898]行
+GetLastAbilityTargetUnit - 第[3899]-[3901]行
+YDWESetMapLimitCoordinate - 第[3902]-[3907]行
+YDWECreateUnitPool - 第[3937]-[3939]行
+YDWEPlaceRandomUnit - 第[3940]-[3942]行
+YDWEGetLastUnitPool - 第[3943]-[3945]行
+YDWEGetLastPoolAbstractedUnit - 第[3946]-[3948]行
+YDWECreateItemPool - 第[3949]-[3951]行
+YDWEPlaceRandomItem - 第[3952]-[3954]行
 --------------------------------------------------
 未引用的局部变量 (23)
 --------------------------------------------------
+YDWEGeneralBounsSystem___SetUnitMaxState - 第[4133]行：[s]
+YDWEGeneralBounsSystem___SetUnitMaxState - 第[4137]行：[a]
+s__YDWETimerPattern___Parabola_create - 第[6511]行：[vx]
 s__YDWETimerPattern___Parabola_create - 第[6512]行：[vy]
 s__YDWETimerPattern___Parabola_create - 第[6513]行：[vz]
 s__YDWETimerPattern___Deceleration_create - 第[6666]行：[vx]
@@ -259,6 +262,3 @@ CreateNeutralPassiveBuildings - 第[7631]行：[unitID]
 CreateNeutralPassiveBuildings - 第[7633]行：[life]
 CreateNeutralPassive - 第[7669]行：[unitID]
 CreateNeutralPassive - 第[7671]行：[life]
-Time_UpdateDate - 第[7862]行：[totalDayBase]
-Time_UpdateDate - 第[7863]行：[totalMonDay]
-Trig_Blood_rite_00Func007T - 第[25776]行：[ydul_i]
