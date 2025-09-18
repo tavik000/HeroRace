@@ -1,9 +1,9 @@
-输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.56.w3x
-输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.56_slk.w3x
+输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.58.w3x
+输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.58_slk.w3x
 输入格式：Mpq
 输出模式：slk
 结果：0 个错误，3 条警告
-用时：3.795 秒
+用时：3.998 秒
 ==========================
 警告 (3)
 ==========================
@@ -145,8 +145,8 @@
 ==========================
 w3i里的文本长度超过1023字符 - 文本保存在wts中会导致加载速度变慢: 
 赛跑有很多BGM，开启背景音乐试试（所有音乐获授权）
-|Cffffff00模式1：团队分高的队伍胜利（类似跑跑卡丁车）|r
 终点在左下方
+|Cffffff00模式1：团队分高的队伍胜利（类似跑跑卡丁车）|r
 |Cff00ff00模式2：队伍有N-1个人（N为队内玩家数）进入终点为胜利|r
 英雄进入终点后将出现灵魂状态（英雄呈现半透明），此时可以帮助其他队友冲向终点以及阻止敌人进入终点
 地图作者：key
@@ -191,11 +191,18 @@ w3i里的文本长度超过1023字符 - 文本保存在wts中会导致加载速�
 -------------------------
 
 ==========================
-脚本优化 (763)
+脚本优化 (767)
 ==========================
 --------------------------------------------------
-未引用的全局变量 (135)
+未引用的全局变量 (139)
 --------------------------------------------------
+MemoryLeakHelper___GROUP_UNIT_MEMORY_USAGE - 第[229]行：
+MemoryLeakHelper___EFFECT_MEMORY_USAGE - 第[230]行：
+MemoryLeakHelper___REMOVED_EFFECT_MEMORY_USAGE - 第[231]行：
+MemoryLeakHelper___IsOpenMemoryLeakHelper - 第[233]行：
+LIBRARY_YDWEEnableCreepSleepBJNull - 第[237]行：
+LIBRARY_YDWEEnumDestructablesInCircleBJNull - 第[240]行：
+LIBRARY_YDWEGetUnitsInRectAllNull - 第[243]行：
 LIBRARY_YDWEGetUnitsOfPlayerAllNull - 第[246]行：
 LIBRARY_YDWEJumpTimer - 第[249]行：
 LIBRARY_YDWELocalVariable - 第[254]行：
@@ -203,42 +210,35 @@ LIBRARY_YDWESetUnitFacingToFaceUnitTimedNull - 第[257]行：
 LIBRARY_YDWETimerPattern - 第[260]行：
 LIBRARY_YDWETimerSystem - 第[267]行：
 udg_TX - 第[297]行：
+udg_EXCH_mode_ANNIU - 第[392]行：
+gg_trg_EXCH_mode_Dialog - 第[626]行：
+gg_trg_EXCH_Dialog_01 - 第[627]行：
+gg_trg_EXCH_Dialog_02 - 第[628]行：
 gg_trg_MaxSpeed - 第[739]行：
 gg_trg_Elector - 第[765]行：
-gg_trg_MeatHook_04 - 第[851]行：
-gg_trg_MeatHook_00_______u - 第[1067]行：
-gg_trg_____________Z - 第[1188]行：
-gg_trg_____________Z_001 - 第[1189]行：
-gg_trg_test_00________u - 第[1230]行：
-gg_trg_test_01________u - 第[1231]行：
-gg_trg_test_02______________u - 第[1232]行：
-gg_trg_test_03___________u - 第[1233]行：
-gg_trg_test_04________________u - 第[1234]行：
-gg_trg_test_05___________________u - 第[1235]行：
-gg_trg_test_06______________u - 第[1236]行：
 --------------------------------------------------
 未引用的函数 (605)
 --------------------------------------------------
-YDWES2I - 第[3804]-[3806]行
-YDWESaveAbilityHandleBJ - 第[3807]-[3809]行
-YDWESaveAbilityHandle - 第[3810]-[3812]行
-YDWELoadAbilityHandleBJ - 第[3813]-[3815]行
-YDWELoadAbilityHandle - 第[3816]-[3818]行
-YDWECoordinateX - 第[3823]-[3825]行
-YDWECoordinateY - 第[3826]-[3828]行
-YDWEId2S - 第[3851]-[3866]行
-YDWES2Id - 第[3867]-[3889]行
-YDWES2UnitId - 第[3890]-[3892]行
-YDWES2ItemId - 第[3893]-[3895]行
-GetLastAbilityCastingUnit - 第[3896]-[3898]行
-GetLastAbilityTargetUnit - 第[3899]-[3901]行
-YDWESetMapLimitCoordinate - 第[3902]-[3907]行
-YDWECreateUnitPool - 第[3937]-[3939]行
-YDWEPlaceRandomUnit - 第[3940]-[3942]行
-YDWEGetLastUnitPool - 第[3943]-[3945]行
-YDWEGetLastPoolAbstractedUnit - 第[3946]-[3948]行
-YDWECreateItemPool - 第[3949]-[3951]行
-YDWEPlaceRandomItem - 第[3952]-[3954]行
+DzFrameSetAlpha - 第[1560]行：
+DzFrameGetAlpha - 第[1561]行：
+DzFrameSetAnimate - 第[1562]行：
+DzFrameSetAnimateOffset - 第[1563]行：
+DzFrameSetTexture - 第[1564]行：
+DzFrameSetScale - 第[1565]行：
+DzFrameSetTooltip - 第[1566]行：
+DzFrameCageMouse - 第[1567]行：
+DzFrameGetValue - 第[1568]行：
+DzFrameSetMinMaxValue - 第[1569]行：
+DzFrameSetStepValue - 第[1570]行：
+DzFrameSetValue - 第[1571]行：
+DzFrameSetSize - 第[1572]行：
+DzCreateFrameByTagName - 第[1573]行：
+DzFrameSetVertexColor - 第[1574]行：
+DzOriginalUIAutoResetPoint - 第[1575]行：
+DzFrameSetPriority - 第[1576]行：
+DzFrameSetParent - 第[1577]行：
+DzFrameGetHeight - 第[1578]行：
+DzFrameSetFont - 第[1579]行：
 --------------------------------------------------
 未引用的局部变量 (23)
 --------------------------------------------------
