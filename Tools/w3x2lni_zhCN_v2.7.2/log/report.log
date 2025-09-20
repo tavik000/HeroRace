@@ -1,9 +1,9 @@
-输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.58.w3x
-输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.58_slk.w3x
+输入路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.59.w3x
+输出路径：D:/Development/Warcraft3/HeroRace/slk/HeroRace_v3.59_slk.w3x
 输入格式：Mpq
 输出模式：slk
 结果：0 个错误，3 条警告
-用时：3.998 秒
+用时：4.407 秒
 ==========================
 警告 (3)
 ==========================
@@ -37,9 +37,9 @@
 ==========================
 移除未引用对象 (102)
 ==========================
-简化掉的对象数: 2596/4395
+简化掉的对象数: 2594/4395
 ---------------------------------------------------------------------
-保留的默认对象数: 390/2821
+保留的默认对象数: 392/2821
 ---------------------------------------------------------------------
 单位 'hphx' 火凤凰 - 脚本里的'hpea'[农民]引用了它
 单位 'hpea' 农民 - 脚本里的'hpea'[农民]引用了它
@@ -71,7 +71,7 @@
 物品 'mcri' 机械类的小玩艺 - 脚本里的'hpea'[农民]引用了它
 物品 'ssan' 避难权杖 - 脚本里的'hpea'[农民]引用了它
 魔法效果 'XHfs' 烈焰风暴(效果) - 脚本里的'hpea'[农民]引用了它
-魔法效果 'BUan' 操纵死尸 - 脚本里的'BUan'[操纵死尸]引用了它
+魔法效果 'BUan' 操纵死尸 - 脚本里的'n020'[不死-1]引用了它
 魔法效果 'Bpoi' 毒 - 脚本里的'n01T'[中立-1]引用了它
 魔法效果 'Bphx' 火凤凰 - 脚本里的'hpea'[农民]引用了它
 魔法效果 'Bsta' 静止陷阱 - 脚本里的'n029'[测试商店]引用了它
@@ -191,74 +191,74 @@ w3i里的文本长度超过1023字符 - 文本保存在wts中会导致加载速�
 -------------------------
 
 ==========================
-脚本优化 (767)
+脚本优化 (768)
 ==========================
 --------------------------------------------------
-未引用的全局变量 (139)
+未引用的全局变量 (140)
 --------------------------------------------------
-MemoryLeakHelper___GROUP_UNIT_MEMORY_USAGE - 第[229]行：
-MemoryLeakHelper___EFFECT_MEMORY_USAGE - 第[230]行：
-MemoryLeakHelper___REMOVED_EFFECT_MEMORY_USAGE - 第[231]行：
-MemoryLeakHelper___IsOpenMemoryLeakHelper - 第[233]行：
-LIBRARY_YDWEEnableCreepSleepBJNull - 第[237]行：
-LIBRARY_YDWEEnumDestructablesInCircleBJNull - 第[240]行：
-LIBRARY_YDWEGetUnitsInRectAllNull - 第[243]行：
-LIBRARY_YDWEGetUnitsOfPlayerAllNull - 第[246]行：
-LIBRARY_YDWEJumpTimer - 第[249]行：
-LIBRARY_YDWELocalVariable - 第[254]行：
-LIBRARY_YDWESetUnitFacingToFaceUnitTimedNull - 第[257]行：
-LIBRARY_YDWETimerPattern - 第[260]行：
-LIBRARY_YDWETimerSystem - 第[267]行：
-udg_TX - 第[297]行：
-udg_EXCH_mode_ANNIU - 第[392]行：
-gg_trg_EXCH_mode_Dialog - 第[626]行：
-gg_trg_EXCH_Dialog_01 - 第[627]行：
-gg_trg_EXCH_Dialog_02 - 第[628]行：
-gg_trg_MaxSpeed - 第[739]行：
-gg_trg_Elector - 第[765]行：
+gg_trg_test_14____________________u - 第[1258]行：
+gg_trg_test_15______________u - 第[1259]行：
+gg_trg_test_16_______________________u - 第[1260]行：
+gg_trg_test_17______________u - 第[1261]行：
+gg_trg_test_17_____________________u - 第[1262]行：
+gg_trg_test_18______________u - 第[1263]行：
+gg_trg_test_19______________u - 第[1264]行：
+gg_trg_test_20______________u - 第[1265]行：
+gg_trg_test_21______________u - 第[1266]行：
+gg_trg_test_22______________u - 第[1267]行：
+gg_trg_test_23______________u - 第[1268]行：
+gg_trg_test_24______________u - 第[1269]行：
+gg_trg_test_25___________u - 第[1270]行：
+gg_trg_test_26____________________u - 第[1271]行：
+gg_trg_test_27____________________u - 第[1272]行：
+udg_bIsInit - 第[1301]行：
+l__library_init - 第[1309]行：
+si__ModSpeed - 第[1312]行：
+si__MemoryLeakHelper___Index - 第[1327]行：
+si__MemoryLeakHelper___Index_F - 第[1328]行：
 --------------------------------------------------
 未引用的函数 (605)
 --------------------------------------------------
-DzFrameSetAlpha - 第[1560]行：
-DzFrameGetAlpha - 第[1561]行：
-DzFrameSetAnimate - 第[1562]行：
-DzFrameSetAnimateOffset - 第[1563]行：
-DzFrameSetTexture - 第[1564]行：
-DzFrameSetScale - 第[1565]行：
-DzFrameSetTooltip - 第[1566]行：
-DzFrameCageMouse - 第[1567]行：
-DzFrameGetValue - 第[1568]行：
-DzFrameSetMinMaxValue - 第[1569]行：
-DzFrameSetStepValue - 第[1570]行：
-DzFrameSetValue - 第[1571]行：
-DzFrameSetSize - 第[1572]行：
-DzCreateFrameByTagName - 第[1573]行：
-DzFrameSetVertexColor - 第[1574]行：
-DzOriginalUIAutoResetPoint - 第[1575]行：
-DzFrameSetPriority - 第[1576]行：
-DzFrameSetParent - 第[1577]行：
-DzFrameGetHeight - 第[1578]行：
-DzFrameSetFont - 第[1579]行：
+YDWEGetLocalVariableEffect - 第[6316]-[6320]行
+YDWESetLocalVariableEffectArray - 第[6321]-[6325]行
+YDWEGetLocalVariableEffectArray - 第[6326]-[6330]行
+YDWESetLocalVariableRect - 第[6332]-[6336]行
+YDWEGetLocalVariableRect - 第[6337]-[6341]行
+YDWESetLocalVariableRectArray - 第[6342]-[6346]行
+YDWEGetLocalVariableRectArray - 第[6347]-[6351]行
+s__YDWETimerPattern___Thread__staticgetindex - 第[6437]-[6439]行
+s__YDWETimerPattern___Thread__staticsetindex - 第[6440]-[6442]行
+s__YDWETimerPattern___Thread_flush - 第[6443]-[6445]行
+s__YDWETimerPattern___Thread_onDestroy - 第[6459]-[6482]行
+s__YDWETimerPattern___Linear_move - 第[6560]-[6590]行
+s__YDWETimerPattern___Linear_create - 第[6591]-[6617]行
+YDWETimerPatternMoonPriestessArrow - 第[6708]-[6725]行
+YDWETimerSystemNewTask - 第[6778]-[6780]行
+YDWETimerSystemGetCurrentTask - 第[6781]-[6783]行
+YDWETimerDestroyTimer - 第[6797]-[6799]行
+YDWETimerRemoveItem - 第[6805]-[6807]行
+YDWETimerSystemGetRunIndex - 第[6885]-[6887]行
+CreatePlayerBuildings - 第[7697]-[7699]行
 --------------------------------------------------
 未引用的局部变量 (23)
 --------------------------------------------------
-YDWEGeneralBounsSystem___SetUnitMaxState - 第[4133]行：[s]
-YDWEGeneralBounsSystem___SetUnitMaxState - 第[4137]行：[a]
-s__YDWETimerPattern___Parabola_create - 第[6511]行：[vx]
-s__YDWETimerPattern___Parabola_create - 第[6512]行：[vy]
-s__YDWETimerPattern___Parabola_create - 第[6513]行：[vz]
-s__YDWETimerPattern___Deceleration_create - 第[6666]行：[vx]
-s__YDWETimerPattern___Deceleration_create - 第[6667]行：[vy]
-s__YDWETimerPattern___Deceleration_create - 第[6668]行：[l]
-YDWETimerDestroyTextTag - 第[6830]行：[N]
-YDWETimerDestroyTextTag - 第[6831]行：[i]
-YDWETimerSystem___Main - 第[6842]行：[p]
-CreateAllDestructables - 第[7567]行：[life]
-CreateBuildingsForPlayer11 - 第[7584]行：[unitID]
-CreateBuildingsForPlayer11 - 第[7586]行：[life]
-CreateUnitsForPlayer11 - 第[7598]行：[unitID]
-CreateUnitsForPlayer11 - 第[7600]行：[life]
-CreateNeutralPassiveBuildings - 第[7631]行：[unitID]
-CreateNeutralPassiveBuildings - 第[7633]行：[life]
-CreateNeutralPassive - 第[7669]行：[unitID]
-CreateNeutralPassive - 第[7671]行：[life]
+s__YDWETimerPattern___Parabola_create - 第[6517]行：[vy]
+s__YDWETimerPattern___Parabola_create - 第[6518]行：[vz]
+s__YDWETimerPattern___Deceleration_create - 第[6671]行：[vx]
+s__YDWETimerPattern___Deceleration_create - 第[6672]行：[vy]
+s__YDWETimerPattern___Deceleration_create - 第[6673]行：[l]
+YDWETimerDestroyTextTag - 第[6835]行：[N]
+YDWETimerDestroyTextTag - 第[6836]行：[i]
+YDWETimerSystem___Main - 第[6847]行：[p]
+CreateAllDestructables - 第[7573]行：[life]
+CreateBuildingsForPlayer11 - 第[7590]行：[unitID]
+CreateBuildingsForPlayer11 - 第[7592]行：[life]
+CreateUnitsForPlayer11 - 第[7604]行：[unitID]
+CreateUnitsForPlayer11 - 第[7606]行：[life]
+CreateNeutralPassiveBuildings - 第[7637]行：[unitID]
+CreateNeutralPassiveBuildings - 第[7639]行：[life]
+CreateNeutralPassive - 第[7675]行：[unitID]
+CreateNeutralPassive - 第[7677]行：[life]
+Time_UpdateDate - 第[7868]行：[totalDayBase]
+Time_UpdateDate - 第[7869]行：[totalMonDay]
+Trig_Blood_rite_00Func007T - 第[25820]行：[ydul_i]
