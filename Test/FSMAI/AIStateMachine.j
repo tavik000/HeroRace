@@ -94,6 +94,9 @@ library AIStateMachine requires optional KeyUtils
             local rect currentWaypointArea 
             local real heroX 
             local real heroY 
+            local real targetX
+            local real targetY
+            local integer currentOrder
             
             // Safety check - ensure hero is alive
             if not IsUnitAliveBJ(owner.hero) then
@@ -105,6 +108,7 @@ library AIStateMachine requires optional KeyUtils
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             set heroX = GetUnitX(owner.hero)
             set heroY = GetUnitY(owner.hero)
+            set currentOrder = GetUnitCurrentOrder(owner.hero)
             
             // Check if hero has reached the current waypoint area
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
@@ -113,12 +117,20 @@ library AIStateMachine requires optional KeyUtils
                 set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
                 if owner.currentWaypointIndex >= WaypointCount then
                     call BJDebugMsg("Reached final waypoint")
-                    set owner.currentWaypointIndex = 0  // Loop back to start
+                    // TODO Goaled State
                 endif
                 
                 // Move to the new waypoint
                 set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
-                call IssuePointOrder(owner.hero, "move", GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea)), GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea)))
+                set targetX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
+                set targetY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
+                call IssuePointOrder(owner.hero, "move", targetX, targetY)
+            elseif currentOrder == 0 then
+                // Hero is idle (no current order) - reissue move command to current waypoint
+                call BJDebugMsg("Hero is idle, reissuing move command")
+                set targetX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
+                set targetY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
+                call IssuePointOrder(owner.hero, "move", targetX, targetY)
             endif
         endmethod
 
