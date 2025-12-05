@@ -8,6 +8,7 @@ library AIStateMachine requires optional KeyUtils
         constant integer STATE_COMBAT = 2
         constant integer STATE_HAZARD = 3
         constant integer STATE_HEALING = 4
+        constant integer STATE_DEAD = 5
         
         // Difficulty Levels
         constant integer DIFF_EASY = 0
@@ -90,11 +91,20 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onUpdate takes nothing returns nothing
-            local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
-            local real heroX = GetUnitX(owner.hero)
-            local real heroY = GetUnitY(owner.hero)
+            local rect currentWaypointArea 
+            local real heroX 
+            local real heroY 
+            
+            // Safety check - ensure hero is alive
+            if not IsUnitAliveBJ(owner.hero) then
+                return
+            endif
             
             call BJDebugMsg("Updating Run State")
+            
+            set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+            set heroX = GetUnitX(owner.hero)
+            set heroY = GetUnitY(owner.hero)
             
             // Check if hero has reached the current waypoint area
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
@@ -103,6 +113,7 @@ library AIStateMachine requires optional KeyUtils
                 set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
                 if owner.currentWaypointIndex >= WaypointCount then
                     call BJDebugMsg("Reached final waypoint")
+                    set owner.currentWaypointIndex = 0  // Loop back to start
                 endif
                 
                 // Move to the new waypoint
@@ -113,6 +124,32 @@ library AIStateMachine requires optional KeyUtils
 
         method onExit takes nothing returns nothing
             call BJDebugMsg("Exiting Run State")
+        endmethod
+    endstruct
+
+    struct DeadState extends AIState
+        static method create takes nothing returns thistype
+            local thistype this = thistype.allocate()
+            set this.stateID = STATE_DEAD
+            return this
+        endmethod
+
+        method onEnter takes nothing returns nothing
+            call BJDebugMsg("Hero died - Entering Dead State")
+            call IssueImmediateOrder(owner.hero, "stop")
+        endmethod
+
+        method onUpdate takes nothing returns nothing
+            if not IsUnitAliveBJ(owner.hero) then
+                return
+            endif
+            
+            call BJDebugMsg("Hero revived - Returning to Run State")
+            call owner.changeState(RunState.create())
+        endmethod
+
+        method onExit takes nothing returns nothing
+            call BJDebugMsg("Exiting Dead State")
         endmethod
     endstruct
 
@@ -132,6 +169,8 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = diff
             set this.currentState = 0
             set this.currentWaypointIndex = 1
+            //test 
+            set this.currentWaypointIndex = 7
 
 
             call this.changeState(RunState.create())
@@ -158,7 +197,12 @@ library AIStateMachine requires optional KeyUtils
         static method onUpdate takes nothing returns nothing
             local thistype this = LoadInteger(udg_TimerHeroMap, GetHandleId(GetExpiredTimer()), 0)
             if this != null and this.currentState != null then
-                call this.currentState.onUpdate()
+                // Check if hero died and transition to dead state if needed
+                if not IsUnitAliveBJ(this.hero) and this.currentState.stateID != STATE_DEAD then
+                    call this.changeState(DeadState.create())
+                else
+                    call this.currentState.onUpdate()
+                endif
             endif
         endmethod
     endstruct
