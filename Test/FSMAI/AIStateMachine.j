@@ -97,9 +97,7 @@ library AIStateMachine requires optional KeyUtils
                 
                 // Move to the new waypoint
                 set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
-                call IssuePointOrder(owner.hero, "move", 
-                    GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea)),
-                    GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea)))
+                call IssuePointOrder(owner.hero, "move", GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea)), GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea)))
             endif
         endmethod
 
