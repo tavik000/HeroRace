@@ -92,7 +92,7 @@ library AIStateMachine requires optional KeyUtils
                 // Move to next waypoint
                 set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
                 if owner.currentWaypointIndex >= WaypointCount then
-                    set owner.currentWaypointIndex = 0  // Loop back to start
+                    call BJDebugMsg("Reached final waypoint")
                 endif
                 
                 // Move to the new waypoint
