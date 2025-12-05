@@ -80,7 +80,27 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onUpdate takes nothing returns nothing
+            local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            
             call BJDebugMsg("Updating Run State")
+            
+            // Check if hero has reached the current waypoint area
+            if RectContainsCoords(currentWaypointArea, heroX, heroY) then
+                call BJDebugMsg("Reached waypoint " + I2S(owner.currentWaypointIndex))
+                // Move to next waypoint
+                set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
+                if owner.currentWaypointIndex >= WaypointCount then
+                    set owner.currentWaypointIndex = 0  // Loop back to start
+                endif
+                
+                // Move to the new waypoint
+                set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+                call IssuePointOrder(owner.hero, "move", 
+                    GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea)),
+                    GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea)))
+            endif
         endmethod
 
         method onExit takes nothing returns nothing
