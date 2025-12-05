@@ -33,17 +33,17 @@ library AIStateMachine requires optional KeyUtils
         // IMPORTANT: Create regions in the World Editor and replace these
         // variable names (e.g., gg_rct_Waypoint_001) with your actual region variables.
         set WaypointAreas[0] = gg_rct_AIWayPointArea01
-        set WaypointAreas[1] = gg_rct_AIWayPointArea01
+        set WaypointAreas[1] = gg_rct_AIWayPointArea01 // After Start Area
         set WaypointAreas[2] = gg_rct_AIWayPointArea02
-        set WaypointAreas[3] = gg_rct_AIWayPointArea03
+        set WaypointAreas[3] = gg_rct_AIWayPointArea03 // Left of Upper Strait
         set WaypointAreas[4] = gg_rct_AIWayPointArea04
         set WaypointAreas[5] = gg_rct_AIWayPointArea05
-        set WaypointAreas[6] = gg_rct_AIWayPointArea06
-        set WaypointAreas[7] = gg_rct_AIWayPointArea07
-        set WaypointAreas[8] = gg_rct_AIWayPointArea08
-        set WaypointAreas[9] = gg_rct_AIWayPointArea09
-        set WaypointAreas[10] = gg_rct_AIWayPointArea10
-        set WaypointAreas[11] = gg_rct_AIWayPointArea11
+        set WaypointAreas[6] = gg_rct_AIWayPointArea06 // Left of 3 Fishes 
+        set WaypointAreas[7] = gg_rct_AIWayPointArea07 // Before Slow Knife Hazard
+        set WaypointAreas[8] = gg_rct_AIWayPointArea08 // After Slow Knife Hazard
+        set WaypointAreas[9] = gg_rct_AIWayPointArea09 // Before Fast Knife Hazard
+        set WaypointAreas[10] = gg_rct_AIWayPointArea10 // Before Net Hazard
+        set WaypointAreas[11] = gg_rct_AIWayPointArea11 // After Net Hazard
         set WaypointAreas[12] = gg_rct_AIWayPointArea12
         set WaypointAreas[13] = gg_rct_Finish
         set WaypointCount = 14 // Update this to match the number of waypoints you added.
