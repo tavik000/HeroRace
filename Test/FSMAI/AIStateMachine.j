@@ -35,8 +35,18 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[0] = gg_rct_AIWayPointArea01
         set WaypointAreas[1] = gg_rct_AIWayPointArea01
         set WaypointAreas[2] = gg_rct_AIWayPointArea02
-        // set WaypointAreas[2] = gg_rct_Waypoint_003
-        set WaypointCount = 3 // Update this to match the number of waypoints you added.
+        set WaypointAreas[3] = gg_rct_AIWayPointArea03
+        set WaypointAreas[4] = gg_rct_AIWayPointArea04
+        set WaypointAreas[5] = gg_rct_AIWayPointArea05
+        set WaypointAreas[6] = gg_rct_AIWayPointArea06
+        set WaypointAreas[7] = gg_rct_AIWayPointArea07
+        set WaypointAreas[8] = gg_rct_AIWayPointArea08
+        set WaypointAreas[9] = gg_rct_AIWayPointArea09
+        set WaypointAreas[10] = gg_rct_AIWayPointArea10
+        set WaypointAreas[11] = gg_rct_AIWayPointArea11
+        set WaypointAreas[12] = gg_rct_AIWayPointArea12
+        set WaypointAreas[13] = gg_rct_Finish
+        set WaypointCount = 14 // Update this to match the number of waypoints you added.
     endfunction
 
     struct AIState 
@@ -66,16 +76,16 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            local rect waypointArea
+            local rect currentWaypointArea
             local real x
             local real y
 
             call BJDebugMsg("Entering Run State")
             // Increment waypoint index, wrapping around if it reaches the end
             set owner.currentWaypointIndex = owner.currentWaypointIndex + 1
-            set waypointArea = WaypointAreas[owner.currentWaypointIndex]
-            set x = GetRandomReal(GetRectMinX(waypointArea), GetRectMaxX(waypointArea))
-            set y = GetRandomReal(GetRectMinY(waypointArea), GetRectMaxY(waypointArea))
+            set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+            set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
+            set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
             call IssuePointOrder(owner.hero, "move", x, y)      
         endmethod
 
@@ -121,7 +131,7 @@ library AIStateMachine requires optional KeyUtils
             set this.hero = u
             set this.difficulty = diff
             set this.currentState = 0
-            set this.currentWaypointIndex = 0
+            set this.currentWaypointIndex = 1
 
 
             call this.changeState(RunState.create())
