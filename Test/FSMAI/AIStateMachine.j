@@ -111,7 +111,7 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[2] = gg_rct_AIWayPointArea02
         set WaypointAreas[3] = gg_rct_AIWayPointArea03 // Left of Upper Strait
         set WaypointAreas[4] = gg_rct_AIWayPointArea04
-        set WaypointAreas[5] = gg_rct_AIWayPointArea05
+        set WaypointAreas[5] = gg_rct_AIWayPointArea05 // Upper of 3 Fishes
         set WaypointAreas[6] = gg_rct_AIWayPointArea06 // Left of 3 Fishes 
         set WaypointAreas[7] = gg_rct_AIWayPointArea07 // Before Slow Knife Hazard
         set WaypointAreas[8] = gg_rct_AIWayPointArea08 // After Slow Knife Hazard
@@ -120,7 +120,7 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[11] = gg_rct_AIWayPointArea11 // After Net Hazard
         set WaypointAreas[12] = gg_rct_AIWayPointArea12
         set WaypointAreas[13] = gg_rct_Finish
-        set WaypointCount = 14 // Update this to match the number of waypoints you added.
+        set WaypointCount = 13 // Update this to match the number of waypoints you added.
     endfunction
 
     // Ability cast types
@@ -271,8 +271,6 @@ library AIStateMachine requires optional KeyUtils
             local real y
 
             call BJDebugMsg("Entering Run State")
-            // Increment waypoint index, wrapping around if it reaches the end
-            set owner.currentWaypointIndex = owner.currentWaypointIndex + 1
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
             set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
@@ -294,7 +292,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
             
-            call BJDebugMsg("Updating Run State")
+            call BJDebugMsg("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
             
             // Check if we should enter combat state
             if owner.shouldEnterCombat() then
@@ -311,11 +309,12 @@ library AIStateMachine requires optional KeyUtils
             // Check if hero has reached the current waypoint area
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
                 call BJDebugMsg("Reached waypoint " + I2S(owner.currentWaypointIndex))
-                // Move to next waypoint
-                set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
                 if owner.currentWaypointIndex >= WaypointCount then
                     call BJDebugMsg("Reached final waypoint")
                     // TODO Goaled State
+                else
+                    // Move to next waypoint
+                    set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
                 endif
                 
                 // Move to the new waypoint
