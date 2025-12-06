@@ -384,7 +384,7 @@ library AIStateMachine requires optional KeyUtils
             local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
             local boolean isCasting = currentTime <= owner.lastCastTime + owner.castPt + TURN_TIME
-            
+
             if isCasting then
                 call BJDebugMsg("Currently casting an ability, skipping update")
                 return
@@ -422,7 +422,8 @@ library AIStateMachine requires optional KeyUtils
                 set heroAbil = owner.combatData.abilities[i]
                 set requiredCooldown = heroAbil.baseCooldown * EASY_CD_MULTIPLIER
                 
-                if currentTime >= heroAbil.lastCastTime + requiredCooldown then
+                // Check cooldown (skip for first-time cast)
+                if heroAbil.lastCastTime == 0.0 or currentTime >= heroAbil.lastCastTime + requiredCooldown then
                     if this.tryCastAbility(heroAbil) then
                         set heroAbil.lastCastTime = currentTime
                         set owner.lastCastTime = currentTime
@@ -446,7 +447,7 @@ library AIStateMachine requires optional KeyUtils
 
                 call BJDebugMsg("Checking ability: " + heroAbil.orderString + " Last Cast Time: " + R2S(heroAbil.lastCastTime) + " Current Time: " + R2S(currentTime) + " Cooldown: " + R2S(heroAbil.baseCooldown))
                 
-                if currentTime >= heroAbil.lastCastTime + heroAbil.baseCooldown then
+                if heroAbil.lastCastTime == 0.0 or currentTime >= heroAbil.lastCastTime + heroAbil.baseCooldown then
                     if this.tryCastAbility(heroAbil) then
                         set heroAbil.lastCastTime = currentTime
                         set owner.lastCastTime = currentTime
