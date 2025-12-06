@@ -3,7 +3,7 @@ library AIStateMachine requires optional KeyUtils
     // --- CONFIGURATION ---
     globals
         // States
-        constant integer STATE_PRE_GAME = 0
+        constant integer STATE_NONE = 0
         constant integer STATE_RUN = 1
         constant integer STATE_COMBAT = 2
         constant integer STATE_HAZARD = 3
@@ -590,7 +590,6 @@ library AIStateMachine requires optional KeyUtils
     endstruct
 
 
-
     struct AIHero
         unit hero
         integer difficulty
@@ -701,6 +700,8 @@ library AIStateMachine requires optional KeyUtils
                 set this.updateTimer = null
             endif
             
+            call RemoveUnit(this.hero)
+
             // Nullify unit handle
             set this.hero = null
             
@@ -723,7 +724,6 @@ library AIStateMachine requires optional KeyUtils
     // This module ensures our initialization functions are called when the map loads.
     private module Initializer
         private static method onInit takes nothing returns nothing
-            call BJDebugMsg("AIStateMachine initializing...")
             set udg_TimerHeroMap = InitHashtable()
             set heroCastPointMap = InitHashtable()
             set gameTimer = CreateTimer()
