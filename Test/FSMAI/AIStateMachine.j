@@ -83,7 +83,12 @@ library AIStateMachine requires optional KeyUtils
             set filterUnit = null
             return false
         endif
-        
+
+        if not IsUnitVisible(filterUnit, tempHeroOwner) then
+            set filterUnit = null
+            return false
+        endif
+
         // Check if we want allies or enemies
         if bTempFilterForAllies then
             // Filter for allies (same team, but not the same unit)
