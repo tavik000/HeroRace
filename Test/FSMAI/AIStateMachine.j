@@ -21,7 +21,8 @@ library AIStateMachine requires optional KeyUtils
         constant real UPDATE_PERIOD = 0.30
         
         // Combat settings
-        constant real EASY_CD_MULTIPLIER = 2.0
+        // constant real EASY_CD_MULTIPLIER = 2.0
+        constant real EASY_CD_MULTIPLIER = 1.0
         constant real NORMAL_CD_MULTIPLIER = 1.0
         constant real HARD_CD_MULTIPLIER = 1.0
         constant integer MAX_ABILITIES_PER_HERO = 7
@@ -36,6 +37,9 @@ library AIStateMachine requires optional KeyUtils
         private rect array WaypointAreas
         // The actual number of waypoints initialized.
         public integer WaypointCount = 0
+
+        // Turn time for 90 degree turns, giving turn rate 0.6
+        constant real TURN_TIME = 0.3 
     endglobals
 
     // This function will run once at map initialization to set up the waypoints.
@@ -72,14 +76,18 @@ library AIStateMachine requires optional KeyUtils
         integer castType
         real lastCastTime
         integer comboIndex  // For chaining abilities in sequence
+        string orderString  // Order string for casting (e.g., "flamestrike")
+        integer manaCost    // Mana cost for the ability
         
-        static method create takes integer aid, real cd, integer ctype returns thistype
+        static method create takes integer aid, real cd, integer ctype, string order, integer mana returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
             set this.castType = ctype
             set this.lastCastTime = 0.0
             set this.comboIndex = 0
+            set this.orderString = order
+            set this.manaCost = mana
             return this
         endmethod
         
@@ -100,9 +108,9 @@ library AIStateMachine requires optional KeyUtils
             return this
         endmethod
         
-        method addAbility takes integer abilityId, real cooldown, integer castType returns nothing
+        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType)
+                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost)
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
@@ -139,14 +147,15 @@ library AIStateMachine requires optional KeyUtils
 
         
         // Example: Add abilities based on hero type
-        if heroTypeId == 'H009' then  // Archmage example
+        if heroTypeId == 'H009' then  // BloodMage example
             call BJDebugMsg("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT)   // Water Elemental
-            call data.addAbility('A01N', 47.0, CAST_UNIT)   // Blood Lust
+            // call data.addAbility('A00S', 22.0, CAST_POINT, "flamestrike", 70)   // Flame Strike
+            call data.addAbility('A00S', 8.0, CAST_POINT, "flamestrike", 70)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50)       // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
-            call data.addAbility('AHtc', 6.0, CAST_UNIT)    // Thunder Clap
-            call data.addAbility('AHbh', 10.0, CAST_INSTANT)// Bash
+            call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75)      // Thunder Clap
+            call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0)          // Bash (passive)
             // Add more hero types as needed...
         endif
         
@@ -284,22 +293,28 @@ library AIStateMachine requires optional KeyUtils
 
         method onEnter takes nothing returns nothing
             call BJDebugMsg("Entering Combat State")
-            call IssueImmediateOrder(owner.hero, "stop")
         endmethod
 
         method onUpdate takes nothing returns nothing
             local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
+            local boolean isCasting = currentTime <= owner.lastCastTime + 0.2 + TURN_TIME
             
+            if isCasting then
+                call BJDebugMsg("Currently casting an ability, skipping update")
+                return
+            endif
+
             // Safety check - ensure hero is alive
             if not IsUnitAliveBJ(owner.hero) then
                 return
             endif
             
-            call BJDebugMsg("Updating Combat State")
-            
             if difficulty == DIFF_EASY then
-                call this.executeEasyCombat()
+                if this.tryExecuteEasyCombat() then
+                    // Successfully cast an ability
+                    return
+                endif
             elseif difficulty == DIFF_NORMAL then
                 call this.executeNormalCombat()
             else // HARD
@@ -310,7 +325,7 @@ library AIStateMachine requires optional KeyUtils
             call owner.changeState(RunState.create())
         endmethod
 
-        method executeEasyCombat takes nothing returns nothing
+        method tryExecuteEasyCombat takes nothing returns boolean
             local integer i = 0
             local HeroAbility heroAbil
             local real currentTime = TimerGetElapsed(gameTimer)
@@ -323,13 +338,15 @@ library AIStateMachine requires optional KeyUtils
                 set requiredCooldown = heroAbil.baseCooldown * EASY_CD_MULTIPLIER
                 
                 if currentTime >= heroAbil.lastCastTime + requiredCooldown then
-                    if this.castAbility(heroAbil) then
+                    if this.tryCastAbility(heroAbil) then
                         set heroAbil.lastCastTime = currentTime
-                        exitwhen true  // Cast one ability then exit
+                        set owner.lastCastTime = currentTime
+                        return true
                     endif
                 endif
                 set i = i + 1
             endloop
+            return false
         endmethod
 
         method executeNormalCombat takes nothing returns nothing
@@ -341,9 +358,11 @@ library AIStateMachine requires optional KeyUtils
             loop
                 exitwhen i >= owner.combatData.abilityCount
                 set heroAbil = owner.combatData.abilities[i]
+
+                call BJDebugMsg("Checking ability: " + heroAbil.orderString + " Last Cast Time: " + R2S(heroAbil.lastCastTime) + " Current Time: " + R2S(currentTime) + " Cooldown: " + R2S(heroAbil.baseCooldown))
                 
                 if currentTime >= heroAbil.lastCastTime + heroAbil.baseCooldown then
-                    if this.castAbility(heroAbil) then
+                    if this.tryCastAbility(heroAbil) then
                         set heroAbil.lastCastTime = currentTime
                     endif
                 endif
@@ -357,29 +376,45 @@ library AIStateMachine requires optional KeyUtils
             // TODO: Add counter-casting logic based on enemy states
         endmethod
 
-        method castAbility takes HeroAbility heroAbil returns boolean
+        method tryCastAbility takes HeroAbility heroAbil returns boolean
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
             local unit target
+            local real currentMana
             
-            // Check if ability is available and hero has mana
+            call BJDebugMsg("Attempting to cast ability: " + heroAbil.orderString)
+
+            // Check if ability is available
             if GetUnitAbilityLevel(owner.hero, heroAbil.abilityId) <= 0 then
+                call BJDebugMsg("Ability not available: " + heroAbil.orderString)
+                return false
+            endif
+            
+            // Check if hero has enough mana
+            set currentMana = GetUnitState(owner.hero, UNIT_STATE_MANA)
+            if currentMana < heroAbil.manaCost then
+                call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
                 return false
             endif
             
             if heroAbil.castType == CAST_INSTANT then
-                call IssueImmediateOrderById(owner.hero, heroAbil.abilityId)
+                call IssueImmediateOrder(owner.hero, heroAbil.orderString)
+                call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_POINT then
                 // Cast at hero's current location or nearby
-                call IssuePointOrderById(owner.hero, heroAbil.abilityId, heroX + GetRandomReal(-200, 200), heroY + GetRandomReal(-200, 200))
+                call IssuePointOrder(owner.hero, heroAbil.orderString, heroX + GetRandomReal(-200, 200), heroY + GetRandomReal(-200, 200))
+                call BJDebugMsg("Casting point ability: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_UNIT then
                 // Find nearest enemy unit to cast on
                 set target = this.findNearestEnemy()
                 if target != null then
-                    call IssueTargetOrderById(owner.hero, heroAbil.abilityId, target)
+                    call IssueTargetOrder(owner.hero, heroAbil.orderString, target)
+                    call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
                     return true
+                else
+                    call BJDebugMsg("No target found for unit ability: " + heroAbil.orderString)
                 endif
             endif
             
@@ -402,16 +437,19 @@ library AIStateMachine requires optional KeyUtils
     struct AIHero
         unit hero
         integer difficulty
+        real castPt
         AIState currentState
         integer currentWaypointIndex
         HeroCombatData combatData
+        real lastCastTime
         
         // Constructor
-        static method create takes unit u, integer diff returns thistype
+        static method create takes unit u, integer diff, real castPoint returns thistype
             local thistype this = thistype.allocate()
             local timer t = CreateTimer()
             set this.hero = u
             set this.difficulty = diff
+            set this.castPt = castPoint
             set this.currentState = 0
             set this.currentWaypointIndex = 1
             //test 
