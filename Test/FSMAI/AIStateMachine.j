@@ -28,6 +28,9 @@ library AIStateMachine requires optional KeyUtils
         
         // Timer to AIHero mapping
         public hashtable udg_TimerHeroMap
+        
+        // Global timer for tracking game time
+        public timer gameTimer
 
         // The array to hold the waypoint regions.
         private rect array WaypointAreas
@@ -134,14 +137,13 @@ library AIStateMachine requires optional KeyUtils
         local HeroCombatData data = HeroCombatData.create()
         local integer heroTypeId = GetUnitTypeId(hero)
 
-        call BJDebugMsg("Initializing combat data for hero type ID: " + I2S(heroTypeId))
         
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // Archmage example
             call BJDebugMsg("Adding abilities for BloodMage")
-            // call data.addAbility('AHbz', 8.0, CAST_POINT)   // Blizzard
-            // call data.addAbility('AHwe', 12.0, CAST_UNIT)   // Water Elemental
-            // call data.addAbility('AHab', 5.0, CAST_INSTANT) // Brilliance Aura
+            call data.addAbility('A00S', 22.0, CAST_POINT)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT)   // Water Elemental
+            call data.addAbility('A01N', 47.0, CAST_UNIT)   // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
             call data.addAbility('AHtc', 6.0, CAST_UNIT)    // Thunder Clap
             call data.addAbility('AHbh', 10.0, CAST_INSTANT)// Bash
@@ -286,7 +288,7 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onUpdate takes nothing returns nothing
-            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
             
             // Safety check - ensure hero is alive
@@ -311,7 +313,7 @@ library AIStateMachine requires optional KeyUtils
         method executeEasyCombat takes nothing returns nothing
             local integer i = 0
             local HeroAbility heroAbil
-            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local real currentTime = TimerGetElapsed(gameTimer)
             local real requiredCooldown
             
             // Cast first available ability with 2x cooldown spacing
@@ -333,7 +335,7 @@ library AIStateMachine requires optional KeyUtils
         method executeNormalCombat takes nothing returns nothing
             local integer i = 0
             local HeroAbility heroAbil
-            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local real currentTime = TimerGetElapsed(gameTimer)
             
             // Execute combo sequence - cast all available abilities
             loop
@@ -430,8 +432,9 @@ library AIStateMachine requires optional KeyUtils
         method shouldEnterCombat takes nothing returns boolean
             local integer i = 0
             local HeroAbility heroAbil
-            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local real currentTime = TimerGetElapsed(gameTimer)
             local real cooldownMultiplier = GetCooldownMultiplier(this.difficulty)
+            call BJDebugMsg("Checking if should enter combat, current time: " + R2S(currentTime))
             
             // Check if any ability is ready for combat based on difficulty
             loop
@@ -477,6 +480,8 @@ library AIStateMachine requires optional KeyUtils
         private static method onInit takes nothing returns nothing
             call BJDebugMsg("AIStateMachine initializing...")
             set udg_TimerHeroMap = InitHashtable()
+            set gameTimer = CreateTimer()
+            call TimerStart(gameTimer, 999999.0, false, null)
             call InitializeWaypoints()
         endmethod
     endmodule
