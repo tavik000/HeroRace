@@ -61,6 +61,7 @@ The AI system uses a state machine with these states:
 
 ### JASS Syntax Conventions
 - Use `local` keyword for all function-scoped variables
+- **CRITICAL: All `local` variable declarations MUST be at the very top of functions/methods, before any executable code**
 - Always set handle variables to `null` to prevent leaks
 - Use `thistype` for struct self-references
 - Implement proper `destroy` methods for all structs
