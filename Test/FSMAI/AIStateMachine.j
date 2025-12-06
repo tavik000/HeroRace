@@ -29,6 +29,9 @@ library AIStateMachine requires optional KeyUtils
         // Timer to AIHero mapping
         public hashtable udg_TimerHeroMap
         
+        // Unit to AIHero mapping
+        public hashtable udg_UnitAIHeroMap
+        
         // Global timer for tracking game time
         public timer gameTimer
         
@@ -110,6 +113,20 @@ library AIStateMachine requires optional KeyUtils
         
         set filterUnit = null
         return true
+    endfunction
+
+    function GetAIHeroFromUnit takes unit u returns AIHero
+        if u == null then
+            return 0
+        endif
+        return LoadInteger(udg_UnitAIHeroMap, GetHandleId(u), 0)
+    endfunction
+
+    function DestroyAIHero takes unit u returns nothing
+        local AIHero aiHero = GetAIHeroFromUnit(u)
+        if aiHero != null then
+            call aiHero.destroy()
+        endif
     endfunction
 
     // This function will run once at map initialization to set up the waypoints.
@@ -619,6 +636,9 @@ library AIStateMachine requires optional KeyUtils
             // Start the loop
             call SaveInteger(udg_TimerHeroMap, GetHandleId(this.updateTimer), 0, this)
             call TimerStart(this.updateTimer, UPDATE_PERIOD, true, function thistype.onUpdate)
+            
+            // Store unit to AIHero mapping
+            call SaveInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0, this)
             return this
         endmethod
 
@@ -700,7 +720,11 @@ library AIStateMachine requires optional KeyUtils
                 set this.updateTimer = null
             endif
             
-            call RemoveUnit(this.hero)
+            // Remove unit to AIHero mapping
+            if this.hero != null then
+                call RemoveSavedInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0)
+                call RemoveUnit(this.hero)
+            endif
 
             // Nullify unit handle
             set this.hero = null
@@ -725,6 +749,7 @@ library AIStateMachine requires optional KeyUtils
     private module Initializer
         private static method onInit takes nothing returns nothing
             set udg_TimerHeroMap = InitHashtable()
+            set udg_UnitAIHeroMap = InitHashtable()
             set heroCastPointMap = InitHashtable()
             set gameTimer = CreateTimer()
             call TimerStart(gameTimer, 999999.0, false, null)
