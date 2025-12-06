@@ -218,7 +218,9 @@ library AIStateMachine requires optional KeyUtils
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
             set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
-            call IssuePointOrder(owner.hero, "move", x, y)      
+            call IssuePointOrder(owner.hero, "move", x, y)
+            
+            set currentWaypointArea = null
         endmethod
 
         method onUpdate takes nothing returns nothing
@@ -270,6 +272,8 @@ library AIStateMachine requires optional KeyUtils
                 set targetY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
                 call IssuePointOrder(owner.hero, "move", targetX, targetY)
             endif
+            
+            set currentWaypointArea = null
         endmethod
 
         method onExit takes nothing returns nothing
@@ -469,11 +473,12 @@ library AIStateMachine requires optional KeyUtils
         integer currentWaypointIndex
         HeroCombatData combatData
         real lastCastTime
+        timer updateTimer
         
         // Constructor
         static method create takes unit u, integer diff returns thistype
             local thistype this = thistype.allocate()
-            local timer t = CreateTimer()
+            set this.updateTimer = CreateTimer()
             set this.hero = u
             set this.difficulty = diff
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
@@ -489,8 +494,8 @@ library AIStateMachine requires optional KeyUtils
 
             
             // Start the loop
-            call SaveInteger(udg_TimerHeroMap, GetHandleId(t), 0, this)
-            call TimerStart(t, UPDATE_PERIOD, true, function thistype.onUpdate)
+            call SaveInteger(udg_TimerHeroMap, GetHandleId(this.updateTimer), 0, this)
+            call TimerStart(this.updateTimer, UPDATE_PERIOD, true, function thistype.onUpdate)
             return this
         endmethod
 
@@ -526,6 +531,33 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
       
+
+        method destroy takes nothing returns nothing
+            // Clean up combat data
+            if this.combatData != null then
+                call this.combatData.destroy()
+                set this.combatData = 0
+            endif
+            
+            // Clean up current state
+            if this.currentState != null then
+                call this.currentState.destroy()
+                set this.currentState = 0
+            endif
+            
+            // Clean up timer
+            if this.updateTimer != null then
+                call RemoveSavedInteger(udg_TimerHeroMap, GetHandleId(this.updateTimer), 0)
+                call PauseTimer(this.updateTimer)
+                call DestroyTimer(this.updateTimer)
+                set this.updateTimer = null
+            endif
+            
+            // Nullify unit handle
+            set this.hero = null
+            
+            call this.deallocate()
+        endmethod
 
         static method onUpdate takes nothing returns nothing
             local thistype this = LoadInteger(udg_TimerHeroMap, GetHandleId(GetExpiredTimer()), 0)
