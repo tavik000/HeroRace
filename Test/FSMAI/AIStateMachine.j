@@ -32,6 +32,9 @@ library AIStateMachine requires optional KeyUtils
         
         // Global timer for tracking game time
         public timer gameTimer
+        
+        // Hero cast point mapping by unit type
+        public hashtable heroCastPointMap
 
         // The array to hold the waypoint regions.
         private rect array WaypointAreas
@@ -39,13 +42,29 @@ library AIStateMachine requires optional KeyUtils
         public integer WaypointCount = 0
 
         // Turn time for 90 degree turns, giving turn rate 0.6
-        constant real TURN_TIME = 0.3 
+        constant real TURN_TIME = 0.2 
     endglobals
+
+    // Initialize hero cast points by unit type
+    private function InitializeHeroCastPoints takes nothing returns nothing
+        // Configure cast points for different hero types
+        call SaveReal(heroCastPointMap, 'H009', 0, 0.2)  // BloodMage
+        // call SaveReal(heroCastPointMap, 'Hmkg', 0, 0.3)  // Mountain King  
+        // TODO: Add more hero types as needed
+    endfunction
+
+    function GetHeroCastPoint takes integer heroTypeId returns real
+        if HaveSavedReal(heroCastPointMap, heroTypeId, 0) then
+            return LoadReal(heroCastPointMap, heroTypeId, 0)
+        else
+            call BJDebugMsg("Unknown hero type for GetHeroCastPoint: " + I2S(heroTypeId))
+            return 0.5  // Default cast point for unknown hero types
+        endif
+    endfunction
 
     // This function will run once at map initialization to set up the waypoints.
     private function InitializeWaypoints takes nothing returns nothing
         // IMPORTANT: Create regions in the World Editor and replace these
-        // variable names (e.g., gg_rct_Waypoint_001) with your actual region variables.
         set WaypointAreas[0] = gg_rct_AIWayPointArea01
         set WaypointAreas[1] = gg_rct_AIWayPointArea01 // After Start Area
         set WaypointAreas[2] = gg_rct_AIWayPointArea02
@@ -298,7 +317,7 @@ library AIStateMachine requires optional KeyUtils
         method onUpdate takes nothing returns nothing
             local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
-            local boolean isCasting = currentTime <= owner.lastCastTime + 0.2 + TURN_TIME
+            local boolean isCasting = currentTime <= owner.lastCastTime + owner.castPt + TURN_TIME
             
             if isCasting then
                 call BJDebugMsg("Currently casting an ability, skipping update")
@@ -381,6 +400,10 @@ library AIStateMachine requires optional KeyUtils
             local real heroY = GetUnitY(owner.hero)
             local unit target
             local real currentMana
+            local real heroFacing
+            local real behindDistance
+            local real targetX
+            local real targetY
             
             call BJDebugMsg("Attempting to cast ability: " + heroAbil.orderString)
 
@@ -402,9 +425,13 @@ library AIStateMachine requires optional KeyUtils
                 call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_POINT then
-                // Cast at hero's current location or nearby
-                call IssuePointOrder(owner.hero, heroAbil.orderString, heroX + GetRandomReal(-200, 200), heroY + GetRandomReal(-200, 200))
-                call BJDebugMsg("Casting point ability: " + heroAbil.orderString)
+                // Cast at a point behind the hero
+                set heroFacing = GetUnitFacing(owner.hero) * bj_DEGTORAD
+                set behindDistance = 200.0  // Distance behind hero
+                set targetX = heroX - behindDistance * Cos(heroFacing)
+                set targetY = heroY - behindDistance * Sin(heroFacing) 
+                call IssuePointOrder(owner.hero, heroAbil.orderString, targetX, targetY)
+                call BJDebugMsg("Casting point ability behind hero: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_UNIT then
                 // Find nearest enemy unit to cast on
@@ -444,12 +471,12 @@ library AIStateMachine requires optional KeyUtils
         real lastCastTime
         
         // Constructor
-        static method create takes unit u, integer diff, real castPoint returns thistype
+        static method create takes unit u, integer diff returns thistype
             local thistype this = thistype.allocate()
             local timer t = CreateTimer()
             set this.hero = u
             set this.difficulty = diff
-            set this.castPt = castPoint
+            set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
             set this.currentWaypointIndex = 1
             //test 
@@ -518,8 +545,10 @@ library AIStateMachine requires optional KeyUtils
         private static method onInit takes nothing returns nothing
             call BJDebugMsg("AIStateMachine initializing...")
             set udg_TimerHeroMap = InitHashtable()
+            set heroCastPointMap = InitHashtable()
             set gameTimer = CreateTimer()
             call TimerStart(gameTimer, 999999.0, false, null)
+            call InitializeHeroCastPoints()
             call InitializeWaypoints()
         endmethod
     endmodule
