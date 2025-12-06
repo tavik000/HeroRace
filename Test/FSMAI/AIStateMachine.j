@@ -227,8 +227,7 @@ library AIStateMachine requires optional KeyUtils
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
             call BJDebugMsg("Adding abilities for BloodMage")
-            // call data.addAbility('A00S', 22.0, CAST_POINT, "flamestrike", 70)   // Flame Strike
-            call data.addAbility('A00S', 8.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200)   // Flame Strike
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200)   // Flame Strike
             call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0)   // Banish
             call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0)       // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
@@ -591,8 +590,6 @@ library AIStateMachine requires optional KeyUtils
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
             set this.currentWaypointIndex = 1
-            //test 
-            set this.currentWaypointIndex = 7
 
             // Initialize combat data
             set this.combatData = InitializeHeroCombatData(u, diff)
