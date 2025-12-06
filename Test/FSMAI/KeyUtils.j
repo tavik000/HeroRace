@@ -84,4 +84,43 @@ library KeyUtils
         return false
     endfunction
 
+
+    function IsUnitInvulnerableOrMagicImmune takes unit u returns boolean
+        // Invulnerability
+        if UnitHasBuffBJ(u, 'Bvul') then
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'Bpsh') then
+            return true
+        endif
+        if GetUnitAbilityLevel(u, 'Avul') > 0 then
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'B021') then
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'BHds') then
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'BOvd') then
+            return true
+        endif
+        // Cyclone
+        if UnitHasBuffBJ(u, 'Bcyc') then
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'Bcy2') then
+            return true
+        endif
+        // Animated Dead
+        if UnitHasBuffBJ(u, 'BUan') then
+            return true
+        endif
+        // Magic Immunity
+        if IsUnitType(u, UNIT_TYPE_MAGIC_IMMUNE) then
+            return true
+        endif
+        return false
+    endfunction
+
 endlibrary
