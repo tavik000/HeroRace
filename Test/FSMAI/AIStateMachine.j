@@ -97,6 +97,10 @@ library AIStateMachine requires optional KeyUtils
                 set filterUnit = null
                 return false
             endif
+            if IsUnitInvulnerableOrMagicImmune(filterUnit) then
+                set filterUnit = null
+                return false
+            endif
         endif
         
         set filterUnit = null
@@ -294,12 +298,6 @@ library AIStateMachine requires optional KeyUtils
             
             call BJDebugMsg("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
             
-            // Check if we should enter combat state
-            if owner.shouldEnterCombat() then
-                call BJDebugMsg("Entering combat - abilities ready")
-                call owner.changeState(CombatState.create())
-                return
-            endif
             
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             set heroX = GetUnitX(owner.hero)
@@ -330,6 +328,13 @@ library AIStateMachine requires optional KeyUtils
                 call IssuePointOrder(owner.hero, "move", targetX, targetY)
             endif
             
+            // Check if we should enter combat state
+            if owner.shouldEnterCombat() then
+                call BJDebugMsg("Entering combat - abilities ready")
+                call owner.changeState(CombatState.create())
+                return
+            endif
+
             set currentWaypointArea = null
         endmethod
 
@@ -494,6 +499,10 @@ library AIStateMachine requires optional KeyUtils
             elseif heroAbil.castType == CAST_POINT_ENEMY_FRONT then
                 // Cast at a point in front of the hero
                 set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                if targetUnit == null then
+                    call BJDebugMsg("No target found for point ability: " + heroAbil.orderString)
+                    return false
+                endif
                 set heroFacing = GetUnitFacing(targetUnit) * bj_DEGTORAD
                 set offset = heroAbil.effectiveRadius
                 set targetX = GetUnitX(targetUnit) + offset * Cos(heroFacing)
@@ -613,14 +622,35 @@ library AIStateMachine requires optional KeyUtils
             local HeroAbility heroAbil
             local real currentTime = TimerGetElapsed(gameTimer)
             local real cooldownMultiplier = GetCooldownMultiplier(this.difficulty)
+            local real currentMana
+
+            if IsUnitStunOrSilence(this.hero) then
+                call BJDebugMsg("Cannot enter combat, hero is stunned or silenced.")
+                return false
+            endif
+
             
             // Check if any ability is ready for combat based on difficulty
             loop
                 exitwhen i >= this.combatData.abilityCount
                 set heroAbil = this.combatData.abilities[i]
                 
+                // Check cooldown
                 if currentTime >= heroAbil.lastCastTime + (heroAbil.baseCooldown * cooldownMultiplier) then
-                    return true
+                    // Check if ability is available
+                    if GetUnitAbilityLevel(this.hero, heroAbil.abilityId) <= 0 then
+                        call BJDebugMsg("Ability not available: " + heroAbil.orderString)
+                    else
+                        // Check if hero has enough mana
+                        set currentMana = GetUnitState(this.hero, UNIT_STATE_MANA)
+                        if currentMana < heroAbil.manaCost then
+                            call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
+                        else
+                            // All conditions met - ability is ready to cast
+                            call BJDebugMsg("Ability ready for combat: " + heroAbil.orderString)
+                            return true
+                        endif
+                    endif
                 endif
                 set i = i + 1
             endloop
