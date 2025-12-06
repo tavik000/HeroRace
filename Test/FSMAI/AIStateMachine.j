@@ -35,6 +35,9 @@ library AIStateMachine requires optional KeyUtils
         
         // Hero cast point mapping by unit type
         public hashtable heroCastPointMap
+        
+        // Temporary variable for filtering enemy heroes
+        private player tempHeroOwner
 
         // The array to hold the waypoint regions.
         private rect array WaypointAreas
@@ -60,6 +63,32 @@ library AIStateMachine requires optional KeyUtils
             call BJDebugMsg("Unknown hero type for GetHeroCastPoint: " + I2S(heroTypeId))
             return 0.5  // Default cast point for unknown hero types
         endif
+    endfunction
+
+    // Filter function for enemy heroes
+    function FilterEnemyHeroes takes nothing returns boolean
+        local unit filterUnit = GetFilterUnit()
+        
+        // Check if unit is alive
+        if not IsUnitAliveBJ(filterUnit) then
+            set filterUnit = null
+            return false
+        endif
+        
+        // Check if unit is enemy
+        if not IsUnitEnemy(filterUnit, tempHeroOwner) then
+            set filterUnit = null
+            return false
+        endif
+        
+        // Check if unit is hero
+        if not IsUnitType(filterUnit, UNIT_TYPE_HERO) then
+            set filterUnit = null
+            return false
+        endif
+        
+        set filterUnit = null
+        return true
     endfunction
 
     // This function will run once at map initialization to set up the waypoints.
@@ -439,7 +468,7 @@ library AIStateMachine requires optional KeyUtils
                 return true
             elseif heroAbil.castType == CAST_UNIT then
                 // Find nearest enemy unit to cast on
-                set target = this.findNearestEnemy()
+                set target = this.findRandomEnemyHero()
                 if target != null then
                     call IssueTargetOrder(owner.hero, heroAbil.orderString, target)
                     call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
@@ -456,6 +485,31 @@ library AIStateMachine requires optional KeyUtils
             // Simple implementation - find first enemy in range
             // TODO: Implement proper enemy detection based on your map's enemy system
             return null  // Placeholder - replace with actual enemy finding logic
+        endmethod
+
+        method findRandomEnemyHero takes nothing returns unit
+            return this.findRandomEnemyHeroInRange(30000)
+        endmethod
+
+        method findRandomEnemyHeroInRange takes real range returns unit
+            local group enemyHeroes = CreateGroup()
+            local unit randomHero
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local player heroOwner = GetOwningPlayer(owner.hero)
+            
+            // Set temp variable for filter function
+            set tempHeroOwner = heroOwner
+            call GroupEnumUnitsInRange(enemyHeroes, heroX, heroY, range, Filter(function FilterEnemyHeroes))
+            
+            // Get random hero from filtered group
+            set randomHero = GroupPickRandomUnit(enemyHeroes)
+            
+            // Clean up
+            call DestroyGroup(enemyHeroes)
+            set enemyHeroes = null
+            
+            return randomHero
         endmethod
 
         method onExit takes nothing returns nothing
