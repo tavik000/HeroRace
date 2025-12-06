@@ -1,5 +1,5 @@
 {
-	"cSpell.words": ["endfunction", "endglobals", "endlibrary", "endmethod", "endmodule", "endstruct", "hashtable", "thistype"],
+	"cSpell.words": ["Abil", "cooldown", "endfunction", "endglobals", "endlibrary", "endmethod", "endmodule", "endstruct", "hashtable", "thistype"],
 	"editor.defaultFormatter": "unouo.jassplus",
 	"[jass]": {
 		"editor.defaultFormatter": "unouo.jassplus"
