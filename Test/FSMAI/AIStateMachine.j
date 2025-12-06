@@ -126,8 +126,12 @@ library AIStateMachine requires optional KeyUtils
     // Ability cast types
     globals
         constant integer CAST_INSTANT = 0
-        constant integer CAST_POINT = 1
-        constant integer CAST_UNIT = 2
+        constant integer CAST_POINT_ENEMY_FRONT = 1
+        constant integer CAST_POINT_ENEMY_BEHIND = 2
+        constant integer CAST_POINT_SELF_BEHIND = 3
+        constant integer CAST_POINT_TREE = 4
+        constant integer CAST_POINT_BLINK = 5
+        constant integer CAST_UNIT = 6
 
         constant integer ALLOW_TARGET_TYPE_NONE = 0
         constant integer ALLOW_TARGET_TYPE_ENEMY_HERO = 1
@@ -148,8 +152,9 @@ library AIStateMachine requires optional KeyUtils
         integer manaCost    
         real castRange
         integer allowTargetType
+        real effectiveRadius
 
-        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType returns thistype
+        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType, real inEffectiveRadius returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
@@ -160,6 +165,7 @@ library AIStateMachine requires optional KeyUtils
             set this.manaCost = mana
             set this.castRange = inCastRange
             set this.allowTargetType = inAllowTargetType
+            set this.effectiveRadius = inEffectiveRadius
             return this
         endmethod
         
@@ -180,9 +186,9 @@ library AIStateMachine requires optional KeyUtils
             return this
         endmethod
         
-        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType returns nothing
+        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType)
+                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius)
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
@@ -222,12 +228,12 @@ library AIStateMachine requires optional KeyUtils
         if heroTypeId == 'H009' then  // BloodMage example
             call BJDebugMsg("Adding abilities for BloodMage")
             // call data.addAbility('A00S', 22.0, CAST_POINT, "flamestrike", 70)   // Flame Strike
-            call data.addAbility('A00S', 8.0, CAST_POINT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO)   // Banish
-            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO)       // Blood Lust
+            call data.addAbility('A00S', 8.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0)       // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
-            call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT)      // Thunder Clap
-            call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0, 0, ALLOW_TARGET_TYPE_NONE)          // Bash (passive)
+            call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
+            call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0, 0, ALLOW_TARGET_TYPE_NONE, 0)          // Bash (passive)
             // Add more hero types as needed...
         endif
         
@@ -455,10 +461,10 @@ library AIStateMachine requires optional KeyUtils
         method tryCastAbility takes HeroAbility heroAbil returns boolean
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
-            local unit target
+            local unit targetUnit
             local real currentMana
             local real heroFacing
-            local real behindDistance
+            local real offset
             local real targetX
             local real targetY
             
@@ -481,39 +487,42 @@ library AIStateMachine requires optional KeyUtils
                 call IssueImmediateOrder(owner.hero, heroAbil.orderString)
                 call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
                 return true
-            elseif heroAbil.castType == CAST_POINT then
-                // Cast at a point behind the hero
-                set heroFacing = GetUnitFacing(owner.hero) * bj_DEGTORAD
-                set behindDistance = 200.0  // Distance behind hero
-                set targetX = heroX - behindDistance * Cos(heroFacing)
-                set targetY = heroY - behindDistance * Sin(heroFacing) 
+            elseif heroAbil.castType == CAST_POINT_ENEMY_FRONT then
+                // Cast at a point in front of the hero
+                set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                set heroFacing = GetUnitFacing(targetUnit) * bj_DEGTORAD
+                set offset = heroAbil.effectiveRadius
+                set targetX = GetUnitX(targetUnit) + offset * Cos(heroFacing)
+                set targetY = GetUnitY(targetUnit) + offset * Sin(heroFacing) 
                 call IssuePointOrder(owner.hero, heroAbil.orderString, targetX, targetY)
-                call BJDebugMsg("Casting point ability behind hero: " + heroAbil.orderString)
+                call BJDebugMsg("Casting point target ability in front: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_UNIT then
                 
                 if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
-                    set target = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
                 elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
-                    set target = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                    set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
                 elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
                     // For simplicity, use enemy hero targeting for enemy units for now
-                    set target = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
                 elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
                     // For simplicity, use ally hero targeting for ally units for now
-                    set target = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                    set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
                 else
                     // For simplicity, only implement hero targeting for now
-                    set target = null
+                    set targetUnit = null
                 endif
                 
-                if target != null then
-                    call IssueTargetOrder(owner.hero, heroAbil.orderString, target)
+                if targetUnit != null then
+                    call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
                     call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
                     return true
                 else
                     call BJDebugMsg("No target found for unit ability: " + heroAbil.orderString)
                 endif
+            else
+                call BJDebugMsg("Unsupported cast type for ability: " + heroAbil.orderString)
             endif
             
             return false
