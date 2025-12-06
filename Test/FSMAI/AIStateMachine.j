@@ -35,8 +35,10 @@ library AIStateMachine requires optional KeyUtils
         // Hero cast point mapping by unit type
         public hashtable heroCastPointMap
         
-        // Temporary variable for filtering enemy heroes
+        // Temporary variables for filtering heroes
         private player tempHeroOwner
+        private boolean bTempFilterForAllies
+        private unit tempHeroUnit
 
         // The array to hold the waypoint regions.
         private rect array WaypointAreas
@@ -66,8 +68,8 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
-    // Filter function for enemy heroes
-    function FilterEnemyHeroes takes nothing returns boolean
+    // Generic filter function for heroes (enemies or allies)
+    function FilterHeroes takes nothing returns boolean
         local unit filterUnit = GetFilterUnit()
         
         // Check if unit is alive
@@ -76,16 +78,25 @@ library AIStateMachine requires optional KeyUtils
             return false
         endif
         
-        // Check if unit is enemy
-        if not IsUnitEnemy(filterUnit, tempHeroOwner) then
-            set filterUnit = null
-            return false
-        endif
-        
         // Check if unit is hero
         if not IsUnitType(filterUnit, UNIT_TYPE_HERO) then
             set filterUnit = null
             return false
+        endif
+        
+        // Check if we want allies or enemies
+        if bTempFilterForAllies then
+            // Filter for allies (same team, but not the same unit)
+            if IsUnitEnemy(filterUnit, tempHeroOwner) then
+                set filterUnit = null
+                return false
+            endif
+        else
+            // Filter for enemies
+            if not IsUnitEnemy(filterUnit, tempHeroOwner) then
+                set filterUnit = null
+                return false
+            endif
         endif
         
         set filterUnit = null
@@ -124,6 +135,7 @@ library AIStateMachine requires optional KeyUtils
         constant integer ALLOW_TARGET_TYPE_ALLY_HERO = 3
         constant integer ALLOW_TARGET_TYPE_ALLY_UNIT = 4
         constant integer ALLOW_TARGET_TYPE_ALL = 5
+        constant integer ALLOW_TARGET_TYPE_SELF = 6
     endglobals
 
     struct HeroAbility
@@ -137,16 +149,17 @@ library AIStateMachine requires optional KeyUtils
         real castRange
         integer allowTargetType
 
-        
-        static method create takes integer aid, real cd, integer _castType, string order, integer mana, real _castRange, integer _allowTargetType returns thistype
+        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
-            set this.castType = _castType
+            set this.castType = inCastType
             set this.lastCastTime = 0.0
             set this.comboIndex = 0
             set this.orderString = order
             set this.manaCost = mana
+            set this.castRange = inCastRange
+            set this.allowTargetType = inAllowTargetType
             return this
         endmethod
         
@@ -213,8 +226,8 @@ library AIStateMachine requires optional KeyUtils
             call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO)   // Banish
             call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO)       // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
-            call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75)      // Thunder Clap
-            call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0)          // Bash (passive)
+            call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT)      // Thunder Clap
+            call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0, 0, ALLOW_TARGET_TYPE_NONE)          // Bash (passive)
             // Add more hero types as needed...
         endif
         
@@ -481,10 +494,16 @@ library AIStateMachine requires optional KeyUtils
                 
                 if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
                     set target = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
+                    set target = this.findRandomAllyHeroInRange(heroAbil.castRange)
                 elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
+                    // For simplicity, use enemy hero targeting for enemy units for now
+                    set target = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
+                    // For simplicity, use ally hero targeting for ally units for now
                     set target = this.findRandomAllyHeroInRange(heroAbil.castRange)
                 else
-                    // For simplicity, only implement enemy hero targeting for now
+                    // For simplicity, only implement hero targeting for now
                     set target = null
                 endif
                 
@@ -506,29 +525,35 @@ library AIStateMachine requires optional KeyUtils
             return null  // Placeholder - replace with actual enemy finding logic
         endmethod
 
-        method findRandomEnemyHero takes nothing returns unit
-            return this.findRandomEnemyHeroInRange(30000)
-        endmethod
-
-        method findRandomEnemyHeroInRange takes real range returns unit
-            local group enemyHeroes = CreateGroup()
+        method findRandomHeroInRange takes real range, boolean isForAllies returns unit
+            local group heroes = CreateGroup()
             local unit randomHero
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
             local player heroOwner = GetOwningPlayer(owner.hero)
             
-            // Set temp variable for filter function
+            // Set temp variables for filter function
             set tempHeroOwner = heroOwner
-            call GroupEnumUnitsInRange(enemyHeroes, heroX, heroY, range, Filter(function FilterEnemyHeroes))
+            set bTempFilterForAllies = isForAllies
+            set tempHeroUnit = owner.hero
+            call GroupEnumUnitsInRange(heroes, heroX, heroY, range, Filter(function FilterHeroes))
             
             // Get random hero from filtered group
-            set randomHero = GroupPickRandomUnit(enemyHeroes)
+            set randomHero = GroupPickRandomUnit(heroes)
             
             // Clean up
-            call DestroyGroup(enemyHeroes)
-            set enemyHeroes = null
+            call DestroyGroup(heroes)
+            set heroes = null
             
             return randomHero
+        endmethod
+
+        method findRandomEnemyHeroInRange takes real range returns unit
+            return this.findRandomHeroInRange(range, false)
+        endmethod
+        
+        method findRandomAllyHeroInRange takes real range returns unit
+            return this.findRandomHeroInRange(range, true)
         endmethod
 
         method onExit takes nothing returns nothing
