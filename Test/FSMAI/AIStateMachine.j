@@ -20,6 +20,12 @@ library AIStateMachine requires optional KeyUtils
         constant real CAST_RANGE = 700.00
         constant real UPDATE_PERIOD = 0.30
         
+        // Combat settings
+        constant real EASY_CD_MULTIPLIER = 2.0
+        constant real NORMAL_CD_MULTIPLIER = 1.0
+        constant real HARD_CD_MULTIPLIER = 1.0
+        constant integer MAX_ABILITIES_PER_HERO = 7
+        
         // Timer to AIHero mapping
         public hashtable udg_TimerHeroMap
 
@@ -48,6 +54,101 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[12] = gg_rct_AIWayPointArea12
         set WaypointAreas[13] = gg_rct_Finish
         set WaypointCount = 14 // Update this to match the number of waypoints you added.
+    endfunction
+
+    // Ability cast types
+    globals
+        constant integer CAST_INSTANT = 0
+        constant integer CAST_POINT = 1
+        constant integer CAST_UNIT = 2
+    endglobals
+
+    struct HeroAbility
+        integer abilityId
+        real baseCooldown
+        integer castType
+        real lastCastTime
+        integer comboIndex  // For chaining abilities in sequence
+        
+        static method create takes integer aid, real cd, integer ctype returns thistype
+            local thistype this = thistype.allocate()
+            set this.abilityId = aid
+            set this.baseCooldown = cd
+            set this.castType = ctype
+            set this.lastCastTime = 0.0
+            set this.comboIndex = 0
+            return this
+        endmethod
+        
+        method destroy takes nothing returns nothing
+            call this.deallocate()
+        endmethod
+    endstruct
+
+    struct HeroCombatData
+        HeroAbility array abilities[MAX_ABILITIES_PER_HERO]
+        integer abilityCount
+        real nextCombatTime
+        
+        static method create takes nothing returns thistype
+            local thistype this = thistype.allocate()
+            set this.abilityCount = 0
+            set this.nextCombatTime = 0.0
+            return this
+        endmethod
+        
+        method addAbility takes integer abilityId, real cooldown, integer castType returns nothing
+            if this.abilityCount < MAX_ABILITIES_PER_HERO then
+                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType)
+                set this.abilityCount = this.abilityCount + 1
+            else
+                // Exceeded max abilities - handle error as needed
+                call BJDebugMsg("Error: Exceeded max abilities for hero combat data.")
+            endif
+        endmethod
+        
+        method destroy takes nothing returns nothing
+            local integer i = 0
+            loop
+                exitwhen i >= this.abilityCount
+                call this.abilities[i].destroy()
+                set i = i + 1
+            endloop
+            call this.deallocate()
+        endmethod
+    endstruct
+
+    // Helper function to get cooldown multiplier based on difficulty
+    function GetCooldownMultiplier takes integer difficulty returns real
+        if difficulty == DIFF_EASY then
+            return EASY_CD_MULTIPLIER
+        elseif difficulty == DIFF_NORMAL then
+            return NORMAL_CD_MULTIPLIER
+        else
+            return HARD_CD_MULTIPLIER
+        endif
+    endfunction
+
+    // Initialize hero-specific abilities (extend this function for different heroes)
+    function InitializeHeroCombatData takes unit hero, integer difficulty returns HeroCombatData
+        local HeroCombatData data = HeroCombatData.create()
+        local integer heroTypeId = GetUnitTypeId(hero)
+
+        call BJDebugMsg("Initializing combat data for hero type ID: " + I2S(heroTypeId))
+        
+        // Example: Add abilities based on hero type
+        if heroTypeId == 'H009' then  // Archmage example
+            call BJDebugMsg("Adding abilities for BloodMage")
+            // call data.addAbility('AHbz', 8.0, CAST_POINT)   // Blizzard
+            // call data.addAbility('AHwe', 12.0, CAST_UNIT)   // Water Elemental
+            // call data.addAbility('AHab', 5.0, CAST_INSTANT) // Brilliance Aura
+        elseif heroTypeId == 'Hmkg' then  // Mountain King example
+            call data.addAbility('AHtc', 6.0, CAST_UNIT)    // Thunder Clap
+            call data.addAbility('AHbh', 10.0, CAST_INSTANT)// Bash
+            // Add more hero types as needed...
+        endif
+        
+        return data
     endfunction
 
     struct AIState 
@@ -104,6 +205,13 @@ library AIStateMachine requires optional KeyUtils
             endif
             
             call BJDebugMsg("Updating Run State")
+            
+            // Check if we should enter combat state
+            if owner.shouldEnterCombat() then
+                call BJDebugMsg("Entering combat - abilities ready")
+                call owner.changeState(CombatState.create())
+                return
+            endif
             
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             set heroX = GetUnitX(owner.hero)
@@ -165,6 +273,128 @@ library AIStateMachine requires optional KeyUtils
         endmethod
     endstruct
 
+    struct CombatState extends AIState
+        static method create takes nothing returns thistype
+            local thistype this = thistype.allocate()
+            set this.stateID = STATE_COMBAT
+            return this
+        endmethod
+
+        method onEnter takes nothing returns nothing
+            call BJDebugMsg("Entering Combat State")
+            call IssueImmediateOrder(owner.hero, "stop")
+        endmethod
+
+        method onUpdate takes nothing returns nothing
+            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local integer difficulty = owner.difficulty
+            
+            // Safety check - ensure hero is alive
+            if not IsUnitAliveBJ(owner.hero) then
+                return
+            endif
+            
+            call BJDebugMsg("Updating Combat State")
+            
+            if difficulty == DIFF_EASY then
+                call this.executeEasyCombat()
+            elseif difficulty == DIFF_NORMAL then
+                call this.executeNormalCombat()
+            else // HARD
+                call this.executeHardCombat()
+            endif
+            
+            // Return to run state after combat
+            call owner.changeState(RunState.create())
+        endmethod
+
+        method executeEasyCombat takes nothing returns nothing
+            local integer i = 0
+            local HeroAbility heroAbil
+            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local real requiredCooldown
+            
+            // Cast first available ability with 2x cooldown spacing
+            loop
+                exitwhen i >= owner.combatData.abilityCount
+                set heroAbil = owner.combatData.abilities[i]
+                set requiredCooldown = heroAbil.baseCooldown * EASY_CD_MULTIPLIER
+                
+                if currentTime >= heroAbil.lastCastTime + requiredCooldown then
+                    if this.castAbility(heroAbil) then
+                        set heroAbil.lastCastTime = currentTime
+                        exitwhen true  // Cast one ability then exit
+                    endif
+                endif
+                set i = i + 1
+            endloop
+        endmethod
+
+        method executeNormalCombat takes nothing returns nothing
+            local integer i = 0
+            local HeroAbility heroAbil
+            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            
+            // Execute combo sequence - cast all available abilities
+            loop
+                exitwhen i >= owner.combatData.abilityCount
+                set heroAbil = owner.combatData.abilities[i]
+                
+                if currentTime >= heroAbil.lastCastTime + heroAbil.baseCooldown then
+                    if this.castAbility(heroAbil) then
+                        set heroAbil.lastCastTime = currentTime
+                    endif
+                endif
+                set i = i + 1
+            endloop
+        endmethod
+
+        method executeHardCombat takes nothing returns nothing
+            // Advanced combat with countering - implement specific logic as needed
+            call this.executeNormalCombat()  // For now, use normal combat
+            // TODO: Add counter-casting logic based on enemy states
+        endmethod
+
+        method castAbility takes HeroAbility heroAbil returns boolean
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local unit target
+            
+            // Check if ability is available and hero has mana
+            if GetUnitAbilityLevel(owner.hero, heroAbil.abilityId) <= 0 then
+                return false
+            endif
+            
+            if heroAbil.castType == CAST_INSTANT then
+                call IssueImmediateOrderById(owner.hero, heroAbil.abilityId)
+                return true
+            elseif heroAbil.castType == CAST_POINT then
+                // Cast at hero's current location or nearby
+                call IssuePointOrderById(owner.hero, heroAbil.abilityId, heroX + GetRandomReal(-200, 200), heroY + GetRandomReal(-200, 200))
+                return true
+            elseif heroAbil.castType == CAST_UNIT then
+                // Find nearest enemy unit to cast on
+                set target = this.findNearestEnemy()
+                if target != null then
+                    call IssueTargetOrderById(owner.hero, heroAbil.abilityId, target)
+                    return true
+                endif
+            endif
+            
+            return false
+        endmethod
+
+        method findNearestEnemy takes nothing returns unit
+            // Simple implementation - find first enemy in range
+            // TODO: Implement proper enemy detection based on your map's enemy system
+            return null  // Placeholder - replace with actual enemy finding logic
+        endmethod
+
+        method onExit takes nothing returns nothing
+            call BJDebugMsg("Exiting Combat State")
+        endmethod
+    endstruct
+
 
 
     struct AIHero
@@ -172,6 +402,7 @@ library AIStateMachine requires optional KeyUtils
         integer difficulty
         AIState currentState
         integer currentWaypointIndex
+        HeroCombatData combatData
         
         // Constructor
         static method create takes unit u, integer diff returns thistype
@@ -184,6 +415,8 @@ library AIStateMachine requires optional KeyUtils
             //test 
             set this.currentWaypointIndex = 7
 
+            // Initialize combat data
+            set this.combatData = InitializeHeroCombatData(u, diff)
 
             call this.changeState(RunState.create())
 
@@ -192,6 +425,26 @@ library AIStateMachine requires optional KeyUtils
             call SaveInteger(udg_TimerHeroMap, GetHandleId(t), 0, this)
             call TimerStart(t, UPDATE_PERIOD, true, function thistype.onUpdate)
             return this
+        endmethod
+
+        method shouldEnterCombat takes nothing returns boolean
+            local integer i = 0
+            local HeroAbility heroAbil
+            local real currentTime = TimerGetElapsed(GetExpiredTimer())
+            local real cooldownMultiplier = GetCooldownMultiplier(this.difficulty)
+            
+            // Check if any ability is ready for combat based on difficulty
+            loop
+                exitwhen i >= this.combatData.abilityCount
+                set heroAbil = this.combatData.abilities[i]
+                
+                if currentTime >= heroAbil.lastCastTime + (heroAbil.baseCooldown * cooldownMultiplier) then
+                    return true
+                endif
+                set i = i + 1
+            endloop
+            
+            return false
         endmethod
 
         method changeState takes AIState newState returns nothing
