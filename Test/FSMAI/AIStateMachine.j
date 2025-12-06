@@ -444,6 +444,7 @@ library AIStateMachine requires optional KeyUtils
                 if currentTime >= heroAbil.lastCastTime + heroAbil.baseCooldown then
                     if this.tryCastAbility(heroAbil) then
                         set heroAbil.lastCastTime = currentTime
+                        set owner.lastCastTime = currentTime
                     endif
                 endif
                 set i = i + 1
@@ -467,6 +468,11 @@ library AIStateMachine requires optional KeyUtils
             local real targetY
             
             call BJDebugMsg("Attempting to cast ability: " + heroAbil.orderString)
+
+            if IsUnitStunOrSilence(owner.hero) then
+                call BJDebugMsg("Cannot cast ability, hero is stunned or silenced.")
+                return false
+            endif
 
             // Check if ability is available
             if GetUnitAbilityLevel(owner.hero, heroAbil.abilityId) <= 0 then
@@ -607,7 +613,6 @@ library AIStateMachine requires optional KeyUtils
             local HeroAbility heroAbil
             local real currentTime = TimerGetElapsed(gameTimer)
             local real cooldownMultiplier = GetCooldownMultiplier(this.difficulty)
-            call BJDebugMsg("Checking if should enter combat, current time: " + R2S(currentTime))
             
             // Check if any ability is ready for combat based on difficulty
             loop
