@@ -635,8 +635,8 @@ library AIStateMachine requires optional KeyUtils
                 exitwhen i >= this.combatData.abilityCount
                 set heroAbil = this.combatData.abilities[i]
                 
-                // Check cooldown
-                if currentTime >= heroAbil.lastCastTime + (heroAbil.baseCooldown * cooldownMultiplier) then
+                // Check cooldown (skip for first-time cast)
+                if heroAbil.lastCastTime == 0.0 or currentTime >= heroAbil.lastCastTime + (heroAbil.baseCooldown * cooldownMultiplier) then
                     // Check if ability is available
                     if GetUnitAbilityLevel(this.hero, heroAbil.abilityId) <= 0 then
                         call BJDebugMsg("Ability not available: " + heroAbil.orderString)
@@ -647,7 +647,11 @@ library AIStateMachine requires optional KeyUtils
                             call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
                         else
                             // All conditions met - ability is ready to cast
-                            call BJDebugMsg("Ability ready for combat: " + heroAbil.orderString)
+                            if heroAbil.lastCastTime == 0.0 then
+                                call BJDebugMsg("First-time ability ready for combat: " + heroAbil.orderString)
+                            else
+                                call BJDebugMsg("Ability ready for combat: " + heroAbil.orderString)
+                            endif
                             return true
                         endif
                     endif
