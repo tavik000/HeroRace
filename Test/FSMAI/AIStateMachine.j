@@ -17,7 +17,6 @@ library AIStateMachine requires optional KeyUtils
         
         // Settings
         constant real HEAL_THRESHOLD = 0.40 // 40% HP
-        constant real CAST_RANGE = 700.00
         constant real UPDATE_PERIOD = 0.30
         
         // Combat settings
@@ -46,6 +45,8 @@ library AIStateMachine requires optional KeyUtils
 
         // Turn time for 90 degree turns, giving turn rate 0.6
         constant real TURN_TIME = 0.2 
+
+        constant real MAX_RANGE = 30000.0
     endglobals
 
     // Initialize hero cast points by unit type
@@ -116,6 +117,13 @@ library AIStateMachine requires optional KeyUtils
         constant integer CAST_INSTANT = 0
         constant integer CAST_POINT = 1
         constant integer CAST_UNIT = 2
+
+        constant integer ALLOW_TARGET_TYPE_NONE = 0
+        constant integer ALLOW_TARGET_TYPE_ENEMY_HERO = 1
+        constant integer ALLOW_TARGET_TYPE_ENEMY_UNIT = 2
+        constant integer ALLOW_TARGET_TYPE_ALLY_HERO = 3
+        constant integer ALLOW_TARGET_TYPE_ALLY_UNIT = 4
+        constant integer ALLOW_TARGET_TYPE_ALL = 5
     endglobals
 
     struct HeroAbility
@@ -124,14 +132,17 @@ library AIStateMachine requires optional KeyUtils
         integer castType
         real lastCastTime
         integer comboIndex  // For chaining abilities in sequence
-        string orderString  // Order string for casting (e.g., "flamestrike")
-        integer manaCost    // Mana cost for the ability
+        string orderString  
+        integer manaCost    
+        real castRange
+        integer allowTargetType
+
         
-        static method create takes integer aid, real cd, integer ctype, string order, integer mana returns thistype
+        static method create takes integer aid, real cd, integer _castType, string order, integer mana, real _castRange, integer _allowTargetType returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
-            set this.castType = ctype
+            set this.castType = _castType
             set this.lastCastTime = 0.0
             set this.comboIndex = 0
             set this.orderString = order
@@ -156,9 +167,9 @@ library AIStateMachine requires optional KeyUtils
             return this
         endmethod
         
-        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost returns nothing
+        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost)
+                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType)
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
@@ -198,9 +209,9 @@ library AIStateMachine requires optional KeyUtils
         if heroTypeId == 'H009' then  // BloodMage example
             call BJDebugMsg("Adding abilities for BloodMage")
             // call data.addAbility('A00S', 22.0, CAST_POINT, "flamestrike", 70)   // Flame Strike
-            call data.addAbility('A00S', 8.0, CAST_POINT, "flamestrike", 70)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40)   // Banish
-            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50)       // Blood Lust
+            call data.addAbility('A00S', 8.0, CAST_POINT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO)       // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
             call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75)      // Thunder Clap
             call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0)          // Bash (passive)
@@ -467,8 +478,16 @@ library AIStateMachine requires optional KeyUtils
                 call BJDebugMsg("Casting point ability behind hero: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_UNIT then
-                // Find nearest enemy unit to cast on
-                set target = this.findRandomEnemyHero()
+                
+                if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
+                    set target = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
+                    set target = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                else
+                    // For simplicity, only implement enemy hero targeting for now
+                    set target = null
+                endif
+                
                 if target != null then
                     call IssueTargetOrder(owner.hero, heroAbil.orderString, target)
                     call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
