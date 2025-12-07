@@ -14,16 +14,19 @@ library AIStateMachine requires optional KeyUtils
         constant integer DIFF_EASY = 0
         constant integer DIFF_NORMAL = 1
         constant integer DIFF_HARD = 2
+        constant integer DIFF_CRAZY = 3
+        constant integer DIFF_NIGHTMARE = 4
         
         // Settings
         constant real HEAL_THRESHOLD = 0.40 // 40% HP
         constant real UPDATE_PERIOD = 0.30
         
         // Combat settings
-        // constant real EASY_CD_MULTIPLIER = 2.0
-        constant real EASY_CD_MULTIPLIER = 1.0
+        constant real EASY_CD_MULTIPLIER = 2.0
         constant real NORMAL_CD_MULTIPLIER = 1.0
         constant real HARD_CD_MULTIPLIER = 1.0
+        constant real CRAZY_CD_MULTIPLIER = 1.0
+        constant real NIGHTMARE_CD_MULTIPLIER = 0.8 
         constant integer MAX_ABILITIES_PER_HERO = 7
         
         // Timer to AIHero mapping
@@ -35,7 +38,7 @@ library AIStateMachine requires optional KeyUtils
         // Global timer for tracking game time
         public timer gameTimer
         
-        // Hero cast point mapping by unit type
+        // Hero cast point (pre-swing) mapping by unit type
         public hashtable heroCastPointMap
         
         // Temporary variables for filtering heroes
@@ -53,6 +56,23 @@ library AIStateMachine requires optional KeyUtils
 
         constant real MAX_RANGE = 30000.0
     endglobals
+
+    // Helper function to get cooldown multiplier based on difficulty
+    function GetCooldownMultiplier takes integer difficulty returns real
+        if difficulty == DIFF_EASY then
+            return EASY_CD_MULTIPLIER
+        elseif difficulty == DIFF_NORMAL then
+            return NORMAL_CD_MULTIPLIER
+        elseif difficulty == DIFF_HARD then
+            return HARD_CD_MULTIPLIER
+        elseif difficulty == DIFF_CRAZY then
+            return CRAZY_CD_MULTIPLIER
+        elseif difficulty == DIFF_NIGHTMARE then
+            return NIGHTMARE_CD_MULTIPLIER
+        else
+            return 1.0
+        endif
+    endfunction
 
     // Initialize hero cast points by unit type
     private function InitializeHeroCastPoints takes nothing returns nothing
@@ -194,6 +214,30 @@ library AIStateMachine requires optional KeyUtils
             set this.effectiveRadius = inEffectiveRadius
             return this
         endmethod
+
+        method isCooldownReady takes integer difficulty returns boolean
+            local real currentTime = TimerGetElapsed(gameTimer)
+            local real requiredCooldown 
+            local real cooldownMultiplier = GetCooldownMultiplier(difficulty)
+            if this.lastCastTime == 0.0 then
+                return true
+            endif
+            set requiredCooldown = this.baseCooldown * cooldownMultiplier
+            if currentTime >= this.lastCastTime + requiredCooldown then
+                return true
+            endif
+            return false
+        endmethod
+
+
+        method isManaReady takes unit caster returns boolean
+            local real currentMana = GetUnitState(caster, UNIT_STATE_MANA)
+            if currentMana >= this.manaCost then
+                return true
+            endif
+            return false
+        endmethod
+
         
         method destroy takes nothing returns nothing
             call this.deallocate()
@@ -232,17 +276,6 @@ library AIStateMachine requires optional KeyUtils
             call this.deallocate()
         endmethod
     endstruct
-
-    // Helper function to get cooldown multiplier based on difficulty
-    function GetCooldownMultiplier takes integer difficulty returns real
-        if difficulty == DIFF_EASY then
-            return EASY_CD_MULTIPLIER
-        elseif difficulty == DIFF_NORMAL then
-            return NORMAL_CD_MULTIPLIER
-        else
-            return HARD_CD_MULTIPLIER
-        endif
-    endfunction
 
     // Initialize hero-specific abilities (extend this function for different heroes)
     function InitializeHeroCombatData takes unit hero, integer difficulty returns HeroCombatData
@@ -405,7 +438,7 @@ library AIStateMachine requires optional KeyUtils
         method onUpdate takes nothing returns nothing
             local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
-            local boolean isCasting = currentTime <= owner.lastCastTime + owner.castPt + TURN_TIME
+            local boolean isCasting = currentTime <= owner.lastCastTime + owner.castPt + TURN_TIME // turn time + cast point (pre-swing) buffer
 
             if isCasting then
                 call BJDebugMsg("Currently casting an ability, skipping update")
@@ -423,9 +456,9 @@ library AIStateMachine requires optional KeyUtils
                     return
                 endif
             elseif difficulty == DIFF_NORMAL then
-                call this.executeNormalCombat()
+                call this.tryExecuteNormalCombat()
             else // HARD
-                call this.executeHardCombat()
+                call this.tryExecuteHardCombat()
             endif
             
             // Return to run state after combat
@@ -436,16 +469,14 @@ library AIStateMachine requires optional KeyUtils
             local integer i = 0
             local HeroAbility heroAbil
             local real currentTime = TimerGetElapsed(gameTimer)
-            local real requiredCooldown
+            local integer difficulty = owner.difficulty
             
             // Cast first available ability with 2x cooldown spacing
             loop
                 exitwhen i >= owner.combatData.abilityCount
                 set heroAbil = owner.combatData.abilities[i]
-                set requiredCooldown = heroAbil.baseCooldown * EASY_CD_MULTIPLIER
                 
-                // Check cooldown (skip for first-time cast)
-                if heroAbil.lastCastTime == 0.0 or currentTime >= heroAbil.lastCastTime + requiredCooldown then
+                if heroAbil.isCooldownReady(difficulty) then
                     if this.tryCastAbility(heroAbil) then
                         set heroAbil.lastCastTime = currentTime
                         set owner.lastCastTime = currentTime
@@ -457,31 +488,13 @@ library AIStateMachine requires optional KeyUtils
             return false
         endmethod
 
-        method executeNormalCombat takes nothing returns nothing
-            local integer i = 0
-            local HeroAbility heroAbil
-            local real currentTime = TimerGetElapsed(gameTimer)
-            
-            // Execute combo sequence - cast all available abilities
-            loop
-                exitwhen i >= owner.combatData.abilityCount
-                set heroAbil = owner.combatData.abilities[i]
-
-                call BJDebugMsg("Checking ability: " + heroAbil.orderString + " Last Cast Time: " + R2S(heroAbil.lastCastTime) + " Current Time: " + R2S(currentTime) + " Cooldown: " + R2S(heroAbil.baseCooldown))
-                
-                if heroAbil.lastCastTime == 0.0 or currentTime >= heroAbil.lastCastTime + heroAbil.baseCooldown then
-                    if this.tryCastAbility(heroAbil) then
-                        set heroAbil.lastCastTime = currentTime
-                        set owner.lastCastTime = currentTime
-                    endif
-                endif
-                set i = i + 1
-            endloop
+        method tryExecuteNormalCombat takes nothing returns boolean
+            return this.tryExecuteEasyCombat()
         endmethod
 
-        method executeHardCombat takes nothing returns nothing
+        method tryExecuteHardCombat takes nothing returns boolean
             // Advanced combat with countering - implement specific logic as needed
-            call this.executeNormalCombat()  // For now, use normal combat
+            return this.tryExecuteNormalCombat()  // For now, use normal combat
             // TODO: Add counter-casting logic based on enemy states
         endmethod
 
@@ -509,9 +522,8 @@ library AIStateMachine requires optional KeyUtils
             endif
             
             // Check if hero has enough mana
-            set currentMana = GetUnitState(owner.hero, UNIT_STATE_MANA)
-            if currentMana < heroAbil.manaCost then
-                call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
+            if not heroAbil.isManaReady(owner.hero) then
+                call BJDebugMsg("Not enough mana for ability: " + heroAbil.orderString)
                 return false
             endif
             
@@ -618,17 +630,17 @@ library AIStateMachine requires optional KeyUtils
         timer updateTimer
         
         // Constructor
-        static method create takes unit u, integer diff returns thistype
+        static method create takes unit u, integer inDifficulty returns thistype
             local thistype this = thistype.allocate()
             set this.updateTimer = CreateTimer()
             set this.hero = u
-            set this.difficulty = diff
+            set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
             set this.currentWaypointIndex = 1
 
             // Initialize combat data
-            set this.combatData = InitializeHeroCombatData(u, diff)
+            set this.combatData = InitializeHeroCombatData(u, inDifficulty)
 
             call this.changeState(RunState.create())
 
@@ -645,8 +657,6 @@ library AIStateMachine requires optional KeyUtils
         method shouldEnterCombat takes nothing returns boolean
             local integer i = 0
             local HeroAbility heroAbil
-            local real currentTime = TimerGetElapsed(gameTimer)
-            local real cooldownMultiplier = GetCooldownMultiplier(this.difficulty)
             local real currentMana
 
             if IsUnitStunOrSilence(this.hero) then
@@ -661,22 +671,16 @@ library AIStateMachine requires optional KeyUtils
                 set heroAbil = this.combatData.abilities[i]
                 
                 // Check cooldown (skip for first-time cast)
-                if heroAbil.lastCastTime == 0.0 or currentTime >= heroAbil.lastCastTime + (heroAbil.baseCooldown * cooldownMultiplier) then
+                if heroAbil.isCooldownReady(this.difficulty) then
                     // Check if ability is available
                     if GetUnitAbilityLevel(this.hero, heroAbil.abilityId) <= 0 then
                         call BJDebugMsg("Ability not available: " + heroAbil.orderString)
                     else
                         // Check if hero has enough mana
                         set currentMana = GetUnitState(this.hero, UNIT_STATE_MANA)
-                        if currentMana < heroAbil.manaCost then
+                        if not heroAbil.isManaReady(this.hero) then
                             call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
                         else
-                            // All conditions met - ability is ready to cast
-                            if heroAbil.lastCastTime == 0.0 then
-                                call BJDebugMsg("First-time ability ready for combat: " + heroAbil.orderString)
-                            else
-                                call BJDebugMsg("Ability ready for combat: " + heroAbil.orderString)
-                            endif
                             return true
                         endif
                     endif
