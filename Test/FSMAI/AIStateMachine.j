@@ -207,13 +207,13 @@ library AIStateMachine requires optional KeyUtils
         integer allowTargetType
         real effectiveRadius
 
-        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType, real inEffectiveRadius returns thistype
+        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType, real inEffectiveRadius, integer inComboIndex returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
             set this.castType = inCastType
             set this.lastCastTime = 0.0
-            set this.comboIndex = 0
+            set this.comboIndex = inComboIndex
             set this.orderString = order
             set this.manaCost = mana
             set this.castRange = inCastRange
@@ -254,18 +254,16 @@ library AIStateMachine requires optional KeyUtils
     struct HeroCombatData
         HeroAbility array abilities[MAX_ABILITIES_PER_HERO]
         integer abilityCount
-        real nextCombatTime
         
         static method create takes nothing returns thistype
             local thistype this = thistype.allocate()
             set this.abilityCount = 0
-            set this.nextCombatTime = 0.0
             return this
         endmethod
         
-        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius returns nothing
+        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius, integer comboIndex returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius)
+                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex)
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
@@ -282,6 +280,57 @@ library AIStateMachine requires optional KeyUtils
             endloop
             call this.deallocate()
         endmethod
+
+        method getAbilityByComboIndex takes integer comboIndex returns HeroAbility
+            local integer i = 0
+            loop
+                exitwhen i >= this.abilityCount
+                if this.abilities[i].comboIndex == comboIndex then
+                    return this.abilities[i]
+                endif
+                set i = i + 1
+            endloop
+            return 0
+        endmethod
+
+        method hasReadyAbility takes unit hero, integer difficulty returns boolean
+            local HeroAbility heroAbil = this.getReadyAbility(hero, difficulty)
+            if heroAbil != 0 then
+                return true
+            endif
+            return false
+        endmethod
+
+        method getReadyAbility takes unit hero, integer difficulty returns HeroAbility
+            local integer i = 0
+            local HeroAbility heroAbil
+            local real currentMana
+            // Check if any ability is ready for combat based on difficulty
+            loop
+                exitwhen i >= this.abilityCount
+                set heroAbil = this.abilities[i]
+                
+                // Check cooldown (skip for first-time cast)
+                if heroAbil.isCooldownReady(difficulty) then
+                    // Check if ability is available
+                    if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
+                        call BJDebugMsg("Ability not available: " + heroAbil.orderString)
+                    else
+                        // Check if hero has enough mana
+                        set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
+                        if not heroAbil.isManaReady(hero) then
+                            call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
+                        else
+                            return heroAbil
+                        endif
+                    endif
+                endif
+                set i = i + 1
+            endloop
+
+            return 0
+        endmethod
+
     endstruct
 
     // Initialize hero-specific abilities (extend this function for different heroes)
@@ -293,12 +342,11 @@ library AIStateMachine requires optional KeyUtils
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
             call BJDebugMsg("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0)   // Banish
-            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0)       // Blood Lust
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0) // Blood Lust
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
-            call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
-            call data.addAbility('AHbh', 10.0, CAST_INSTANT, "bash", 0, 0, ALLOW_TARGET_TYPE_NONE, 0)          // Bash (passive)
+            // call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
             // Add more hero types as needed...
         endif
         
@@ -492,20 +540,15 @@ library AIStateMachine requires optional KeyUtils
             local integer difficulty = owner.difficulty
             
             // Cast first available ability with 2x cooldown spacing
-            loop
-                exitwhen i >= owner.combatData.abilityCount
-                set heroAbil = owner.combatData.abilities[i]
-                
-                if heroAbil.isCooldownReady(difficulty) then
-                    if this.tryCastAbility(heroAbil) then
-                        set owner.isCasting = true
-                        set owner.castingAbility = heroAbil
-                        set owner.lastStartCastTime = currentTime
-                        return true
-                    endif
+            set heroAbil = owner.combatData.getReadyAbility(owner.hero, difficulty)
+            if heroAbil != null then
+                if this.tryCastAbility(heroAbil) then
+                    set owner.isCasting = true
+                    set owner.castingAbility = heroAbil
+                    set owner.lastStartCastTime = currentTime
+                    return true
                 endif
-                set i = i + 1
-            endloop
+            endif
             return false
         endmethod
 
@@ -685,36 +728,17 @@ library AIStateMachine requires optional KeyUtils
             local integer i = 0
             local HeroAbility heroAbil
             local real currentMana
+            local boolean hasReadyAbility = false
 
             if IsUnitStunOrSilence(this.hero) then
                 call BJDebugMsg("Cannot enter combat, hero is stunned or silenced.")
                 return false
             endif
 
-            
-            // Check if any ability is ready for combat based on difficulty
-            loop
-                exitwhen i >= this.combatData.abilityCount
-                set heroAbil = this.combatData.abilities[i]
-                
-                // Check cooldown (skip for first-time cast)
-                if heroAbil.isCooldownReady(this.difficulty) then
-                    // Check if ability is available
-                    if GetUnitAbilityLevel(this.hero, heroAbil.abilityId) <= 0 then
-                        call BJDebugMsg("Ability not available: " + heroAbil.orderString)
-                    else
-                        // Check if hero has enough mana
-                        set currentMana = GetUnitState(this.hero, UNIT_STATE_MANA)
-                        if not heroAbil.isManaReady(this.hero) then
-                            call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
-                        else
-                            return true
-                        endif
-                    endif
-                endif
-                set i = i + 1
-            endloop
-            
+            set hasReadyAbility = this.combatData.hasReadyAbility(this.hero, this.difficulty)
+            if hasReadyAbility then
+                return true
+            endif
             return false
         endmethod
 
