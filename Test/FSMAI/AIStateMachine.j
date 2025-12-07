@@ -149,6 +149,13 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
+    function OnAIHeroCastComplete takes unit u returns nothing
+        local AIHero aiHero = GetAIHeroFromUnit(u)
+        if aiHero != null then
+            call aiHero.onCastComplete()
+        endif
+    endfunction
+
     // This function will run once at map initialization to set up the waypoints.
     private function InitializeWaypoints takes nothing returns nothing
         // IMPORTANT: Create regions in the World Editor and replace these
@@ -438,9 +445,16 @@ library AIStateMachine requires optional KeyUtils
         method onUpdate takes nothing returns nothing
             local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
-            local boolean isCasting = currentTime <= owner.lastCastTime + owner.castPt + TURN_TIME // turn time + cast point (pre-swing) buffer
+            local boolean isCastOvertime = currentTime > owner.lastStartCastTime + owner.castPt + TURN_TIME // Turn Time and Pre-swing 
+            local boolean isCastFailed = owner.isCasting and isCastOvertime
 
-            if isCasting then
+            if isCastFailed then
+                call BJDebugMsg("Casting failed or interrupted, resetting casting state")
+                set owner.isCasting = false
+                set owner.castingAbility = 0
+            endif
+
+            if owner.isCasting then
                 call BJDebugMsg("Currently casting an ability, skipping update")
                 return
             endif
@@ -456,9 +470,15 @@ library AIStateMachine requires optional KeyUtils
                     return
                 endif
             elseif difficulty == DIFF_NORMAL then
-                call this.tryExecuteNormalCombat()
+                if this.tryExecuteNormalCombat() then
+                    // Successfully cast an ability
+                    return
+                endif
             else // HARD
-                call this.tryExecuteHardCombat()
+                if this.tryExecuteHardCombat() then
+                    // Successfully cast an ability
+                    return
+                endif
             endif
             
             // Return to run state after combat
@@ -478,8 +498,9 @@ library AIStateMachine requires optional KeyUtils
                 
                 if heroAbil.isCooldownReady(difficulty) then
                     if this.tryCastAbility(heroAbil) then
-                        set heroAbil.lastCastTime = currentTime
-                        set owner.lastCastTime = currentTime
+                        set owner.isCasting = true
+                        set owner.castingAbility = heroAbil
+                        set owner.lastStartCastTime = currentTime
                         return true
                     endif
                 endif
@@ -626,7 +647,9 @@ library AIStateMachine requires optional KeyUtils
         AIState currentState
         integer currentWaypointIndex
         HeroCombatData combatData
-        real lastCastTime
+        real lastStartCastTime
+        boolean isCasting
+        HeroAbility castingAbility
         timer updateTimer
         
         // Constructor
@@ -638,6 +661,9 @@ library AIStateMachine requires optional KeyUtils
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
             set this.currentWaypointIndex = 1
+            set this.lastStartCastTime = 0.0
+            set this.isCasting = false
+
 
             // Initialize combat data
             set this.combatData = InitializeHeroCombatData(u, inDifficulty)
@@ -651,6 +677,7 @@ library AIStateMachine requires optional KeyUtils
             
             // Store unit to AIHero mapping
             call SaveInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0, this)
+
             return this
         endmethod
 
@@ -746,6 +773,14 @@ library AIStateMachine requires optional KeyUtils
                     call this.currentState.onUpdate()
                 endif
             endif
+        endmethod
+
+        method onCastComplete takes nothing returns nothing
+            local real currentTime = TimerGetElapsed(gameTimer)
+            set this.isCasting = false
+            set this.castingAbility.lastCastTime = currentTime
+            set this.castingAbility = 0
+            call BJDebugMsg("Casting complete, castingAbility: " + this.castingAbility.orderString)
         endmethod
     endstruct
 
