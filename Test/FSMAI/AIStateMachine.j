@@ -305,11 +305,34 @@ library AIStateMachine requires optional KeyUtils
             local integer i = 0
             local HeroAbility heroAbil
             local real currentMana
+            local boolean bCheckCombo = false
+
+            if difficulty == DIFF_HARD or difficulty == DIFF_CRAZY or difficulty == DIFF_NIGHTMARE then
+                // Check for combo abilities first
+                set bCheckCombo = true
+            endif
+            if bCheckCombo then
+                // Check for combo abilities starting from index 1
+                set heroAbil = this.getAbilityByComboIndex(1)
+                if heroAbil != 0 then
+                    set heroAbil = this.getReadyComboAbility(hero, difficulty)
+                    if heroAbil != 0 then
+                        return heroAbil
+                    endif
+                endif
+            endif
+
             // Check if any ability is ready for combat based on difficulty
             loop
                 exitwhen i >= this.abilityCount
                 set heroAbil = this.abilities[i]
                 
+                if bCheckCombo and heroAbil.comboIndex > 0 then
+                    // Skip combo abilities if not checking for combos
+                    set i = i + 1
+                    continue
+                endif
+
                 // Check cooldown (skip for first-time cast)
                 if heroAbil.isCooldownReady(difficulty) then
                     // Check if ability is available
@@ -329,6 +352,54 @@ library AIStateMachine requires optional KeyUtils
             endloop
 
             return 0
+        endmethod
+
+        method getReadyComboAbility takes unit hero, integer difficulty returns HeroAbility
+            local integer i = 1
+            local HeroAbility heroAbil
+            local real requiredTotalMana = 0.0
+            local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
+            local HeroAbility resultComboAbility = 0
+            local AIHero aiHero = GetAIHeroFromUnit(hero)
+            if aiHero == 0 then
+                call BJDebugMsg("Error: AIHero not found for unit in getReadyComboAbility.")
+                return 0
+            endif
+
+
+            // Check if a sequence of combo abilities are ready
+            loop
+                set heroAbil = this.getAbilityByComboIndex(i)
+                // Reach end of combo sequence
+                exitwhen heroAbil == 0
+                
+                // Check cooldown
+                if not heroAbil.isCooldownReady(difficulty) then
+                    call BJDebugMsg("Ability cooldown not ready for combo: " + heroAbil.orderString)
+                    return 0
+                endif
+                
+                // Check if ability is available
+                if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
+                    call BJDebugMsg("Ability not available for combo: " + heroAbil.orderString)
+                    return 0
+                endif
+                
+                set requiredTotalMana = requiredTotalMana + heroAbil.manaCost
+                
+                if i == aiHero.currentComboIndex then
+                    set resultComboAbility = heroAbil
+                endif
+                set i = i + 1
+            endloop
+
+            if currentMana < requiredTotalMana then
+                call BJDebugMsg("Not enough mana for combo abilities. Need: " + R2S(requiredTotalMana) + ", Have: " + R2S(currentMana))
+                return 0
+            endif
+
+            call BJDebugMsg("Combo abilities ready, returning ability: " + resultComboAbility.orderString)
+            return resultComboAbility
         endmethod
 
     endstruct
@@ -359,7 +430,6 @@ library AIStateMachine requires optional KeyUtils
         stub method onEnter takes nothing returns nothing
             // Placeholder for state entry logic
         endmethod
-
         stub method onUpdate takes nothing returns nothing
             // Placeholder for timer callbackj
         endmethod
@@ -694,6 +764,7 @@ library AIStateMachine requires optional KeyUtils
         boolean isCasting
         HeroAbility castingAbility
         timer updateTimer
+        integer currentComboIndex
         
         // Constructor
         static method create takes unit u, integer inDifficulty returns thistype
@@ -706,6 +777,8 @@ library AIStateMachine requires optional KeyUtils
             set this.currentWaypointIndex = 1
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
+            set this.castingAbility = 0
+            set this.currentComboIndex = 0
 
 
             // Initialize combat data
