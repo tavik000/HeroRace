@@ -74,7 +74,15 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
-    // Initialize hero cast points by unit type
+    function IsApplyingCombo takes integer difficulty returns boolean
+        if difficulty == DIFF_HARD or difficulty == DIFF_CRAZY or difficulty == DIFF_NIGHTMARE then
+            return true
+        else
+            return false
+        endif
+    endfunction
+
+    // Initialize hero cast points (Pre-swing) by unit type
     private function InitializeHeroCastPoints takes nothing returns nothing
         // Configure cast points for different hero types
         call SaveReal(heroCastPointMap, 'H009', 0, 0.2)  // BloodMage
@@ -116,12 +124,14 @@ library AIStateMachine requires optional KeyUtils
         if bTempFilterForAllies then
             // Filter for allies (same team, but not the same unit)
             if IsUnitEnemy(filterUnit, tempHeroOwner) then
+                call BJDebugMsg("Filtering out unit that is an enemy: " + GetUnitName(filterUnit))
                 set filterUnit = null
                 return false
             endif
         else
             // Filter for enemies
             if not IsUnitEnemy(filterUnit, tempHeroOwner) then
+                call BJDebugMsg("Filtering out unit that is not an enemy: " + GetUnitName(filterUnit))
                 set filterUnit = null
                 return false
             endif
@@ -305,17 +315,14 @@ library AIStateMachine requires optional KeyUtils
             local integer i = 0
             local HeroAbility heroAbil
             local real currentMana
-            local boolean bCheckCombo = false
+            local boolean bCheckCombo = IsApplyingCombo(difficulty)
+            local AIHero aiHero = GetAIHeroFromUnit(hero)
 
-            if difficulty == DIFF_HARD or difficulty == DIFF_CRAZY or difficulty == DIFF_NIGHTMARE then
-                // Check for combo abilities first
-                set bCheckCombo = true
-            endif
             if bCheckCombo then
                 // Check for combo abilities starting from index 1
                 set heroAbil = this.getAbilityByComboIndex(1)
                 if heroAbil != 0 then
-                    set heroAbil = this.getReadyComboAbility(hero, difficulty)
+                    set heroAbil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
                     if heroAbil != 0 then
                         return heroAbil
                     endif
@@ -329,22 +336,20 @@ library AIStateMachine requires optional KeyUtils
                 
                 if bCheckCombo and heroAbil.comboIndex > 0 then
                     // Skip combo abilities if not checking for combos
-                    set i = i + 1
-                    continue
-                endif
-
-                // Check cooldown (skip for first-time cast)
-                if heroAbil.isCooldownReady(difficulty) then
-                    // Check if ability is available
-                    if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                        call BJDebugMsg("Ability not available: " + heroAbil.orderString)
-                    else
-                        // Check if hero has enough mana
-                        set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
-                        if not heroAbil.isManaReady(hero) then
-                            call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
+                else
+                    // Check cooldown (skip for first-time cast)
+                    if heroAbil.isCooldownReady(difficulty) then
+                        // Check if ability is available
+                        if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
+                            call BJDebugMsg("Ability not available: " + heroAbil.orderString)
                         else
-                            return heroAbil
+                            // Check if hero has enough mana
+                            set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
+                            if not heroAbil.isManaReady(hero) then
+                                call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
+                            else
+                                return heroAbil
+                            endif
                         endif
                     endif
                 endif
@@ -354,8 +359,8 @@ library AIStateMachine requires optional KeyUtils
             return 0
         endmethod
 
-        method getReadyComboAbility takes unit hero, integer difficulty returns HeroAbility
-            local integer i = 1
+        method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns HeroAbility
+            local integer i = startingComboIndex
             local HeroAbility heroAbil
             local real requiredTotalMana = 0.0
             local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
@@ -389,6 +394,7 @@ library AIStateMachine requires optional KeyUtils
                 
                 if i == aiHero.currentComboIndex then
                     set resultComboAbility = heroAbil
+                    call BJDebugMsg("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
                 endif
                 set i = i + 1
             endloop
@@ -666,11 +672,20 @@ library AIStateMachine requires optional KeyUtils
                 call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_POINT_ENEMY_FRONT then
-                // Cast at a point in front of the hero
-                set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null then
+                    set targetUnit = owner.comboTargetUnit
+                else
+                    // Cast at a point in front of the hero
+                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                endif
                 if targetUnit == null then
                     call BJDebugMsg("No target found for point ability: " + heroAbil.orderString)
                     return false
+                endif
+                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != targetUnit then
+                    if heroAbil.comboIndex > 0 then
+                        set owner.comboTargetUnit = targetUnit
+                    endif
                 endif
                 set heroFacing = GetUnitFacing(targetUnit) * bj_DEGTORAD
                 set offset = heroAbil.effectiveRadius
@@ -681,22 +696,35 @@ library AIStateMachine requires optional KeyUtils
                 return true
             elseif heroAbil.castType == CAST_UNIT then
                 
-                if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
-                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
-                    set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
-                elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
-                    // For simplicity, use enemy hero targeting for enemy units for now
-                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
-                    // For simplicity, use ally hero targeting for ally units for now
-                    set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                // Check if we should use existing combo target
+                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null then
+                    set targetUnit = owner.comboTargetUnit
+                    call BJDebugMsg("Using existing combo target for unit, targetUnit: " + GetUnitName(targetUnit))
                 else
-                    // For simplicity, only implement hero targeting for now
-                    set targetUnit = null
+                    // Use default target finding logic
+                    if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
+                        set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                        call BJDebugMsg("Finding random enemy hero for unit ability, targetUnit: " + GetUnitName(targetUnit))
+                    elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
+                        set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                    elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
+                        // For simplicity, use enemy hero targeting for enemy units for now
+                        set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
+                        // For simplicity, use ally hero targeting for ally units for now
+                        set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                    else
+                        // For simplicity, only implement hero targeting for now
+                        set targetUnit = null
+                    endif
                 endif
                 
                 if targetUnit != null then
+                    if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != targetUnit then
+                        if heroAbil.comboIndex > 0 then
+                            set owner.comboTargetUnit = targetUnit
+                        endif
+                    endif
                     call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
                     call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
                     return true
@@ -765,6 +793,7 @@ library AIStateMachine requires optional KeyUtils
         HeroAbility castingAbility
         timer updateTimer
         integer currentComboIndex
+        unit comboTargetUnit
         
         // Constructor
         static method create takes unit u, integer inDifficulty returns thistype
@@ -778,7 +807,8 @@ library AIStateMachine requires optional KeyUtils
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
-            set this.currentComboIndex = 0
+            set this.currentComboIndex = 1 // only for difficulty HARD and above
+            set this.comboTargetUnit = null
 
 
             // Initialize combat data
@@ -874,10 +904,23 @@ library AIStateMachine requires optional KeyUtils
 
         method onCastComplete takes nothing returns nothing
             local real currentTime = TimerGetElapsed(gameTimer)
+            local integer difficulty = this.difficulty
             set this.isCasting = false
             set this.castingAbility.lastCastTime = currentTime
-            set this.castingAbility = 0
+            // Advance combo index if casting combo ability
+            if IsApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
+                set this.currentComboIndex = this.currentComboIndex + 1
+                call BJDebugMsg("Ability cast complete: " + this.castingAbility.orderString + ", advancing combo index to: " + I2S(this.currentComboIndex))
+                // If no further combo ability, reset combo index
+                if this.combatData.getAbilityByComboIndex(this.currentComboIndex) == 0 then
+                    set this.currentComboIndex = 1
+                    set this.comboTargetUnit = null
+                    call BJDebugMsg("Combo sequence complete, resetting combo index to 1")
+                endif
+            endif
+
             call BJDebugMsg("Casting complete, castingAbility: " + this.castingAbility.orderString)
+            set this.castingAbility = 0
         endmethod
     endstruct
 
