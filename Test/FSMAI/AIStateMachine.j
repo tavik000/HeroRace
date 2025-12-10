@@ -704,18 +704,8 @@ library AIStateMachine requires optional KeyUtils
             // TODO: Add counter-casting logic based on enemy states
         endmethod
 
-        method tryCastAbility takes HeroAbility heroAbil returns boolean
-            local real heroX = GetUnitX(owner.hero)
-            local real heroY = GetUnitY(owner.hero)
-            local unit targetUnit
-            local real currentMana
-            local real heroFacing
-            local real offset
-            local real targetX
-            local real targetY
-            
-            call BJDebugMsg("Attempting to cast ability: " + heroAbil.orderString)
-
+        method canCastAbility takes HeroAbility heroAbil returns boolean
+            // Check if hero is stunned or silenced
             if IsUnitStunOrSilence(owner.hero) then
                 call BJDebugMsg("Cannot cast ability, hero is stunned or silenced.")
                 return false
@@ -733,85 +723,132 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
             
-            if heroAbil.castType == CAST_INSTANT then
-                call IssueImmediateOrder(owner.hero, heroAbil.orderString)
-                call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
-                return true
-            elseif heroAbil.castType == CAST_POINT_ENEMY_FRONT then
-                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
-                    set targetUnit = owner.comboTargetUnit
-                else
-                    // Cast at a point in front of the hero
-                    if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
-                        set targetUnit = this.findBestComboTarget(heroAbil.castRange)
-                    else
-                        set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                    endif
-                endif
-                if targetUnit == null then
-                    call BJDebugMsg("No target found for point ability: " + heroAbil.orderString)
-                    return false
-                endif
-                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != targetUnit then
-                    if heroAbil.comboIndex > 0 then
-                        set owner.comboTargetUnit = targetUnit
-                    endif
-                endif
-                set heroFacing = GetUnitFacing(targetUnit) * bj_DEGTORAD
-                set offset = heroAbil.effectiveRadius
-                set targetX = GetUnitX(targetUnit) + offset * Cos(heroFacing)
-                set targetY = GetUnitY(targetUnit) + offset * Sin(heroFacing) 
-                call IssuePointOrder(owner.hero, heroAbil.orderString, targetX, targetY)
-                call BJDebugMsg("Casting point target ability in front: " + heroAbil.orderString)
-                return true
-            elseif heroAbil.castType == CAST_UNIT then
-                
-                // Check if we should use existing combo target
-                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
-                    set targetUnit = owner.comboTargetUnit
-                    call BJDebugMsg("Using existing combo target for unit, targetUnit: " + GetUnitName(targetUnit))
-                else
-                    // Use default target finding logic
-                    if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
-                        // Use smart combo targeting for combo abilities, random for others
-                        if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
-                            set targetUnit = this.findBestComboTarget(heroAbil.castRange)
-                            call BJDebugMsg("Finding best combo target for unit ability, targetUnit: " + GetUnitName(targetUnit))
-                        else
-                            set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                            call BJDebugMsg("Finding random enemy hero for unit ability, targetUnit: " + GetUnitName(targetUnit))
-                        endif
-                    elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
-                        set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
-                    elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
-                        // For simplicity, use enemy hero targeting for enemy units for now
-                        set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                    elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
-                        // For simplicity, use ally hero targeting for ally units for now
-                        set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
-                    else
-                        // For simplicity, only implement hero targeting for now
-                        set targetUnit = null
-                    endif
-                endif
-                
-                if targetUnit != null then
-                    if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != targetUnit then
-                        if heroAbil.comboIndex > 0 then
-                            set owner.comboTargetUnit = targetUnit
-                        endif
-                    endif
-                    call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
-                    call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
-                    return true
-                else
-                    call BJDebugMsg("No target found for unit ability: " + heroAbil.orderString)
-                endif
-            else
-                call BJDebugMsg("Unsupported cast type for ability: " + heroAbil.orderString)
+            return true
+        endmethod
+
+        method shouldUpdateComboTarget takes HeroAbility heroAbil, unit targetUnit returns boolean
+            if not IsApplyingCombo(owner.difficulty) then
+                return false
             endif
             
-            return false
+            if heroAbil.comboIndex <= 0 then
+                return false
+            endif
+            
+            if owner.comboTargetUnit == targetUnit then
+                return false
+            endif
+            
+            return true
+        endmethod
+
+        method findTargetForAbility takes HeroAbility heroAbil returns unit
+            local unit targetUnit = null
+            
+            // Check if we should use existing combo target
+            if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
+                set targetUnit = owner.comboTargetUnit
+                call BJDebugMsg("Using existing combo target: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            
+            // Find new target based on ability type
+            if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
+                // Use smart combo targeting for combo abilities, random for others
+                if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
+                    set targetUnit = this.findBestComboTarget(heroAbil.castRange)
+                    call BJDebugMsg("Finding best combo target, result: " + GetUnitName(targetUnit))
+                else
+                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    call BJDebugMsg("Finding random enemy hero, result: " + GetUnitName(targetUnit))
+                endif
+            elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
+                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                call BJDebugMsg("Finding ally hero target, result: " + GetUnitName(targetUnit))
+            elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
+                // For simplicity, use enemy hero targeting for enemy units for now
+                set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                call BJDebugMsg("Finding enemy unit target, result: " + GetUnitName(targetUnit))
+            elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
+                // For simplicity, use ally hero targeting for ally units for now
+                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                call BJDebugMsg("Finding ally unit target, result: " + GetUnitName(targetUnit))
+            else
+                call BJDebugMsg("Unsupported target type for ability: " + heroAbil.orderString)
+                set targetUnit = null
+            endif
+            
+            return targetUnit
+        endmethod
+
+        method castInstantAbility takes HeroAbility heroAbil returns boolean
+            call IssueImmediateOrder(owner.hero, heroAbil.orderString)
+            call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
+            return true
+        endmethod
+
+        method castPointAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
+            local real heroFacing
+            local real offset
+            local real targetX
+            local real targetY
+            
+            if targetUnit == null then
+                call BJDebugMsg("No target found for point ability: " + heroAbil.orderString)
+                return false
+            endif
+            
+            set heroFacing = GetUnitFacing(targetUnit) * bj_DEGTORAD
+            set offset = heroAbil.effectiveRadius
+            set targetX = GetUnitX(targetUnit) + offset * Cos(heroFacing)
+            set targetY = GetUnitY(targetUnit) + offset * Sin(heroFacing) 
+            call IssuePointOrder(owner.hero, heroAbil.orderString, targetX, targetY)
+            call BJDebugMsg("Casting point target ability in front: " + heroAbil.orderString)
+            return true
+        endmethod
+
+        method castUnitAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
+            if targetUnit != null then
+                call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
+                call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
+                return true
+            else
+                call BJDebugMsg("No target found for unit ability: " + heroAbil.orderString)
+                return false
+            endif
+        endmethod
+
+        method tryCastAbility takes HeroAbility heroAbil returns boolean
+            local unit targetUnit
+            
+            call BJDebugMsg("Attempting to cast ability: " + heroAbil.orderString)
+            
+            if not this.canCastAbility(heroAbil) then
+                return false
+            endif
+            
+            // Handle instant abilities (no target needed)
+            if heroAbil.castType == CAST_INSTANT then
+                return this.castInstantAbility(heroAbil)
+            endif
+            
+            // Find target for targeted abilities
+            set targetUnit = this.findTargetForAbility(heroAbil)
+            
+            // Update combo target if needed
+            if this.shouldUpdateComboTarget(heroAbil, targetUnit) then
+                set owner.comboTargetUnit = targetUnit
+            endif
+            
+            // Execute cast based on type
+            if heroAbil.castType == CAST_POINT_ENEMY_FRONT then
+                return this.castPointAbility(heroAbil, targetUnit)
+            elseif heroAbil.castType == CAST_UNIT then
+                return this.castUnitAbility(heroAbil, targetUnit)
+            else
+                call BJDebugMsg("Unsupported cast type for ability: " + heroAbil.orderString)
+                return false
+            endif
         endmethod
 
         method findNearestEnemy takes nothing returns unit
@@ -864,6 +901,8 @@ library AIStateMachine requires optional KeyUtils
             local real bestTargetHp = 0.0
             local boolean isKillTarget
             local boolean bestIsKillTarget = false
+            local boolean isStunOrSlow
+            local boolean bestIsStunOrSlow = false
             local real comboExpectedDamage = owner.combatData.comboExpectedDamage
             local real comboMinThreshold = comboExpectedDamage * owner.combatData.comboOverkillThresholdPercent
             
@@ -882,39 +921,63 @@ library AIStateMachine requires optional KeyUtils
                 set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
                 set maxHp = GetUnitState(currentUnit, UNIT_STATE_MAX_LIFE)
                 
-                // Skip if HP is below minimum threshold (avoid overkill)
+                //  Current Priority Order:                                                                                     
+                // 1. Avoid Overkill (already filtered)
+                // 2. Prioritize Stunned/Slowed
+                // 3. Secure Kills
+                // 4. Minimize Overkill Among Kills
+                // 5. Damage Efficiency
+                // 6. Fallback to Overkill
+
                 if currentHp >= comboMinThreshold then
                     set isKillTarget = (currentHp <= comboExpectedDamage)
+                    set isStunOrSlow = IsUnitStunOrSlow(currentUnit)
                     
-                    // Target selection logic:
-                    // 1. Prefer kill targets over non-kill targets
-                    // 2. Among kill targets, prefer higher HP (less overkill)
-                    // 3. Among non-kill targets, prefer lower HP (better efficiency)
                     if bestTarget == null then
+                        // First candidate - set as best
                         set bestTarget = currentUnit
                         set bestTargetHp = currentHp
                         set bestIsKillTarget = isKillTarget
+                        set bestIsStunOrSlow = isStunOrSlow
                         if isKillTarget then
-                            call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1")
+                            if isStunOrSlow then
+                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:1")
+                            else
+                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:0")
+                            endif
                         else
-                            call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0")
+                            if isStunOrSlow then
+                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:1")
+                            else
+                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:0")
+                            endif
                         endif
-                    elseif isKillTarget and not bestIsKillTarget then
-                        // Kill target is better than non-kill target
+                    elseif isStunOrSlow and not bestIsStunOrSlow then
+                        // Stunned/slowed target is better than normal target
                         set bestTarget = currentUnit
                         set bestTargetHp = currentHp
                         set bestIsKillTarget = isKillTarget
-                        call BJDebugMsg("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
-                    elseif isKillTarget and bestIsKillTarget and currentHp > bestTargetHp then
-                        // Among kill targets, prefer higher HP (less overkill)
-                        set bestTarget = currentUnit
-                        set bestTargetHp = currentHp
-                        call BJDebugMsg("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
-                    elseif not isKillTarget and not bestIsKillTarget and currentHp < bestTargetHp then
-                        // Among non-kill targets, prefer lower HP (better efficiency)
-                        set bestTarget = currentUnit
-                        set bestTargetHp = currentHp
-                        call BJDebugMsg("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        set bestIsStunOrSlow = isStunOrSlow
+                        call BJDebugMsg("Better combo target (stun/slow): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                    elseif (isStunOrSlow == bestIsStunOrSlow) then
+                        // Same stun/slow status, apply kill priority logic
+                        if isKillTarget and not bestIsKillTarget then
+                            // Kill target is better than non-kill target
+                            set bestTarget = currentUnit
+                            set bestTargetHp = currentHp
+                            set bestIsKillTarget = isKillTarget
+                            call BJDebugMsg("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        elseif isKillTarget and bestIsKillTarget and currentHp > bestTargetHp then
+                            // Among kill targets, prefer higher HP (less overkill)
+                            set bestTarget = currentUnit
+                            set bestTargetHp = currentHp
+                            call BJDebugMsg("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        elseif not isKillTarget and not bestIsKillTarget and currentHp < bestTargetHp then
+                            // Among non-kill targets, prefer lower HP (better efficiency)
+                            set bestTarget = currentUnit
+                            set bestTargetHp = currentHp
+                            call BJDebugMsg("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        endif
                     endif
                 else
                     call BJDebugMsg("Skipping combo target (too low HP): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " < " + R2S(comboMinThreshold))
@@ -928,9 +991,17 @@ library AIStateMachine requires optional KeyUtils
             
             if bestTarget != null then
                 if bestIsKillTarget then
-                    call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:1")
+                    if bestIsStunOrSlow then
+                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:1 Stun/Slow:1")
+                    else
+                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:1 Stun/Slow:0")
+                    endif
                 else
-                    call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:0")
+                    if bestIsStunOrSlow then
+                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:0 Stun/Slow:1")
+                    else
+                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:0 Stun/Slow:0")
+                    endif
                 endif
             else
                 call BJDebugMsg("No suitable combo target found, trying fallback to overkill targets")

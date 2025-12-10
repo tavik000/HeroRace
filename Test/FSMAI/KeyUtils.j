@@ -1,17 +1,7 @@
 library KeyUtils
 
     // --- UTILITY FUNCTIONS ---
-    function IsUnitStunOrSilence takes unit u returns boolean
-        if not IsUnitAliveBJ(u) then
-            return true  
-        endif
-        if IsUnitPausedBJ(u) then
-            return true
-        endif
-        if IsUnitHiddenBJ(u) then
-            return true
-        endif
-        // Stun
+    function IsUnitStun takes unit u returns boolean
         if UnitHasBuffBJ(u, 'BSTN') then 
             return true
         endif
@@ -42,6 +32,23 @@ library KeyUtils
         if UnitHasBuffBJ(u, 'B00B') then 
             return true
         endif 
+        return false
+    endfunction
+
+    function IsUnitStunOrSilence takes unit u returns boolean
+        if not IsUnitAliveBJ(u) then
+            return true  
+        endif
+        if IsUnitPausedBJ(u) then
+            return true
+        endif
+        if IsUnitHiddenBJ(u) then
+            return true
+        endif
+        // Stun
+        if IsUnitStun(u) then 
+            return true
+        endif
         // Magic Leash
         if UnitHasBuffBJ(u, 'Bmlt') then 
             return true
@@ -122,5 +129,32 @@ library KeyUtils
         endif
         return false
     endfunction
+
+    function IsUnitStunOrSlow takes unit u returns boolean
+        if IsUnitPausedBJ(u) then
+            return false
+        endif
+        if IsUnitHiddenBJ(u) then
+            return false
+        endif
+        // Stun
+        if IsUnitStun(u) then 
+            return true
+        endif
+        // Magic Leash
+        if UnitHasBuffBJ(u, 'Bmlt') then 
+            return true
+        endif       
+        // Impale
+        if UnitHasBuffBJ(u, 'BUim') then 
+            return true
+        endif
+        // Slow: current speed less than base speed
+        if GetUnitMoveSpeed(u) < GetUnitDefaultMoveSpeed(u) then
+            return true
+        endif
+        return false
+    endfunction
+
 
 endlibrary
