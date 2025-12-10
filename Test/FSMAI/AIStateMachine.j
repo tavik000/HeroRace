@@ -124,14 +124,12 @@ library AIStateMachine requires optional KeyUtils
         if bTempFilterForAllies then
             // Filter for allies (same team, but not the same unit)
             if IsUnitEnemy(filterUnit, tempHeroOwner) then
-                call BJDebugMsg("Filtering out unit that is an enemy: " + GetUnitName(filterUnit))
                 set filterUnit = null
                 return false
             endif
         else
             // Filter for enemies
             if not IsUnitEnemy(filterUnit, tempHeroOwner) then
-                call BJDebugMsg("Filtering out unit that is not an enemy: " + GetUnitName(filterUnit))
                 set filterUnit = null
                 return false
             endif
@@ -264,10 +262,12 @@ library AIStateMachine requires optional KeyUtils
     struct HeroCombatData
         HeroAbility array abilities[MAX_ABILITIES_PER_HERO]
         integer abilityCount
+        real comboRequiredMana
         
         static method create takes nothing returns thistype
             local thistype this = thistype.allocate()
             set this.abilityCount = 0
+            set this.comboRequiredMana = 0.0
             return this
         endmethod
         
@@ -275,6 +275,9 @@ library AIStateMachine requires optional KeyUtils
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
                 set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex)
                 set this.abilityCount = this.abilityCount + 1
+                if comboIndex > 0 then
+                    set this.comboRequiredMana = this.comboRequiredMana + manaCost
+                endif
             else
                 // Exceeded max abilities - handle error as needed
                 call BJDebugMsg("Error: Exceeded max abilities for hero combat data.")
@@ -322,10 +325,22 @@ library AIStateMachine requires optional KeyUtils
                 // Check for combo abilities starting from index 1
                 set heroAbil = this.getAbilityByComboIndex(1)
                 if heroAbil != 0 then
-                    set heroAbil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
-                    if heroAbil != 0 then
-                        return heroAbil
+                    // Exist any combo ability
+                    // If combo ability cooldown are ready, prioritize them
+                    if this.areComboAbilityCooldownReady(hero, difficulty, aiHero.currentComboIndex) then
+                        // Check if we have enough mana for combo
+                        if this.hasEnoughManaForCombo(hero) then
+                            // Cooldown ready and enough mana - proceed with combo
+                            set heroAbil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
+                            if heroAbil != 0 then
+                                return heroAbil
+                            endif
+                        else
+                            // Cooldown ready but not enough mana - don't fallback to non-combo abilities, prioritize mana waiting
+                            return 0
+                        endif
                     endif
+                    // If combo cooldown are not ready, continue to check non-combo abilities
                 endif
             endif
 
@@ -362,8 +377,6 @@ library AIStateMachine requires optional KeyUtils
         method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns HeroAbility
             local integer i = startingComboIndex
             local HeroAbility heroAbil
-            local real requiredTotalMana = 0.0
-            local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
             local HeroAbility resultComboAbility = 0
             local AIHero aiHero = GetAIHeroFromUnit(hero)
             if aiHero == 0 then
@@ -390,8 +403,6 @@ library AIStateMachine requires optional KeyUtils
                     return 0
                 endif
                 
-                set requiredTotalMana = requiredTotalMana + heroAbil.manaCost
-                
                 if i == aiHero.currentComboIndex then
                     set resultComboAbility = heroAbil
                     call BJDebugMsg("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
@@ -399,13 +410,49 @@ library AIStateMachine requires optional KeyUtils
                 set i = i + 1
             endloop
 
-            if currentMana < requiredTotalMana then
-                call BJDebugMsg("Not enough mana for combo abilities. Need: " + R2S(requiredTotalMana) + ", Have: " + R2S(currentMana))
+            if not this.hasEnoughManaForCombo(hero) then
+                call BJDebugMsg("Not enough mana for combo abilities. Need: " + R2S(this.comboRequiredMana) + ", Have: " + R2S(GetUnitState(hero, UNIT_STATE_MANA)))
                 return 0
             endif
 
             call BJDebugMsg("Combo abilities ready, returning ability: " + resultComboAbility.orderString)
             return resultComboAbility
+        endmethod
+
+        method hasEnoughManaForCombo takes unit hero returns boolean
+            local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
+            if currentMana >= this.comboRequiredMana then
+                return true
+            endif
+            call BJDebugMsg("Not enough mana for combo. Need: " + R2S(this.comboRequiredMana) + ", Have: " + R2S(currentMana))
+            return false
+        endmethod
+
+        method areComboAbilityCooldownReady takes unit hero, integer difficulty, integer currentComboIndex returns boolean
+            local integer i = currentComboIndex
+            local HeroAbility heroAbil
+            
+            // Check if combo abilities have their cooldowns ready (starting from currentComboIndex)
+            loop
+                set heroAbil = this.getAbilityByComboIndex(i)
+                // Reach end of combo sequence
+                exitwhen heroAbil == 0
+                
+                // Check cooldown
+                if not heroAbil.isCooldownReady(difficulty) then
+                    return false
+                endif
+                
+                // Check if ability is available
+                if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
+                    return false
+                endif
+                
+                set i = i + 1
+            endloop
+            
+            // All remaining combo abilities have cooldowns ready
+            return true
         endmethod
 
     endstruct
@@ -672,7 +719,7 @@ library AIStateMachine requires optional KeyUtils
                 call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
                 return true
             elseif heroAbil.castType == CAST_POINT_ENEMY_FRONT then
-                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null then
+                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
                     set targetUnit = owner.comboTargetUnit
                 else
                     // Cast at a point in front of the hero
@@ -697,7 +744,7 @@ library AIStateMachine requires optional KeyUtils
             elseif heroAbil.castType == CAST_UNIT then
                 
                 // Check if we should use existing combo target
-                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null then
+                if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
                     set targetUnit = owner.comboTargetUnit
                     call BJDebugMsg("Using existing combo target for unit, targetUnit: " + GetUnitName(targetUnit))
                 else
