@@ -12,6 +12,7 @@
 		"endstruct",
 		"exitwhen",
 		"hashtable",
+		"killable",
 		"thistype"
 	],
 	"editor.defaultFormatter": "unouo.jassplus",
