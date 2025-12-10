@@ -214,8 +214,9 @@ library AIStateMachine requires optional KeyUtils
         real castRange
         integer allowTargetType
         real effectiveRadius
+        real expectedDamage  // For combo targeting logic
 
-        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType, real inEffectiveRadius, integer inComboIndex returns thistype
+        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
@@ -227,6 +228,7 @@ library AIStateMachine requires optional KeyUtils
             set this.castRange = inCastRange
             set this.allowTargetType = inAllowTargetType
             set this.effectiveRadius = inEffectiveRadius
+            set this.expectedDamage = inExpectedDamage
             return this
         endmethod
 
@@ -262,16 +264,23 @@ library AIStateMachine requires optional KeyUtils
     struct HeroCombatData
         HeroAbility array abilities[MAX_ABILITIES_PER_HERO]
         integer abilityCount
+        real comboExpectedDamage
+        real comboOverkillThresholdPercent
         
         static method create takes nothing returns thistype
             local thistype this = thistype.allocate()
             set this.abilityCount = 0
+            set this.comboExpectedDamage = 0.0
+            set this.comboOverkillThresholdPercent = 0.3 // Default to 30% of combo damage
             return this
         endmethod
         
-        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius, integer comboIndex returns nothing
+        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex)
+                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex, expectedDamage)
+                if comboIndex > 0 then
+                    set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
+                endif
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
@@ -475,9 +484,10 @@ library AIStateMachine requires optional KeyUtils
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
             call BJDebugMsg("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1)   // Banish
-            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0) // Blood Lust
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2, 866.0)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1, 0.0)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0, 0.0) // Blood Lust
+            
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
             // call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
             // Add more hero types as needed...
@@ -732,7 +742,11 @@ library AIStateMachine requires optional KeyUtils
                     set targetUnit = owner.comboTargetUnit
                 else
                     // Cast at a point in front of the hero
-                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
+                        set targetUnit = this.findBestComboTarget(heroAbil.castRange)
+                    else
+                        set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    endif
                 endif
                 if targetUnit == null then
                     call BJDebugMsg("No target found for point ability: " + heroAbil.orderString)
@@ -759,8 +773,14 @@ library AIStateMachine requires optional KeyUtils
                 else
                     // Use default target finding logic
                     if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
-                        set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                        call BJDebugMsg("Finding random enemy hero for unit ability, targetUnit: " + GetUnitName(targetUnit))
+                        // Use smart combo targeting for combo abilities, random for others
+                        if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
+                            set targetUnit = this.findBestComboTarget(heroAbil.castRange)
+                            call BJDebugMsg("Finding best combo target for unit ability, targetUnit: " + GetUnitName(targetUnit))
+                        else
+                            set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                            call BJDebugMsg("Finding random enemy hero for unit ability, targetUnit: " + GetUnitName(targetUnit))
+                        endif
                     elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
                         set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
                     elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
@@ -829,6 +849,123 @@ library AIStateMachine requires optional KeyUtils
         
         method findRandomAllyHeroInRange takes real range returns unit
             return this.findRandomHeroInRange(range, true)
+        endmethod
+
+        method findBestComboTarget takes real range returns unit
+            local group heroes = CreateGroup()
+            local unit currentUnit = null
+            local unit bestTarget = null
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local player heroOwner = GetOwningPlayer(owner.hero)
+            local real currentHp
+            local real maxHp
+            local real currentHpPercent
+            local real bestTargetHp = 0.0
+            local boolean isKillTarget
+            local boolean bestIsKillTarget = false
+            local real comboExpectedDamage = owner.combatData.comboExpectedDamage
+            local real comboMinThreshold = comboExpectedDamage * owner.combatData.comboOverkillThresholdPercent
+            
+            // Set temp variables for filter function
+            set tempHeroOwner = heroOwner
+            set bTempFilterForAllies = false
+            set tempHeroUnit = owner.hero
+            call GroupEnumUnitsInRange(heroes, heroX, heroY, range, Filter(function FilterHeroes))
+            
+            // Iterate through filtered enemies to find best target
+            loop
+                set currentUnit = FirstOfGroup(heroes)
+                exitwhen currentUnit == null
+                call GroupRemoveUnit(heroes, currentUnit)
+                
+                set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
+                set maxHp = GetUnitState(currentUnit, UNIT_STATE_MAX_LIFE)
+                
+                // Skip if HP is below minimum threshold (avoid overkill)
+                if currentHp >= comboMinThreshold then
+                    set isKillTarget = (currentHp <= comboExpectedDamage)
+                    
+                    // Target selection logic:
+                    // 1. Prefer kill targets over non-kill targets
+                    // 2. Among kill targets, prefer higher HP (less overkill)
+                    // 3. Among non-kill targets, prefer lower HP (better efficiency)
+                    if bestTarget == null then
+                        set bestTarget = currentUnit
+                        set bestTargetHp = currentHp
+                        set bestIsKillTarget = isKillTarget
+                        if isKillTarget then
+                            call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1")
+                        else
+                            call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0")
+                        endif
+                    elseif isKillTarget and not bestIsKillTarget then
+                        // Kill target is better than non-kill target
+                        set bestTarget = currentUnit
+                        set bestTargetHp = currentHp
+                        set bestIsKillTarget = isKillTarget
+                        call BJDebugMsg("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                    elseif isKillTarget and bestIsKillTarget and currentHp > bestTargetHp then
+                        // Among kill targets, prefer higher HP (less overkill)
+                        set bestTarget = currentUnit
+                        set bestTargetHp = currentHp
+                        call BJDebugMsg("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                    elseif not isKillTarget and not bestIsKillTarget and currentHp < bestTargetHp then
+                        // Among non-kill targets, prefer lower HP (better efficiency)
+                        set bestTarget = currentUnit
+                        set bestTargetHp = currentHp
+                        call BJDebugMsg("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                    endif
+                else
+                    call BJDebugMsg("Skipping combo target (too low HP): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " < " + R2S(comboMinThreshold))
+                endif
+            endloop
+            
+            // Clean up
+            call DestroyGroup(heroes)
+            set heroes = null
+            set currentUnit = null
+            
+            if bestTarget != null then
+                if bestIsKillTarget then
+                    call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:1")
+                else
+                    call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:0")
+                endif
+            else
+                call BJDebugMsg("No suitable combo target found, trying fallback to overkill targets")
+                
+                // Fallback: If no targets above threshold, find highest HP among all enemies (minimize overkill)
+                set heroes = CreateGroup()
+                call GroupEnumUnitsInRange(heroes, heroX, heroY, range, Filter(function FilterHeroes))
+                
+                loop
+                    set currentUnit = FirstOfGroup(heroes)
+                    exitwhen currentUnit == null
+                    call GroupRemoveUnit(heroes, currentUnit)
+                    
+                    set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
+                    
+                    // Among all enemies, prefer highest HP (minimize overkill damage waste)
+                    if bestTarget == null or currentHp > bestTargetHp then
+                        set bestTarget = currentUnit
+                        set bestTargetHp = currentHp
+                        call BJDebugMsg("Fallback combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                    endif
+                endloop
+                
+                // Clean up fallback group
+                call DestroyGroup(heroes)
+                set heroes = null
+                
+                if bestTarget != null then
+                    call BJDebugMsg("Fallback combo target selected: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " (overkill)")
+                else
+                    call BJDebugMsg("No combo targets found at all")
+                endif
+            endif
+            
+            return bestTarget
         endmethod
 
         method onExit takes nothing returns nothing
