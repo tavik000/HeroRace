@@ -262,12 +262,10 @@ library AIStateMachine requires optional KeyUtils
     struct HeroCombatData
         HeroAbility array abilities[MAX_ABILITIES_PER_HERO]
         integer abilityCount
-        real comboRequiredMana
         
         static method create takes nothing returns thistype
             local thistype this = thistype.allocate()
             set this.abilityCount = 0
-            set this.comboRequiredMana = 0.0
             return this
         endmethod
         
@@ -275,9 +273,6 @@ library AIStateMachine requires optional KeyUtils
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
                 set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex)
                 set this.abilityCount = this.abilityCount + 1
-                if comboIndex > 0 then
-                    set this.comboRequiredMana = this.comboRequiredMana + manaCost
-                endif
             else
                 // Exceeded max abilities - handle error as needed
                 call BJDebugMsg("Error: Exceeded max abilities for hero combat data.")
@@ -329,7 +324,7 @@ library AIStateMachine requires optional KeyUtils
                     // If combo ability cooldown are ready, prioritize them
                     if this.areComboAbilityCooldownReady(hero, difficulty, aiHero.currentComboIndex) then
                         // Check if we have enough mana for combo
-                        if this.hasEnoughManaForCombo(hero) then
+                        if this.hasEnoughManaForCombo(hero, aiHero.currentComboIndex) then
                             // Cooldown ready and enough mana - proceed with combo
                             set heroAbil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
                             if heroAbil != 0 then
@@ -410,8 +405,8 @@ library AIStateMachine requires optional KeyUtils
                 set i = i + 1
             endloop
 
-            if not this.hasEnoughManaForCombo(hero) then
-                call BJDebugMsg("Not enough mana for combo abilities. Need: " + R2S(this.comboRequiredMana) + ", Have: " + R2S(GetUnitState(hero, UNIT_STATE_MANA)))
+            if not this.hasEnoughManaForCombo(hero, startingComboIndex) then
+                call BJDebugMsg("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
                 return 0
             endif
 
@@ -419,12 +414,26 @@ library AIStateMachine requires optional KeyUtils
             return resultComboAbility
         endmethod
 
-        method hasEnoughManaForCombo takes unit hero returns boolean
+        method hasEnoughManaForCombo takes unit hero, integer currentComboIndex returns boolean
             local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
-            if currentMana >= this.comboRequiredMana then
+            local real requiredMana = 0.0
+            local integer i = currentComboIndex
+            local HeroAbility heroAbil
+            
+            // Calculate mana cost for remaining combo abilities from currentComboIndex
+            loop
+                set heroAbil = this.getAbilityByComboIndex(i)
+                // Reach end of combo sequence
+                exitwhen heroAbil == 0
+                
+                set requiredMana = requiredMana + heroAbil.manaCost
+                set i = i + 1
+            endloop
+            
+            if currentMana >= requiredMana then
                 return true
             endif
-            call BJDebugMsg("Not enough mana for combo. Need: " + R2S(this.comboRequiredMana) + ", Have: " + R2S(currentMana))
+            call BJDebugMsg("Not enough mana for remaining combo. Need: " + R2S(requiredMana) + ", Have: " + R2S(currentMana))
             return false
         endmethod
 
