@@ -55,6 +55,38 @@ library AIStateMachine requires optional KeyUtils
         constant real TURN_TIME = 0.2 
 
         constant real MAX_RANGE = 30000.0
+
+        // Debug Text Tag Color Presets (RGB 0-255 format)
+        constant integer COLOR_WHITE_R = 255
+        constant integer COLOR_WHITE_G = 255
+        constant integer COLOR_WHITE_B = 255
+        constant integer COLOR_RED_R = 255
+        constant integer COLOR_RED_G = 0
+        constant integer COLOR_RED_B = 0
+        constant integer COLOR_GREEN_R = 0
+        constant integer COLOR_GREEN_G = 255
+        constant integer COLOR_GREEN_B = 0
+        constant integer COLOR_BLUE_R = 0
+        constant integer COLOR_BLUE_G = 0
+        constant integer COLOR_BLUE_B = 255
+        constant integer COLOR_YELLOW_R = 255
+        constant integer COLOR_YELLOW_G = 255
+        constant integer COLOR_YELLOW_B = 0
+        constant integer COLOR_ORANGE_R = 255
+        constant integer COLOR_ORANGE_G = 165
+        constant integer COLOR_ORANGE_B = 0
+        constant integer COLOR_PURPLE_R = 128
+        constant integer COLOR_PURPLE_G = 0
+        constant integer COLOR_PURPLE_B = 128
+        constant integer COLOR_CYAN_R = 0
+        constant integer COLOR_CYAN_G = 255
+        constant integer COLOR_CYAN_B = 255
+        constant integer COLOR_PINK_R = 255
+        constant integer COLOR_PINK_G = 192
+        constant integer COLOR_PINK_B = 203
+        constant integer COLOR_GRAY_R = 128
+        constant integer COLOR_GRAY_G = 128
+        constant integer COLOR_GRAY_B = 128
     endglobals
 
     // Helper function to get cooldown multiplier based on difficulty
@@ -1058,6 +1090,8 @@ library AIStateMachine requires optional KeyUtils
         timer updateTimer
         integer currentComboIndex
         unit comboTargetUnit
+        texttag debugTextTag
+        string debugTextTagContent
         
         // Constructor
         static method create takes unit u, integer inDifficulty returns thistype
@@ -1073,6 +1107,8 @@ library AIStateMachine requires optional KeyUtils
             set this.castingAbility = 0
             set this.currentComboIndex = 1 // only for difficulty HARD and above
             set this.comboTargetUnit = null
+            set this.debugTextTag = null
+            set this.debugTextTagContent = ""
 
 
             // Initialize combat data
@@ -1087,6 +1123,8 @@ library AIStateMachine requires optional KeyUtils
             
             // Store unit to AIHero mapping
             call SaveInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0, this)
+
+            call this.createDebugTextTag()
 
             return this
         endmethod
@@ -1141,6 +1179,10 @@ library AIStateMachine requires optional KeyUtils
                 call DestroyTimer(this.updateTimer)
                 set this.updateTimer = null
             endif
+
+            if this.debugTextTag != null then
+                call this.destroyDebugTextTag()
+            endif
             
             // Remove unit to AIHero mapping
             if this.hero != null then
@@ -1164,6 +1206,11 @@ library AIStateMachine requires optional KeyUtils
                     call this.currentState.onUpdate()
                 endif
             endif
+
+            // Debug: Update text tag position
+            if this.debugTextTag != null then
+                call SetTextTagPos (this.debugTextTag, GetUnitX(this.hero) - 125.0, GetUnitY(this.hero), 0.0)
+            endif
         endmethod
 
         method onCastComplete takes nothing returns nothing
@@ -1184,7 +1231,69 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             call BJDebugMsg("Casting complete, castingAbility: " + this.castingAbility.orderString)
+            call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " CastComplete, SetComboIdx: " + I2S(this.currentComboIndex))
+            call this.setDebugTextTagColorPreset("YELLOW", 255)
+
             set this.castingAbility = 0
+        endmethod
+
+        method createDebugTextTag takes nothing returns nothing
+            set this.debugTextTag = CreateTextTag()
+            set this.debugTextTagContent = "AI"
+            call SetTextTagTextBJ(this.debugTextTag, this.debugTextTagContent, 10.0)
+            call SetTextTagColorBJ(this.debugTextTag, 255, 255, 255, 0)
+            call SetTextTagPos (this.debugTextTag, GetUnitX(this.hero) - 125.0, GetUnitY(this.hero), 0.0)
+            call SetTextTagPermanent(this.debugTextTag, true)
+            call SetTextTagSuspended(this.debugTextTag, true)
+            call SetTextTagVisibility(this.debugTextTag, true)
+            call SetTextTagFadepoint(this.debugTextTag, -1.0)
+        endmethod
+
+        method setDebugTextTagContent takes string content returns nothing
+            set this.debugTextTagContent = content
+            if this.debugTextTag != null then
+                call SetTextTagTextBJ(this.debugTextTag, this.debugTextTagContent, 10.0)
+            endif
+        endmethod
+
+        method setDebugTextTagColor takes integer r, integer g, integer b, integer a returns nothing
+            if this.debugTextTag != null then
+                call SetTextTagColorBJ(this.debugTextTag, r, g, b, a)
+            endif
+        endmethod
+
+        method setDebugTextTagColorPreset takes string colorName, integer alpha returns nothing
+            if colorName == "WHITE" then
+                call this.setDebugTextTagColor(COLOR_WHITE_R, COLOR_WHITE_G, COLOR_WHITE_B, alpha)
+            elseif colorName == "RED" then
+                call this.setDebugTextTagColor(COLOR_RED_R, COLOR_RED_G, COLOR_RED_B, alpha)
+            elseif colorName == "GREEN" then
+                call this.setDebugTextTagColor(COLOR_GREEN_R, COLOR_GREEN_G, COLOR_GREEN_B, alpha)
+            elseif colorName == "BLUE" then
+                call this.setDebugTextTagColor(COLOR_BLUE_R, COLOR_BLUE_G, COLOR_BLUE_B, alpha)
+            elseif colorName == "YELLOW" then
+                call this.setDebugTextTagColor(COLOR_YELLOW_R, COLOR_YELLOW_G, COLOR_YELLOW_B, alpha)
+            elseif colorName == "ORANGE" then
+                call this.setDebugTextTagColor(COLOR_ORANGE_R, COLOR_ORANGE_G, COLOR_ORANGE_B, alpha)
+            elseif colorName == "PURPLE" then
+                call this.setDebugTextTagColor(COLOR_PURPLE_R, COLOR_PURPLE_G, COLOR_PURPLE_B, alpha)
+            elseif colorName == "CYAN" then
+                call this.setDebugTextTagColor(COLOR_CYAN_R, COLOR_CYAN_G, COLOR_CYAN_B, alpha)
+            elseif colorName == "PINK" then
+                call this.setDebugTextTagColor(COLOR_PINK_R, COLOR_PINK_G, COLOR_PINK_B, alpha)
+            elseif colorName == "GRAY" then
+                call this.setDebugTextTagColor(COLOR_GRAY_R, COLOR_GRAY_G, COLOR_GRAY_B, alpha)
+            else
+                call BJDebugMsg("Unknown color preset: " + colorName)
+                call this.setDebugTextTagColor(COLOR_WHITE_R, COLOR_WHITE_G, COLOR_WHITE_B, alpha)
+            endif
+        endmethod
+
+        method destroyDebugTextTag takes nothing returns nothing
+            if this.debugTextTag != null then
+                call SetTextTagVisibility(this.debugTextTag, false)
+                set this.debugTextTag = null
+            endif
         endmethod
     endstruct
 

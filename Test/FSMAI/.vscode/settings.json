@@ -11,8 +11,10 @@
 		"endmodule",
 		"endstruct",
 		"exitwhen",
+		"Fadepoint",
 		"hashtable",
 		"killable",
+		"texttag",
 		"thistype"
 	],
 	"editor.defaultFormatter": "unouo.jassplus",
