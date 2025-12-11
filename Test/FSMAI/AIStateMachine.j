@@ -31,6 +31,7 @@ library AIStateMachine requires optional KeyUtils
         
         // Timer to AIHero mapping
         public hashtable udg_TimerHeroMap
+        public hashtable udg_DebugTextTagTimerHeroMap
         
         // Unit to AIHero mapping
         public hashtable udg_UnitAIHeroMap
@@ -89,6 +90,16 @@ library AIStateMachine requires optional KeyUtils
         constant integer COLOR_GRAY_B = 128
     endglobals
 
+    function BotLog takes string msg returns nothing
+        if udg_bEnableLogBot then
+            call BJDebugMsg("[AI Bot] " + msg)
+        endif
+    endfunction
+
+    function BotLogError takes string msg returns nothing
+        call BJDebugMsg("[AI Bot] |cffff0000[ERROR]|r " + msg)
+    endfunction
+
     // Helper function to get cooldown multiplier based on difficulty
     function GetCooldownMultiplier takes integer difficulty returns real
         if difficulty == DIFF_EASY then
@@ -126,7 +137,7 @@ library AIStateMachine requires optional KeyUtils
         if HaveSavedReal(heroCastPointMap, heroTypeId, 0) then
             return LoadReal(heroCastPointMap, heroTypeId, 0)
         else
-            call BJDebugMsg("Unknown hero type for GetHeroCastPoint: " + I2S(heroTypeId))
+            call BotLogError("Unknown hero type for GetHeroCastPoint: " + I2S(heroTypeId))
             return 0.5  // Default cast point for unknown hero types
         endif
     endfunction
@@ -281,7 +292,7 @@ library AIStateMachine requires optional KeyUtils
 
         method isManaReady takes unit caster returns boolean
             local real currentMana = GetUnitState(caster, UNIT_STATE_MANA)
-            if currentMana >= this.manaCost then
+            if currentMana >= I2R(this.manaCost) then
                 return true
             endif
             return false
@@ -316,7 +327,7 @@ library AIStateMachine requires optional KeyUtils
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
-                call BJDebugMsg("Error: Exceeded max abilities for hero combat data.")
+                call BotLogError("Exceeded max abilities for hero combat data.")
             endif
         endmethod
         
@@ -392,12 +403,14 @@ library AIStateMachine requires optional KeyUtils
                     if heroAbil.isCooldownReady(difficulty) then
                         // Check if ability is available
                         if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                            call BJDebugMsg("Ability not available: " + heroAbil.orderString)
+                            call BotLogError("Ability not available: " + heroAbil.orderString)
                         else
                             // Check if hero has enough mana
                             set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
                             if not heroAbil.isManaReady(hero) then
-                                call BJDebugMsg("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + R2S(currentMana))
+                                call BotLog("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
+                                call aiHero.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Mana" + "(" + I2S(heroAbil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
+                                call aiHero.setDebugTextTagColorPreset("RED")
                             else
                                 return heroAbil
                             endif
@@ -416,7 +429,7 @@ library AIStateMachine requires optional KeyUtils
             local HeroAbility resultComboAbility = 0
             local AIHero aiHero = GetAIHeroFromUnit(hero)
             if aiHero == 0 then
-                call BJDebugMsg("Error: AIHero not found for unit in getReadyComboAbility.")
+                call BotLogError("AIHero not found for unit in getReadyComboAbility.")
                 return 0
             endif
 
@@ -429,29 +442,36 @@ library AIStateMachine requires optional KeyUtils
                 
                 // Check cooldown
                 if not heroAbil.isCooldownReady(difficulty) then
-                    call BJDebugMsg("Ability cooldown not ready for combo: " + heroAbil.orderString)
+                    call BotLog("Ability cooldown not ready for combo: " + heroAbil.orderString)
+                    call aiHero.setDebugTextTagContent("Combat: Combo CD Not Ready " + heroAbil.orderString)
+                    call aiHero.setDebugTextTagColorPreset("RED")
                     return 0
                 endif
                 
                 // Check if ability is available
                 if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                    call BJDebugMsg("Ability not available for combo: " + heroAbil.orderString)
+                    call BotLogError("Ability not available for combo: " + heroAbil.orderString)
                     return 0
                 endif
                 
                 if i == aiHero.currentComboIndex then
                     set resultComboAbility = heroAbil
-                    call BJDebugMsg("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
+                    call BotLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
+                    call aiHero.setDebugTextTagContent("Combat: Found Combo Ability " + heroAbil.orderString)
+                    call aiHero.setDebugTextTagColorPreset("RED")
                 endif
                 set i = i + 1
             endloop
 
             if not this.hasEnoughManaForCombo(hero, startingComboIndex) then
-                call BJDebugMsg("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
+                call BotLog("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
                 return 0
             endif
 
-            call BJDebugMsg("Combo abilities ready, returning ability: " + resultComboAbility.orderString)
+            call BotLog("Combo abilities ready, returning ability: " + resultComboAbility.orderString)
+            call aiHero.setDebugTextTagContent("Combat: Combo Ability Ready " + resultComboAbility.orderString)
+            call aiHero.setDebugTextTagColorPreset("RED")
+
             return resultComboAbility
         endmethod
 
@@ -460,6 +480,7 @@ library AIStateMachine requires optional KeyUtils
             local real requiredMana = 0.0
             local integer i = currentComboIndex
             local HeroAbility heroAbil
+            local AIHero aiHero = GetAIHeroFromUnit(hero)
             
             // Calculate mana cost for remaining combo abilities from currentComboIndex
             loop
@@ -474,7 +495,9 @@ library AIStateMachine requires optional KeyUtils
             if currentMana >= requiredMana then
                 return true
             endif
-            call BJDebugMsg("Not enough mana for remaining combo. Need: " + R2S(requiredMana) + ", Have: " + R2S(currentMana))
+            call BotLog("Not enough mana for remaining combo. (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
+            call aiHero.setDebugTextTagContent("Combat: No Mana, (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
+            call aiHero.setDebugTextTagColorPreset("RED")
             return false
         endmethod
 
@@ -515,7 +538,7 @@ library AIStateMachine requires optional KeyUtils
         
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
-            call BJDebugMsg("Adding abilities for BloodMage")
+            call BotLog("Adding abilities for BloodMage")
             call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2, 866.0)   // Flame Strike
             call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1, 0.0)   // Banish
             call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0, 0.0) // Blood Lust
@@ -558,7 +581,10 @@ library AIStateMachine requires optional KeyUtils
             local real x
             local real y
 
-            call BJDebugMsg("Entering Run State")
+            call BotLog("Entering Run State")
+            call owner.setDebugTextTagContent("Run: Entering")
+            call owner.setDebugTextTagColorPreset("GREEN")
+
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
             set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
@@ -580,7 +606,9 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
             
-            call BJDebugMsg("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
+            call BotLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
+            call owner.setDebugTextTagContent("Run: Updating, WPI " + I2S(owner.currentWaypointIndex))
+            call owner.setDebugTextTagColorPreset("GREEN")
             
             
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
@@ -590,9 +618,13 @@ library AIStateMachine requires optional KeyUtils
             
             // Check if hero has reached the current waypoint area
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
-                call BJDebugMsg("Reached waypoint " + I2S(owner.currentWaypointIndex))
+                call BotLog("Reached waypoint " + I2S(owner.currentWaypointIndex))
+                call owner.setDebugTextTagContent("Run: Reached Waypoint " + I2S(owner.currentWaypointIndex))
+                call owner.setDebugTextTagColorPreset("GREEN")
                 if owner.currentWaypointIndex >= WaypointCount then
-                    call BJDebugMsg("Reached final waypoint")
+                    call BotLog("Reached final waypoint")
+                    call owner.setDebugTextTagContent("Run: Reached Final Waypoint")
+                    call owner.setDebugTextTagColorPreset("GREEN")
                     // TODO Goaled State
                 else
                     // Move to next waypoint
@@ -606,7 +638,9 @@ library AIStateMachine requires optional KeyUtils
                 call IssuePointOrder(owner.hero, "move", targetX, targetY)
             elseif currentOrder == 0 then
                 // Hero is idle (no current order) - reissue move command to current waypoint
-                call BJDebugMsg("Hero is idle, reissuing move command")
+                call BotLog("Hero is idle, reissuing move command")
+                call owner.setDebugTextTagContent("Run: Reissuing Move Command")
+                call owner.setDebugTextTagColorPreset("GREEN")
                 set targetX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
                 set targetY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
                 call IssuePointOrder(owner.hero, "move", targetX, targetY)
@@ -614,7 +648,9 @@ library AIStateMachine requires optional KeyUtils
             
             // Check if we should enter combat state
             if owner.shouldEnterCombat() then
-                call BJDebugMsg("Entering combat - abilities ready")
+                call BotLog("Entering combat - abilities ready")
+                call owner.setDebugTextTagContent("Run: Entering Combat")
+                call owner.setDebugTextTagColorPreset("GREEN")
                 call owner.changeState(CombatState.create())
                 return
             endif
@@ -623,7 +659,9 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onExit takes nothing returns nothing
-            call BJDebugMsg("Exiting Run State")
+            call BotLog("Exiting Run State")
+            call owner.setDebugTextTagContent("Run: Exiting")
+            call owner.setDebugTextTagColorPreset("GREEN")
         endmethod
     endstruct
 
@@ -635,7 +673,9 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            call BJDebugMsg("Hero died - Entering Dead State")
+            call BotLog("Hero died - Entering Dead State")
+            call owner.setDebugTextTagContent("Dead: Entering")
+            call owner.setDebugTextTagColorPreset("GRAY")
             call IssueImmediateOrder(owner.hero, "stop")
         endmethod
 
@@ -644,12 +684,16 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
             
-            call BJDebugMsg("Hero revived - Returning to Run State")
+            call BotLog("Hero revived - Returning to Run State")
+            call owner.setDebugTextTagContent("Dead: Revived")
+            call owner.setDebugTextTagColorPreset("GRAY")
             call owner.changeState(RunState.create())
         endmethod
 
         method onExit takes nothing returns nothing
-            call BJDebugMsg("Exiting Dead State")
+            call BotLog("Exiting Dead State")
+            call owner.setDebugTextTagContent("Dead: Exiting")
+            call owner.setDebugTextTagColorPreset("GRAY")
         endmethod
     endstruct
 
@@ -661,7 +705,9 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            call BJDebugMsg("Entering Combat State")
+            call BotLog("Entering Combat State")
+            call owner.setDebugTextTagContent("Combat: Entering")
+            call owner.setDebugTextTagColorPreset("RED")
         endmethod
 
         method onUpdate takes nothing returns nothing
@@ -671,13 +717,17 @@ library AIStateMachine requires optional KeyUtils
             local boolean isCastFailed = owner.isCasting and isCastOvertime
 
             if isCastFailed then
-                call BJDebugMsg("Casting failed or interrupted, resetting casting state")
+                call BotLog("Casting failed or interrupted, resetting casting state")
+                call owner.setDebugTextTagContent("Combat: Cast Failed " + owner.castingAbility.orderString)
+                call owner.setDebugTextTagColorPreset("RED")
                 set owner.isCasting = false
                 set owner.castingAbility = 0
             endif
 
             if owner.isCasting then
-                call BJDebugMsg("Currently casting an ability, skipping update")
+                call BotLog("Currently casting an ability, skipping update")
+                call owner.setDebugTextTagContent("Combat: Casting " + owner.castingAbility.orderString)
+                call owner.setDebugTextTagColorPreset("RED")
                 return
             endif
 
@@ -739,19 +789,23 @@ library AIStateMachine requires optional KeyUtils
         method canCastAbility takes HeroAbility heroAbil returns boolean
             // Check if hero is stunned or silenced
             if IsUnitStunOrSilence(owner.hero) then
-                call BJDebugMsg("Cannot cast ability, hero is stunned or silenced.")
+                call BotLog("Cannot cast ability, hero is stunned or silenced.")
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Stunned/Silenced")
+                call owner.setDebugTextTagColorPreset("RED")
                 return false
             endif
 
             // Check if ability is available
             if GetUnitAbilityLevel(owner.hero, heroAbil.abilityId) <= 0 then
-                call BJDebugMsg("Ability not available: " + heroAbil.orderString)
+                call BotLogError("Ability not available: " + heroAbil.orderString)
                 return false
             endif
             
             // Check if hero has enough mana
             if not heroAbil.isManaReady(owner.hero) then
-                call BJDebugMsg("Not enough mana for ability: " + heroAbil.orderString)
+                call BotLog("Not enough mana for ability: " + heroAbil.orderString)
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Not Enough Mana")
+                call owner.setDebugTextTagColorPreset("RED")
                 return false
             endif
             
@@ -780,7 +834,9 @@ library AIStateMachine requires optional KeyUtils
             // Check if we should use existing combo target
             if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
                 set targetUnit = owner.comboTargetUnit
-                call BJDebugMsg("Using existing combo target: " + GetUnitName(targetUnit))
+                call BotLog("Using existing combo target: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Using Combo Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             endif
             
@@ -789,24 +845,35 @@ library AIStateMachine requires optional KeyUtils
                 // Use smart combo targeting for combo abilities, random for others
                 if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
                     set targetUnit = this.findBestComboTarget(heroAbil.castRange)
-                    call BJDebugMsg("Finding best combo target, result: " + GetUnitName(targetUnit))
+                    call BotLog("Finding best combo target, result: " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Combo Target " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagColorPreset("RED")
                 else
                     set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                    call BJDebugMsg("Finding random enemy hero, result: " + GetUnitName(targetUnit))
+                    call BotLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagColorPreset("RED")
                 endif
             elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
                 set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
-                call BJDebugMsg("Finding ally hero target, result: " + GetUnitName(targetUnit))
+                call BotLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+
             elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
                 // For simplicity, use enemy hero targeting for enemy units for now
                 set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
-                call BJDebugMsg("Finding enemy unit target, result: " + GetUnitName(targetUnit))
+                call BotLog("Finding enemy unit target, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Unit Target" + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
             elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
                 // For simplicity, use ally hero targeting for ally units for now
                 set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
-                call BJDebugMsg("Finding ally unit target, result: " + GetUnitName(targetUnit))
+                call BotLog("Finding ally unit target, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Unit Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
             else
-                call BJDebugMsg("Unsupported target type for ability: " + heroAbil.orderString)
+                call BotLogError("Unsupported target type for ability: " + heroAbil.orderString)
                 set targetUnit = null
             endif
             
@@ -815,7 +882,7 @@ library AIStateMachine requires optional KeyUtils
 
         method castInstantAbility takes HeroAbility heroAbil returns boolean
             call IssueImmediateOrder(owner.hero, heroAbil.orderString)
-            call BJDebugMsg("Casting instant ability: " + heroAbil.orderString)
+            call BotLog("Casting instant ability: " + heroAbil.orderString)
             return true
         endmethod
 
@@ -826,7 +893,9 @@ library AIStateMachine requires optional KeyUtils
             local real targetY
             
             if targetUnit == null then
-                call BJDebugMsg("No target found for point ability: " + heroAbil.orderString)
+                call BotLog("No target found for point ability: " + heroAbil.orderString)
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Target")
+                call owner.setDebugTextTagColorPreset("RED")
                 return false
             endif
             
@@ -835,17 +904,19 @@ library AIStateMachine requires optional KeyUtils
             set targetX = GetUnitX(targetUnit) + offset * Cos(heroFacing)
             set targetY = GetUnitY(targetUnit) + offset * Sin(heroFacing) 
             call IssuePointOrder(owner.hero, heroAbil.orderString, targetX, targetY)
-            call BJDebugMsg("Casting point target ability in front: " + heroAbil.orderString)
+            call BotLog("Casting point target ability in front: " + heroAbil.orderString)
             return true
         endmethod
 
         method castUnitAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
             if targetUnit != null then
                 call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
-                call BJDebugMsg("Casting unit target ability: " + heroAbil.orderString)
+                call BotLog("Casting unit target ability: " + heroAbil.orderString)
                 return true
             else
-                call BJDebugMsg("No target found for unit ability: " + heroAbil.orderString)
+                call BotLog("No target found for unit ability: " + heroAbil.orderString)
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Target")
+                call owner.setDebugTextTagColorPreset("RED")
                 return false
             endif
         endmethod
@@ -853,7 +924,9 @@ library AIStateMachine requires optional KeyUtils
         method tryCastAbility takes HeroAbility heroAbil returns boolean
             local unit targetUnit
             
-            call BJDebugMsg("Attempting to cast ability: " + heroAbil.orderString)
+            call BotLog("Attempting to cast ability: " + heroAbil.orderString)
+            call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString)
+            call owner.setDebugTextTagColorPreset("RED")
             
             if not this.canCastAbility(heroAbil) then
                 return false
@@ -878,7 +951,7 @@ library AIStateMachine requires optional KeyUtils
             elseif heroAbil.castType == CAST_UNIT then
                 return this.castUnitAbility(heroAbil, targetUnit)
             else
-                call BJDebugMsg("Unsupported cast type for ability: " + heroAbil.orderString)
+                call BotLogError("Unsupported cast type for ability: " + heroAbil.orderString)
                 return false
             endif
         endmethod
@@ -973,15 +1046,15 @@ library AIStateMachine requires optional KeyUtils
                         set bestIsStunOrSlow = isStunOrSlow
                         if isKillTarget then
                             if isStunOrSlow then
-                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:1")
+                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:1")
                             else
-                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:0")
+                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:0")
                             endif
                         else
                             if isStunOrSlow then
-                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:1")
+                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:1")
                             else
-                                call BJDebugMsg("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:0")
+                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:0")
                             endif
                         endif
                     elseif isStunOrSlow and not bestIsStunOrSlow then
@@ -990,7 +1063,7 @@ library AIStateMachine requires optional KeyUtils
                         set bestTargetHp = currentHp
                         set bestIsKillTarget = isKillTarget
                         set bestIsStunOrSlow = isStunOrSlow
-                        call BJDebugMsg("Better combo target (stun/slow): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        call BotLog("Better combo target (stun/slow): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
                     elseif (isStunOrSlow == bestIsStunOrSlow) then
                         // Same stun/slow status, apply kill priority logic
                         if isKillTarget and not bestIsKillTarget then
@@ -998,21 +1071,21 @@ library AIStateMachine requires optional KeyUtils
                             set bestTarget = currentUnit
                             set bestTargetHp = currentHp
                             set bestIsKillTarget = isKillTarget
-                            call BJDebugMsg("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            call BotLog("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
                         elseif isKillTarget and bestIsKillTarget and currentHp > bestTargetHp then
                             // Among kill targets, prefer higher HP (less overkill)
                             set bestTarget = currentUnit
                             set bestTargetHp = currentHp
-                            call BJDebugMsg("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            call BotLog("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
                         elseif not isKillTarget and not bestIsKillTarget and currentHp < bestTargetHp then
                             // Among non-kill targets, prefer lower HP (better efficiency)
                             set bestTarget = currentUnit
                             set bestTargetHp = currentHp
-                            call BJDebugMsg("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            call BotLog("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
                         endif
                     endif
                 else
-                    call BJDebugMsg("Skipping combo target (too low HP): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " < " + R2S(comboMinThreshold))
+                    call BotLog("Skipping combo target (too low HP): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " < " + R2S(comboMinThreshold))
                 endif
             endloop
             
@@ -1024,19 +1097,26 @@ library AIStateMachine requires optional KeyUtils
             if bestTarget != null then
                 if bestIsKillTarget then
                     if bestIsStunOrSlow then
-                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:1 Stun/Slow:1")
+                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1")
+                        call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1)")
+                        call owner.setDebugTextTagColorPreset("RED")
                     else
-                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:1 Stun/Slow:0")
+                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0")
+                        call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0)")
+                        call owner.setDebugTextTagColorPreset("RED")
                     endif
                 else
                     if bestIsStunOrSlow then
-                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:0 Stun/Slow:1")
+                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1")
+                        call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1)")
+                        call owner.setDebugTextTagColorPreset("RED")
                     else
-                        call BJDebugMsg("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Kill:0 Stun/Slow:0")
+                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0")
+                        call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0)")
                     endif
                 endif
             else
-                call BJDebugMsg("No suitable combo target found, trying fallback to overkill targets")
+                call BotLog("No suitable combo target found, trying fallback to overkill targets")
                 
                 // Fallback: If no targets above threshold, find highest HP among all enemies (minimize overkill)
                 set heroes = CreateGroup()
@@ -1053,7 +1133,9 @@ library AIStateMachine requires optional KeyUtils
                     if bestTarget == null or currentHp > bestTargetHp then
                         set bestTarget = currentUnit
                         set bestTargetHp = currentHp
-                        call BJDebugMsg("Fallback combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        call BotLog("Fallback combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        call owner.setDebugTextTagContent("Combat: Fallback Combo Target Candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        call owner.setDebugTextTagColorPreset("RED")
                     endif
                 endloop
                 
@@ -1062,9 +1144,13 @@ library AIStateMachine requires optional KeyUtils
                 set heroes = null
                 
                 if bestTarget != null then
-                    call BJDebugMsg("Fallback combo target selected: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " (overkill)")
+                    call BotLog("Fallback combo target selected: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " (overkill)")
+                    call owner.setDebugTextTagContent("Combat: Combo Target (Overkill): " + GetUnitName(bestTarget))
+                    call owner.setDebugTextTagColorPreset("RED")
                 else
-                    call BJDebugMsg("No combo targets found at all")
+                    call BotLog("No combo targets found at all")
+                    call owner.setDebugTextTagContent("Combat: No Combo Target")
+                    call owner.setDebugTextTagColorPreset("RED")
                 endif
             endif
             
@@ -1072,7 +1158,9 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onExit takes nothing returns nothing
-            call BJDebugMsg("Exiting Combat State")
+            call BotLog("Exiting Combat State")
+            call owner.setDebugTextTagContent("Combat: Exit")
+            call owner.setDebugTextTagColorPreset("RED")
         endmethod
     endstruct
 
@@ -1092,6 +1180,7 @@ library AIStateMachine requires optional KeyUtils
         unit comboTargetUnit
         texttag debugTextTag
         string debugTextTagContent
+        timer debugTextTagTimer
         
         // Constructor
         static method create takes unit u, integer inDifficulty returns thistype
@@ -1123,8 +1212,9 @@ library AIStateMachine requires optional KeyUtils
             
             // Store unit to AIHero mapping
             call SaveInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0, this)
-
-            call this.createDebugTextTag()
+            if udg_bEnableBotTextTag then
+                call this.createDebugTextTag()
+            endif
 
             return this
         endmethod
@@ -1136,7 +1226,9 @@ library AIStateMachine requires optional KeyUtils
             local boolean hasReadyAbility = false
 
             if IsUnitStunOrSilence(this.hero) then
-                call BJDebugMsg("Cannot enter combat, hero is stunned or silenced.")
+                call BotLog("Cannot enter combat, hero is stunned or silenced.")
+                call this.setDebugTextTagContent("Run: Stunned/Silenced")
+                call this.setDebugTextTagColorPreset("GREEN")
                 return false
             endif
 
@@ -1207,10 +1299,6 @@ library AIStateMachine requires optional KeyUtils
                 endif
             endif
 
-            // Debug: Update text tag position
-            if this.debugTextTag != null then
-                call SetTextTagPos (this.debugTextTag, GetUnitX(this.hero) - 125.0, GetUnitY(this.hero), 0.0)
-            endif
         endmethod
 
         method onCastComplete takes nothing returns nothing
@@ -1221,39 +1309,55 @@ library AIStateMachine requires optional KeyUtils
             // Advance combo index if casting combo ability
             if IsApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
                 set this.currentComboIndex = this.currentComboIndex + 1
-                call BJDebugMsg("Ability cast complete: " + this.castingAbility.orderString + ", advancing combo index to: " + I2S(this.currentComboIndex))
+                call BotLog("Advancing combo index to: " + I2S(this.currentComboIndex))
                 // If no further combo ability, reset combo index
                 if this.combatData.getAbilityByComboIndex(this.currentComboIndex) == 0 then
                     set this.currentComboIndex = 1
                     set this.comboTargetUnit = null
-                    call BJDebugMsg("Combo sequence complete, resetting combo index to 1")
+                    call BotLog("Combo sequence complete, resetting combo index to 1")
                 endif
             endif
 
-            call BJDebugMsg("Casting complete, castingAbility: " + this.castingAbility.orderString)
-            call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " CastComplete, SetComboIdx: " + I2S(this.currentComboIndex))
-            call this.setDebugTextTagColorPreset("YELLOW", 255)
-
+            call BotLog("Casting complete for ability: " + this.castingAbility.orderString + ", current combo index: " + I2S(this.currentComboIndex))
+            call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " done, CCI: " + I2S(this.currentComboIndex))
+            call this.setDebugTextTagColorPreset("RED")
             set this.castingAbility = 0
         endmethod
 
         method createDebugTextTag takes nothing returns nothing
             set this.debugTextTag = CreateTextTag()
-            set this.debugTextTagContent = "AI"
-            call SetTextTagTextBJ(this.debugTextTag, this.debugTextTagContent, 10.0)
+            set this.debugTextTagContent = "Bot"
+            call setDebugTextTagContent(this.debugTextTagContent)
             call SetTextTagColorBJ(this.debugTextTag, 255, 255, 255, 0)
-            call SetTextTagPos (this.debugTextTag, GetUnitX(this.hero) - 125.0, GetUnitY(this.hero), 0.0)
+            call SetTextTagPos (this.debugTextTag, GetUnitX(this.hero) + this.calculateTextCenterOffset(), GetUnitY(this.hero) - 80.0, 0.0)
             call SetTextTagPermanent(this.debugTextTag, true)
             call SetTextTagSuspended(this.debugTextTag, true)
             call SetTextTagVisibility(this.debugTextTag, true)
             call SetTextTagFadepoint(this.debugTextTag, -1.0)
+
+            set this.debugTextTagTimer = CreateTimer()
+            call TimerStart(this.debugTextTagTimer, 0.03, true, function thistype.updateDebugTextTagPosition)
+            call SaveInteger(udg_DebugTextTagTimerHeroMap, GetHandleId(this.debugTextTagTimer), 0, this)
+        endmethod
+
+        static method updateDebugTextTagPosition takes nothing returns nothing
+            local thistype this = LoadInteger(udg_DebugTextTagTimerHeroMap, GetHandleId(GetExpiredTimer()), 0)
+            if this.debugTextTag != null then
+                call SetTextTagPos(this.debugTextTag, GetUnitX(this.hero) + this.calculateTextCenterOffset(), GetUnitY(this.hero) - 80.0, 0.0)
+            endif
         endmethod
 
         method setDebugTextTagContent takes string content returns nothing
             set this.debugTextTagContent = content
             if this.debugTextTag != null then
-                call SetTextTagTextBJ(this.debugTextTag, this.debugTextTagContent, 10.0)
+                call SetTextTagTextBJ(this.debugTextTag, this.debugTextTagContent, 8.0)
             endif
+        endmethod
+
+        method calculateTextCenterOffset takes nothing returns real
+            local integer stringLength = StringLength(this.debugTextTagContent)
+            local real characterWidth = 65.0  // Approximate character width in Warcraft III units
+            return - (stringLength * characterWidth) / 5.3
         endmethod
 
         method setDebugTextTagColor takes integer r, integer g, integer b, integer a returns nothing
@@ -1262,7 +1366,8 @@ library AIStateMachine requires optional KeyUtils
             endif
         endmethod
 
-        method setDebugTextTagColorPreset takes string colorName, integer alpha returns nothing
+        method setDebugTextTagColorPreset takes string colorName returns nothing
+            local integer alpha = 0
             if colorName == "WHITE" then
                 call this.setDebugTextTagColor(COLOR_WHITE_R, COLOR_WHITE_G, COLOR_WHITE_B, alpha)
             elseif colorName == "RED" then
@@ -1284,7 +1389,7 @@ library AIStateMachine requires optional KeyUtils
             elseif colorName == "GRAY" then
                 call this.setDebugTextTagColor(COLOR_GRAY_R, COLOR_GRAY_G, COLOR_GRAY_B, alpha)
             else
-                call BJDebugMsg("Unknown color preset: " + colorName)
+                call BotLogError("Unknown color preset: " + colorName)
                 call this.setDebugTextTagColor(COLOR_WHITE_R, COLOR_WHITE_G, COLOR_WHITE_B, alpha)
             endif
         endmethod
@@ -1301,6 +1406,7 @@ library AIStateMachine requires optional KeyUtils
     private module Initializer
         private static method onInit takes nothing returns nothing
             set udg_TimerHeroMap = InitHashtable()
+            set udg_DebugTextTagTimerHeroMap = InitHashtable()
             set udg_UnitAIHeroMap = InitHashtable()
             set heroCastPointMap = InitHashtable()
             set gameTimer = CreateTimer()
