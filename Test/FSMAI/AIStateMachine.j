@@ -46,6 +46,7 @@ library AIStateMachine requires optional KeyUtils
         private player tempHeroOwner
         private boolean bTempFilterForAllies
         private unit tempHeroUnit
+        private HeroAbility tempHeroAbility
 
         // The array to hold the waypoint regions.
         private rect array WaypointAreas
@@ -133,6 +134,27 @@ library AIStateMachine requires optional KeyUtils
         // TODO: Add more hero types as needed
     endfunction
 
+    // Initialize hero-specific abilities (extend this function for different heroes)
+    function InitializeHeroCombatData takes unit hero, integer difficulty returns HeroCombatData
+        local HeroCombatData data = HeroCombatData.create()
+        local integer heroTypeId = GetUnitTypeId(hero)
+
+        
+        // Example: Add abilities based on hero type
+        if heroTypeId == 'H009' then  // BloodMage example
+            call BotLog("Adding abilities for BloodMage")
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2, 866.0)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1, 0.0)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0, 0.0) // Blood Lust
+            
+        elseif heroTypeId == 'Hmkg' then  // Mountain King example
+            // call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
+            // Add more hero types as needed...
+        endif
+        
+        return data
+    endfunction
+
     function GetHeroCastPoint takes integer heroTypeId returns real
         if HaveSavedReal(heroCastPointMap, heroTypeId, 0) then
             return LoadReal(heroCastPointMap, heroTypeId, 0)
@@ -161,6 +183,14 @@ library AIStateMachine requires optional KeyUtils
         if not IsUnitVisible(filterUnit, tempHeroOwner) then
             set filterUnit = null
             return false
+        endif
+
+        // Custom ability filter
+        if tempHeroAbility != 0 then
+            if not tempHeroAbility.customFilter(filterUnit) then
+                set filterUnit = null
+                return false
+            endif
         endif
 
         // Check if we want allies or enemies
@@ -296,6 +326,17 @@ library AIStateMachine requires optional KeyUtils
                 return true
             endif
             return false
+        endmethod
+
+        method customFilter takes unit u returns boolean
+            // Custom filtering logic for specific abilities
+            if this.abilityId == 'A00W' then  // Banish ability
+                if UnitHasBuffBJ(u, 'BHbn') then
+                    call BotLog("Skipping banish target, already banished, unit: " + GetUnitName(u))
+                    return false
+                endif
+            endif
+            return true
         endmethod
 
         
@@ -530,26 +571,6 @@ library AIStateMachine requires optional KeyUtils
 
     endstruct
 
-    // Initialize hero-specific abilities (extend this function for different heroes)
-    function InitializeHeroCombatData takes unit hero, integer difficulty returns HeroCombatData
-        local HeroCombatData data = HeroCombatData.create()
-        local integer heroTypeId = GetUnitTypeId(hero)
-
-        
-        // Example: Add abilities based on hero type
-        if heroTypeId == 'H009' then  // BloodMage example
-            call BotLog("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2, 866.0)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1, 0.0)   // Banish
-            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0, 0.0) // Blood Lust
-            
-        elseif heroTypeId == 'Hmkg' then  // Mountain King example
-            // call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
-            // Add more hero types as needed...
-        endif
-        
-        return data
-    endfunction
 
     struct AIState 
         integer stateID
@@ -844,31 +865,31 @@ library AIStateMachine requires optional KeyUtils
             if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
                 // Use smart combo targeting for combo abilities, random for others
                 if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
-                    set targetUnit = this.findBestComboTarget(heroAbil.castRange)
+                    set targetUnit = this.findBestComboTarget(heroAbil.castRange, heroAbil)
                     call BotLog("Finding best combo target, result: " + GetUnitName(targetUnit))
                     call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Combo Target " + GetUnitName(targetUnit))
                     call owner.setDebugTextTagColorPreset("RED")
                 else
-                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange, heroAbil)
                     call BotLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
                     call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
                     call owner.setDebugTextTagColorPreset("RED")
                 endif
             elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
-                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange, heroAbil)
                 call BotLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
 
             elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
                 // For simplicity, use enemy hero targeting for enemy units for now
-                set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange)
+                set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange, heroAbil)
                 call BotLog("Finding enemy unit target, result: " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Unit Target" + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
             elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
                 // For simplicity, use ally hero targeting for ally units for now
-                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange)
+                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange, heroAbil)
                 call BotLog("Finding ally unit target, result: " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Unit Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
@@ -910,6 +931,13 @@ library AIStateMachine requires optional KeyUtils
 
         method castUnitAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
             if targetUnit != null then
+                // Apply custom filter before casting
+                if not heroAbil.customFilter(targetUnit) then
+                    call BotLog("Target filtered out by custom filter: " + heroAbil.orderString)
+                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Target Filtered")
+                    call owner.setDebugTextTagColorPreset("RED")
+                    return false
+                endif
                 call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
                 call BotLog("Casting unit target ability: " + heroAbil.orderString)
                 return true
@@ -962,9 +990,10 @@ library AIStateMachine requires optional KeyUtils
             return null  // Placeholder - replace with actual enemy finding logic
         endmethod
 
-        method findRandomHeroInRange takes real range, boolean isForAllies returns unit
+        method findRandomHeroInRange takes real range, boolean isForAllies, HeroAbility heroAbil returns unit
             local group heroes = CreateGroup()
             local unit randomHero
+            local unit tempUnit
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
             local player heroOwner = GetOwningPlayer(owner.hero)
@@ -973,7 +1002,22 @@ library AIStateMachine requires optional KeyUtils
             set tempHeroOwner = heroOwner
             set bTempFilterForAllies = isForAllies
             set tempHeroUnit = owner.hero
+            set tempHeroAbility = heroAbil
             call GroupEnumUnitsInRange(heroes, heroX, heroY, range, Filter(function FilterHeroes))
+            set tempHeroAbility = 0
+            
+            // Apply custom filter if provided
+            if heroAbil != null then
+                loop
+                    set tempUnit = FirstOfGroup(heroes)
+                    exitwhen tempUnit == null
+                    call GroupRemoveUnit(heroes, tempUnit)
+                    
+                    if heroAbil.customFilter(tempUnit) then
+                        call GroupAddUnit(heroes, tempUnit)
+                    endif
+                endloop
+            endif
             
             // Get random hero from filtered group
             set randomHero = GroupPickRandomUnit(heroes)
@@ -985,15 +1029,15 @@ library AIStateMachine requires optional KeyUtils
             return randomHero
         endmethod
 
-        method findRandomEnemyHeroInRange takes real range returns unit
-            return this.findRandomHeroInRange(range, false)
+        method findRandomEnemyHeroInRange takes real range, HeroAbility heroAbil returns unit
+            return this.findRandomHeroInRange(range, false, heroAbil)
         endmethod
         
-        method findRandomAllyHeroInRange takes real range returns unit
-            return this.findRandomHeroInRange(range, true)
+        method findRandomAllyHeroInRange takes real range, HeroAbility heroAbil returns unit
+            return this.findRandomHeroInRange(range, true, heroAbil)
         endmethod
 
-        method findBestComboTarget takes real range returns unit
+        method findBestComboTarget takes real range, HeroAbility heroAbil returns unit
             local group heroes = CreateGroup()
             local unit currentUnit = null
             local unit bestTarget = null
@@ -1015,6 +1059,7 @@ library AIStateMachine requires optional KeyUtils
             set tempHeroOwner = heroOwner
             set bTempFilterForAllies = false
             set tempHeroUnit = owner.hero
+            set tempHeroAbility = heroAbil
             call GroupEnumUnitsInRange(heroes, heroX, heroY, range, Filter(function FilterHeroes))
             
             // Iterate through filtered enemies to find best target
@@ -1034,58 +1079,63 @@ library AIStateMachine requires optional KeyUtils
                 // 5. Damage Efficiency
                 // 6. Fallback to Overkill
 
-                if currentHp >= comboMinThreshold then
-                    set isKillTarget = (currentHp <= comboExpectedDamage)
-                    set isStunOrSlow = IsUnitStunOrSlow(currentUnit)
+                // Apply custom filter if provided
+                if heroAbil != null and not heroAbil.customFilter(currentUnit) then
+                    // Skip this unit if it doesn't pass the custom filter
+                else
+                    if currentHp >= comboMinThreshold then
+                        set isKillTarget = (currentHp <= comboExpectedDamage)
+                        set isStunOrSlow = IsUnitStunOrSlow(currentUnit)
                     
-                    if bestTarget == null then
-                        // First candidate - set as best
-                        set bestTarget = currentUnit
-                        set bestTargetHp = currentHp
-                        set bestIsKillTarget = isKillTarget
-                        set bestIsStunOrSlow = isStunOrSlow
-                        if isKillTarget then
-                            if isStunOrSlow then
-                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:1")
-                            else
-                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:0")
-                            endif
-                        else
-                            if isStunOrSlow then
-                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:1")
-                            else
-                                call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:0")
-                            endif
-                        endif
-                    elseif isStunOrSlow and not bestIsStunOrSlow then
-                        // Stunned/slowed target is better than normal target
-                        set bestTarget = currentUnit
-                        set bestTargetHp = currentHp
-                        set bestIsKillTarget = isKillTarget
-                        set bestIsStunOrSlow = isStunOrSlow
-                        call BotLog("Better combo target (stun/slow): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
-                    elseif (isStunOrSlow == bestIsStunOrSlow) then
-                        // Same stun/slow status, apply kill priority logic
-                        if isKillTarget and not bestIsKillTarget then
-                            // Kill target is better than non-kill target
+                        if bestTarget == null then
+                            // First candidate - set as best
                             set bestTarget = currentUnit
                             set bestTargetHp = currentHp
                             set bestIsKillTarget = isKillTarget
-                            call BotLog("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
-                        elseif isKillTarget and bestIsKillTarget and currentHp > bestTargetHp then
-                            // Among kill targets, prefer higher HP (less overkill)
+                            set bestIsStunOrSlow = isStunOrSlow
+                            if isKillTarget then
+                                if isStunOrSlow then
+                                    call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:1")
+                                else
+                                    call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:1 Stun/Slow:0")
+                                endif
+                            else
+                                if isStunOrSlow then
+                                    call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:1")
+                                else
+                                    call BotLog("Initial combo target candidate: " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " Kill:0 Stun/Slow:0")
+                                endif
+                            endif
+                        elseif isStunOrSlow and not bestIsStunOrSlow then
+                            // Stunned/slowed target is better than normal target
                             set bestTarget = currentUnit
                             set bestTargetHp = currentHp
-                            call BotLog("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
-                        elseif not isKillTarget and not bestIsKillTarget and currentHp < bestTargetHp then
-                            // Among non-kill targets, prefer lower HP (better efficiency)
-                            set bestTarget = currentUnit
-                            set bestTargetHp = currentHp
-                            call BotLog("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            set bestIsKillTarget = isKillTarget
+                            set bestIsStunOrSlow = isStunOrSlow
+                            call BotLog("Better combo target (stun/slow): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                        elseif (isStunOrSlow == bestIsStunOrSlow) then
+                            // Same stun/slow status, apply kill priority logic
+                            if isKillTarget and not bestIsKillTarget then
+                                // Kill target is better than non-kill target
+                                set bestTarget = currentUnit
+                                set bestTargetHp = currentHp
+                                set bestIsKillTarget = isKillTarget
+                                call BotLog("Better combo target (kill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            elseif isKillTarget and bestIsKillTarget and currentHp > bestTargetHp then
+                                // Among kill targets, prefer higher HP (less overkill)
+                                set bestTarget = currentUnit
+                                set bestTargetHp = currentHp
+                                call BotLog("Better combo target (less overkill): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            elseif not isKillTarget and not bestIsKillTarget and currentHp < bestTargetHp then
+                                // Among non-kill targets, prefer lower HP (better efficiency)
+                                set bestTarget = currentUnit
+                                set bestTargetHp = currentHp
+                                call BotLog("Better combo target (efficiency): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp))
+                            endif
                         endif
+                    else
+                        call BotLog("Skipping combo target (too low HP): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " < " + R2S(comboMinThreshold))
                     endif
-                else
-                    call BotLog("Skipping combo target (too low HP): " + GetUnitName(currentUnit) + " HP:" + R2S(currentHp) + " < " + R2S(comboMinThreshold))
                 endif
             endloop
             
@@ -1154,6 +1204,7 @@ library AIStateMachine requires optional KeyUtils
                 endif
             endif
             
+            set tempHeroAbility = 0            
             return bestTarget
         endmethod
 
