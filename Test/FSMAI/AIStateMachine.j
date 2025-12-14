@@ -97,8 +97,40 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
+    function BotLogWithPlayer takes player p, string msg returns nothing
+        local integer playerIndex = GetPlayerId(p) + 1
+        local string playerName = ""
+        if udg_bEnableLogBot then
+            if playerIndex >= 0 and playerIndex <= 12 then
+                set playerName = udg_PlayerNameWithHero[playerIndex]
+                if playerName != null and playerName != "" then
+                    call BJDebugMsg("[AI Bot] " + playerName + " " + msg)
+                else
+                    call BJDebugMsg("[AI Bot] Player " + I2S(playerIndex) + " " + msg)
+                endif
+            else
+                call BJDebugMsg("[AI Bot] " + msg)
+            endif
+        endif
+    endfunction
+
     function BotLogError takes string msg returns nothing
         call BJDebugMsg("[AI Bot] |cffff0000[ERROR]|r " + msg)
+    endfunction
+
+    function BotLogErrorWithPlayer takes player p, string msg returns nothing
+        local integer playerIndex = GetPlayerId(p) + 1
+        local string playerName = ""
+        if playerIndex >= 0 and playerIndex <= 12 then
+            set playerName = udg_PlayerNameWithHero[playerIndex]
+            if playerName != null and playerName != "" then
+                call BJDebugMsg("[AI Bot] |cffff0000[ERROR]|r " + playerName + " " + msg)
+            else
+                call BJDebugMsg("[AI Bot] |cffff0000[ERROR]|r Player " + I2S(playerIndex) + " " + msg)
+            endif
+        else
+            call BJDebugMsg("[AI Bot] |cffff0000[ERROR]|r " + msg)
+        endif
     endfunction
 
     // Helper function to get cooldown multiplier based on difficulty
@@ -576,6 +608,15 @@ library AIStateMachine requires optional KeyUtils
     struct AIState 
         integer stateID
         AIHero owner
+        
+        method botLog takes string msg returns nothing
+            call BotLogWithPlayer(GetOwningPlayer(owner.hero), msg)
+        endmethod
+        
+        method botLogError takes string msg returns nothing
+            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), msg)
+        endmethod
+        
         stub method onEnter takes nothing returns nothing
             // Placeholder for state entry logic
         endmethod
@@ -603,7 +644,7 @@ library AIStateMachine requires optional KeyUtils
             local real x
             local real y
 
-            call BotLog("Entering Run State")
+            call this.botLog("Entering Run State")
             call owner.setDebugTextTagContent("Run: Entering")
             call owner.setDebugTextTagColorPreset("GREEN")
 
@@ -628,7 +669,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
             
-            call BotLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
+            call this.botLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
             call owner.setDebugTextTagContent("Run: Updating, WPI " + I2S(owner.currentWaypointIndex))
             call owner.setDebugTextTagColorPreset("GREEN")
             
@@ -640,11 +681,11 @@ library AIStateMachine requires optional KeyUtils
             
             // Check if hero has reached the current waypoint area
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
-                call BotLog("Reached waypoint " + I2S(owner.currentWaypointIndex))
+                call this.botLog("Reached waypoint " + I2S(owner.currentWaypointIndex))
                 call owner.setDebugTextTagContent("Run: Reached Waypoint " + I2S(owner.currentWaypointIndex))
                 call owner.setDebugTextTagColorPreset("GREEN")
                 if owner.currentWaypointIndex >= WaypointCount then
-                    call BotLog("Reached final waypoint")
+                    call this.botLog("Reached final waypoint")
                     call owner.setDebugTextTagContent("Run: Reached Final Waypoint")
                     call owner.setDebugTextTagColorPreset("GREEN")
                     // TODO Goaled State
@@ -660,7 +701,7 @@ library AIStateMachine requires optional KeyUtils
                 call IssuePointOrder(owner.hero, "move", targetX, targetY)
             elseif currentOrder == 0 then
                 // Hero is idle (no current order) - reissue move command to current waypoint
-                call BotLog("Hero is idle, reissuing move command")
+                call this.botLog("Hero is idle, reissuing move command")
                 call owner.setDebugTextTagContent("Run: Reissuing Move Command")
                 call owner.setDebugTextTagColorPreset("GREEN")
                 set targetX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
@@ -670,7 +711,7 @@ library AIStateMachine requires optional KeyUtils
             
             // Check if we should enter combat state
             if owner.shouldEnterCombat() then
-                call BotLog("Entering combat - abilities ready")
+                call this.botLog("Entering combat - abilities ready")
                 call owner.setDebugTextTagContent("Run: Entering Combat")
                 call owner.setDebugTextTagColorPreset("GREEN")
                 call owner.changeState(CombatState.create())
@@ -681,7 +722,7 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onExit takes nothing returns nothing
-            call BotLog("Exiting Run State")
+            call this.botLog("Exiting Run State")
             call owner.setDebugTextTagContent("Run: Exiting")
             call owner.setDebugTextTagColorPreset("GREEN")
         endmethod
@@ -695,7 +736,7 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            call BotLog("Hero died - Entering Dead State")
+            call this.botLog("Hero died - Entering Dead State")
             call owner.setDebugTextTagContent("Dead: Entering")
             call owner.setDebugTextTagColorPreset("GRAY")
             call IssueImmediateOrder(owner.hero, "stop")
@@ -706,14 +747,14 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
             
-            call BotLog("Hero revived - Returning to Run State")
+            call this.botLog("Hero revived - Returning to Run State")
             call owner.setDebugTextTagContent("Dead: Revived")
             call owner.setDebugTextTagColorPreset("GRAY")
             call owner.changeState(RunState.create())
         endmethod
 
         method onExit takes nothing returns nothing
-            call BotLog("Exiting Dead State")
+            call this.botLog("Exiting Dead State")
             call owner.setDebugTextTagContent("Dead: Exiting")
             call owner.setDebugTextTagColorPreset("GRAY")
         endmethod
@@ -727,7 +768,7 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            call BotLog("Entering Combat State")
+            call this.botLog("Entering Combat State")
             call owner.setDebugTextTagContent("Combat: Entering")
             call owner.setDebugTextTagColorPreset("RED")
         endmethod
@@ -739,7 +780,7 @@ library AIStateMachine requires optional KeyUtils
             local boolean isCastFailed = owner.isCasting and isCastOvertime
 
             if isCastFailed then
-                call BotLog("Casting failed or interrupted, resetting casting state")
+                call this.botLog("Casting failed or interrupted, resetting casting state")
                 call owner.setDebugTextTagContent("Combat: Cast Failed " + owner.castingAbility.orderString)
                 call owner.setDebugTextTagColorPreset("RED")
                 set owner.isCasting = false
@@ -747,7 +788,7 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             if owner.isCasting then
-                call BotLog("Currently casting an ability, skipping update")
+                call this.botLog("Currently casting an ability, skipping update")
                 call owner.setDebugTextTagContent("Combat: Casting " + owner.castingAbility.orderString)
                 call owner.setDebugTextTagColorPreset("RED")
                 return
@@ -904,7 +945,7 @@ library AIStateMachine requires optional KeyUtils
 
         method castInstantAbility takes HeroAbility heroAbil returns boolean
             call IssueImmediateOrder(owner.hero, heroAbil.orderString)
-            call BotLog("Casting instant ability: " + heroAbil.orderString)
+            call this.botLog("Casting instant ability: " + heroAbil.orderString)
             return true
         endmethod
 
@@ -926,14 +967,14 @@ library AIStateMachine requires optional KeyUtils
             set targetX = GetUnitX(targetUnit) + offset * Cos(heroFacing)
             set targetY = GetUnitY(targetUnit) + offset * Sin(heroFacing) 
             call IssuePointOrder(owner.hero, heroAbil.orderString, targetX, targetY)
-            call BotLog("Casting point target ability in front: " + heroAbil.orderString)
+            call this.botLog("Casting point target ability in front: " + heroAbil.orderString)
             return true
         endmethod
 
         method castUnitAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
             if targetUnit != null then
                 call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
-                call BotLog("Casting unit target ability: " + heroAbil.orderString)
+                call this.botLog("Casting unit target ability: " + heroAbil.orderString)
                 return true
             else
                 call BotLog("No target found for unit ability: " + heroAbil.orderString)
@@ -1165,7 +1206,7 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onExit takes nothing returns nothing
-            call BotLog("Exiting Combat State")
+            call this.botLog("Exiting Combat State")
             call owner.setDebugTextTagContent("Combat: Exit")
             call owner.setDebugTextTagColorPreset("RED")
         endmethod
@@ -1256,7 +1297,13 @@ library AIStateMachine requires optional KeyUtils
             call this.currentState.onEnter()
         endmethod
 
-      
+        method botLog takes string msg returns nothing
+            call BotLogWithPlayer(GetOwningPlayer(this.hero), msg)
+        endmethod
+        
+        method botLogError takes string msg returns nothing
+            call BotLogErrorWithPlayer(GetOwningPlayer(this.hero), msg)
+        endmethod
 
         method destroy takes nothing returns nothing
             // Clean up combat data
@@ -1316,16 +1363,16 @@ library AIStateMachine requires optional KeyUtils
             // Advance combo index if casting combo ability
             if IsApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
                 set this.currentComboIndex = this.currentComboIndex + 1
-                call BotLog("Advancing combo index to: " + I2S(this.currentComboIndex))
+                call this.botLog("Advancing combo index to: " + I2S(this.currentComboIndex))
                 // If no further combo ability, reset combo index
                 if this.combatData.getAbilityByComboIndex(this.currentComboIndex) == 0 then
                     set this.currentComboIndex = 1
                     set this.comboTargetUnit = null
-                    call BotLog("Combo sequence complete, resetting combo index to 1")
+                    call this.botLog("Combo sequence complete, resetting combo index to 1")
                 endif
             endif
 
-            call BotLog("Casting complete for ability: " + this.castingAbility.orderString + ", current combo index: " + I2S(this.currentComboIndex))
+            call this.botLog("Casting complete for ability: " + this.castingAbility.orderString + ", current combo index: " + I2S(this.currentComboIndex))
             call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " done, CCI: " + I2S(this.currentComboIndex))
             call this.setDebugTextTagColorPreset("RED")
             set this.castingAbility = 0
