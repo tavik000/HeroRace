@@ -86,9 +86,9 @@ library AIStateMachine requires optional KeyUtils
         constant integer COLOR_PINK_R = 255
         constant integer COLOR_PINK_G = 192
         constant integer COLOR_PINK_B = 203
-        constant integer COLOR_GRAY_R = 128
-        constant integer COLOR_GRAY_G = 128
-        constant integer COLOR_GRAY_B = 128
+        constant integer COLOR_GRAY_R = 93
+        constant integer COLOR_GRAY_G = 93
+        constant integer COLOR_GRAY_B = 93
     endglobals
 
     function BotLog takes string msg returns nothing
@@ -143,7 +143,7 @@ library AIStateMachine requires optional KeyUtils
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
             call BotLog("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_NONE, 200, 2, 866.0)   // Flame Strike
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 200, 2, 866.0)   // Flame Strike
             call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1, 0.0)   // Banish
             call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0, 0.0) // Blood Lust
             
