@@ -813,7 +813,7 @@ library AIStateMachine requires optional KeyUtils
             if IsUnitStunOrSilence(owner.hero) then
                 call BotLog("Cannot cast ability, hero is stunned or silenced.")
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Stunned/Silenced")
-                call owner.setDebugTextTagColorPreset("RED")
+                call owner.setDebugTextTagColorPreset("YELLOW")
                 return false
             endif
 
@@ -1235,7 +1235,7 @@ library AIStateMachine requires optional KeyUtils
             if IsUnitStunOrSilence(this.hero) then
                 call BotLog("Cannot enter combat, hero is stunned or silenced.")
                 call this.setDebugTextTagContent("Run: Stunned/Silenced")
-                call this.setDebugTextTagColorPreset("GREEN")
+                call this.setDebugTextTagColorPreset("YELLOW")
                 return false
             endif
 
