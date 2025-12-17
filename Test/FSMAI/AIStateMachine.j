@@ -1380,7 +1380,7 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
             
-            return false
+            return true
         endmethod
 
         method destroy takes nothing returns nothing
