@@ -20,6 +20,16 @@ library AIStateMachine requires optional KeyUtils
         // Settings
         constant real HEAL_THRESHOLD = 0.40 // 40% HP
         constant real UPDATE_PERIOD = 0.30
+
+        // Hazard Types
+        constant integer HAZARD_TYPE_NONE = 0
+        constant integer HAZARD_TYPE_SLOW_SPIKE = 1
+        constant integer HAZARD_TYPE_NET = 2
+        
+        // Spike Hazard Settings 
+        constant real SLOW_SPIKE_AVOIDANCE_RADIUS = 150.0
+        constant real SLOW_SPIKE_SPEED = 155.0
+        constant real SLOW_SPIKE_RADIUS = 110.0
         
         // Combat settings
         constant real EASY_CD_MULTIPLIER = 2.0
@@ -58,37 +68,37 @@ library AIStateMachine requires optional KeyUtils
 
         constant real MAX_RANGE = 30000.0
 
-        // Debug Text Tag Color Presets (RGB 0-255 format)
-        constant integer COLOR_WHITE_R = 255
-        constant integer COLOR_WHITE_G = 255
-        constant integer COLOR_WHITE_B = 255
-        constant integer COLOR_RED_R = 255
-        constant integer COLOR_RED_G = 0
-        constant integer COLOR_RED_B = 0
-        constant integer COLOR_GREEN_R = 0
-        constant integer COLOR_GREEN_G = 255
-        constant integer COLOR_GREEN_B = 0
-        constant integer COLOR_BLUE_R = 0
-        constant integer COLOR_BLUE_G = 0
-        constant integer COLOR_BLUE_B = 255
-        constant integer COLOR_YELLOW_R = 255
-        constant integer COLOR_YELLOW_G = 255
-        constant integer COLOR_YELLOW_B = 0
-        constant integer COLOR_ORANGE_R = 255
-        constant integer COLOR_ORANGE_G = 165
-        constant integer COLOR_ORANGE_B = 0
-        constant integer COLOR_PURPLE_R = 128
-        constant integer COLOR_PURPLE_G = 0
-        constant integer COLOR_PURPLE_B = 128
-        constant integer COLOR_CYAN_R = 0
-        constant integer COLOR_CYAN_G = 255
-        constant integer COLOR_CYAN_B = 255
-        constant integer COLOR_PINK_R = 255
-        constant integer COLOR_PINK_G = 192
-        constant integer COLOR_PINK_B = 203
-        constant integer COLOR_GRAY_R = 93
-        constant integer COLOR_GRAY_G = 93
-        constant integer COLOR_GRAY_B = 93
+        // Debug Text Tag Color Presets (RGB 0-100 format)
+        constant real COLOR_WHITE_R = 100.0
+        constant real COLOR_WHITE_G = 100.0
+        constant real COLOR_WHITE_B = 100.0
+        constant real COLOR_RED_R = 100.0
+        constant real COLOR_RED_G = 0.0
+        constant real COLOR_RED_B = 0.0
+        constant real COLOR_GREEN_R = 0.0
+        constant real COLOR_GREEN_G = 100.0
+        constant real COLOR_GREEN_B = 0.0
+        constant real COLOR_BLUE_R = 0.0
+        constant real COLOR_BLUE_G = 0.0
+        constant real COLOR_BLUE_B = 100.0
+        constant real COLOR_YELLOW_R = 100.0
+        constant real COLOR_YELLOW_G = 100.0
+        constant real COLOR_YELLOW_B = 0.0
+        constant real COLOR_ORANGE_R = 100.0
+        constant real COLOR_ORANGE_G = 64.7
+        constant real COLOR_ORANGE_B = 0.0
+        constant real COLOR_PURPLE_R = 50.2
+        constant real COLOR_PURPLE_G = 0.0
+        constant real COLOR_PURPLE_B = 50.2
+        constant real COLOR_CYAN_R = 0.0
+        constant real COLOR_CYAN_G = 100.0
+        constant real COLOR_CYAN_B = 100.0
+        constant real COLOR_PINK_R = 100.0
+        constant real COLOR_PINK_G = 75.3
+        constant real COLOR_PINK_B = 79.6
+        constant real COLOR_GRAY_R = 36.5
+        constant real COLOR_GRAY_G = 36.5
+        constant real COLOR_GRAY_B = 36.5
     endglobals
 
     function BotLog takes string msg returns nothing
@@ -280,9 +290,9 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[4] = gg_rct_AIWayPointArea04
         set WaypointAreas[5] = gg_rct_AIWayPointArea05 // Upper of 3 Fishes
         set WaypointAreas[6] = gg_rct_AIWayPointArea06 // Left of 3 Fishes 
-        set WaypointAreas[7] = gg_rct_AIWayPointArea07 // Before Slow Knife Hazard
-        set WaypointAreas[8] = gg_rct_AIWayPointArea08 // After Slow Knife Hazard
-        set WaypointAreas[9] = gg_rct_AIWayPointArea09 // Before Fast Knife Hazard
+        set WaypointAreas[7] = gg_rct_AIWayPointArea07 // Before Slow Spike Hazard
+        set WaypointAreas[8] = gg_rct_AIWayPointArea08 // After Slow Spike Hazard
+        set WaypointAreas[9] = gg_rct_AIWayPointArea09 // Before Fast Spike Hazard
         set WaypointAreas[10] = gg_rct_AIWayPointArea10 // Before Net Hazard
         set WaypointAreas[11] = gg_rct_AIWayPointArea11 // After Net Hazard
         set WaypointAreas[12] = gg_rct_AIWayPointArea12
@@ -709,6 +719,13 @@ library AIStateMachine requires optional KeyUtils
                 call IssuePointOrder(owner.hero, "move", targetX, targetY)
             endif
             
+            // Check for spike hazards first (highest priority, only between waypoints 7-8)
+            if owner.shouldEnterHazardState() then
+                call this.botLog("Spike hazard detected - entering spike dodge state")
+                call owner.changeState(HazardState.create())
+                return
+            endif
+            
             // Check if we should enter combat state
             if owner.shouldEnterCombat() then
                 call this.botLog("Entering combat - abilities ready")
@@ -758,6 +775,58 @@ library AIStateMachine requires optional KeyUtils
             call owner.setDebugTextTagContent("Dead: Exiting")
             call owner.setDebugTextTagColorPreset("GRAY")
         endmethod
+    endstruct
+
+    struct HazardState extends AIState
+        integer hazardType  // 0 = Spike, 1 = Net, etc.
+
+        static method create takes nothing returns thistype
+            local thistype this = thistype.allocate()
+            set this.stateID = STATE_HAZARD
+            return this
+        endmethod
+
+        method onEnter takes nothing returns nothing
+            if isInSlowSpikeHazardZone(owner) then
+                set this.hazardType = HAZARD_TYPE_SLOW_SPIKE
+                call this.botLog("Detected Slow Spike Hazard Zone")
+                call owner.setDebugTextTagContent("Hazard: Slow Spike Detected")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+            else
+                // Other hazard types can be added here
+                call this.botLogError("Unknown hazard type detected!")
+            endif
+        endmethod
+        
+        method onUpdate takes nothing returns nothing
+            if not IsUnitAliveBJ(owner.hero) then
+                return
+            endif
+            if this.hazardType == HAZARD_TYPE_SLOW_SPIKE then
+                call this.onSlowSpikeHazardZoneUpdate()
+            endif
+        endmethod
+        
+        method onSlowSpikeHazardZoneUpdate takes nothing returns nothing
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            call this.botLog("onSlowSpikeHazardZoneUpdate - Hero Position: (" + R2S(heroX) + ", " + R2S(heroY) + ")")
+        endmethod
+
+        method onExit takes nothing returns nothing
+            call this.botLog("Exiting Slow Spike Hazard State")
+            call owner.setDebugTextTagContent("Hazard: Slow Spike Exiting")
+            call owner.setDebugTextTagColorPreset("ORANGE")
+        endmethod
+
+        method isInSlowSpikeHazardZone takes AIHero aiHero returns boolean
+            local integer wpi = aiHero.currentWaypointIndex
+            if wpi == 8 then
+                return true
+            endif
+            return false
+        endmethod
+
     endstruct
 
     struct CombatState extends AIState
@@ -1238,7 +1307,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 1
+            set this.currentWaypointIndex = 7
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
@@ -1303,6 +1372,15 @@ library AIStateMachine requires optional KeyUtils
         
         method botLogError takes string msg returns nothing
             call BotLogErrorWithPlayer(GetOwningPlayer(this.hero), msg)
+        endmethod
+        
+        method shouldEnterHazardState takes nothing returns boolean
+            // Only check for slow spikes waypoints  8
+            if this.currentWaypointIndex != 8 then
+                return false
+            endif
+            
+            return false
         endmethod
 
         method destroy takes nothing returns nothing
@@ -1414,7 +1492,7 @@ library AIStateMachine requires optional KeyUtils
             return - (stringLength * characterWidth) / 5.3
         endmethod
 
-        method setDebugTextTagColor takes integer r, integer g, integer b, integer a returns nothing
+        method setDebugTextTagColor takes real r, real g, real b, real a returns nothing
             if this.debugTextTag != null then
                 call SetTextTagColorBJ(this.debugTextTag, r, g, b, a)
             endif
