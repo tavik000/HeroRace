@@ -27,9 +27,9 @@ library AIStateMachine requires optional KeyUtils
         constant integer HAZARD_TYPE_NET = 2
         
         // Spike Hazard Settings 
-        constant real SLOW_SPIKE_AVOIDANCE_RADIUS = 150.0
         constant real SLOW_SPIKE_SPEED = 155.0
         constant real SLOW_SPIKE_RADIUS = 110.0
+        constant integer SLOW_SPIKE_UNIT_TYPE_ID = 'e047'
         
         // Combat settings
         constant real EASY_CD_MULTIPLIER = 2.0
@@ -810,7 +810,54 @@ library AIStateMachine requires optional KeyUtils
         method onSlowSpikeHazardZoneUpdate takes nothing returns nothing
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
+            local real avoidanceDetectRadiusBase = 300.0
+            local real slowSpikeRadius = SLOW_SPIKE_RADIUS
+            local real avoidanceDetectRadius = avoidanceDetectRadiusBase + slowSpikeRadius
             call this.botLog("onSlowSpikeHazardZoneUpdate - Hero Position: (" + R2S(heroX) + ", " + R2S(heroY) + ")")
+
+            // detect slow spike ahead within certain radius
+            if isSlowSpikeAhead(avoidanceDetectRadius) then
+                call this.botLog("Slow Spike detected ahead, issuing dodge maneuver")
+                call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                // call owner.executeSlowSpikeDodgeManeuver()
+            else
+                // No more spikes ahead, return to Run State
+                call this.botLog("No Slow Spikes")
+            endif
+        endmethod
+
+        method isSlowSpikeAhead takes real detectRadius returns boolean
+            local group spikeGroup = CreateGroup()
+            local unit u
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local real uX
+            local real uY
+            local real distance
+            call GroupEnumUnitsInRange(spikeGroup, heroX, heroY, detectRadius, null)
+            loop
+                set u = FirstOfGroup(spikeGroup)
+                exitwhen u == null
+                if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID then
+                    // Found a spike unit
+                    set uX = GetUnitX(u)
+                    set uY = GetUnitY(u)
+                    set distance = SquareRoot((uX - heroX) * (uX - heroX) + (uY - heroY) * (uY - heroY))
+                    call this.botLog("Found spike unit at (" + R2S(uX) + ", " + R2S(uY) + "), distance: " + R2S(distance))
+                    // check if spike is ahead (in front of hero's facing direction)
+                    if IsUnitInFrontOfUnit(owner.hero, u) then
+                        call this.botLog("Spike is ahead of hero")
+                        call GroupRemoveUnit(spikeGroup, u)
+                        call DestroyGroup(spikeGroup)
+                        return true
+                    endif
+                endif
+            endloop
+            call DestroyGroup(spikeGroup)
+            
+
+            return false
         endmethod
 
         method onExit takes nothing returns nothing

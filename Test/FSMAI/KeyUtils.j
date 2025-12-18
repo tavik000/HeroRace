@@ -1,5 +1,14 @@
 library KeyUtils
 
+    // --- MATH FUNCTIONS ---
+    function Abs takes real value returns real
+        if value < 0.0 then
+            return -value
+        else
+            return value
+        endif
+    endfunction
+
     // --- UTILITY FUNCTIONS ---
     function IsUnitStun takes unit u returns boolean
         if UnitHasBuffBJ(u, 'BSTN') then 
@@ -155,6 +164,27 @@ library KeyUtils
         endif
         return false
     endfunction
+
+    function IsUnitInFrontOfUnit takes unit source, unit target returns boolean
+        local real sourceX = GetUnitX(source)
+        local real sourceY = GetUnitY(source)
+        local real targetX = GetUnitX(target)
+        local real targetY = GetUnitY(target)
+        local real angleThreshold = 180.0
+        
+        local real dx = targetX - sourceX
+        local real dy = targetY - sourceY
+        local real angleToTarget = Atan2(dy, dx) * 180.0 / bj_PI
+        
+        local real sourceFacing = GetUnitFacing(source)
+        
+        local real angleDiff = Abs(angleToTarget - sourceFacing)
+
+        call BJDebugMsg("Source Facing: " + R2S(sourceFacing) + ", Angle to Target: " + R2S(angleToTarget) + ", Angle Diff: " + R2S(angleDiff))
+        
+        return angleDiff <= angleThreshold
+    endfunction
+
 
 
 endlibrary
