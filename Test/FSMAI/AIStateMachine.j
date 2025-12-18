@@ -827,37 +827,42 @@ library AIStateMachine requires optional KeyUtils
             endif
         endmethod
 
+        method checkSpikeUnit takes unit u returns boolean
+            call this.botLog("Checking spike unit: " + GetUnitName(u) + " (Type ID: " + I2S(GetUnitTypeId(u)) + ")")
+            // Aloc is Locus ability
+            if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID and GetUnitAbilityLevel(u, 'Aloc') > 0 then
+                if IsUnitInFrontOfUnit(owner.hero, u) then
+                    return true
+                endif
+            endif
+            return false
+        endmethod
+
         method isSlowSpikeAhead takes real detectRadius returns boolean
             local group spikeGroup = CreateGroup()
             local unit u
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
-            local real uX
-            local real uY
-            local real distance
-            call GroupEnumUnitsInRange(spikeGroup, heroX, heroY, detectRadius, null)
+            local boolean result = false
+            local boolexpr filter = Filter(function AntiLeak)
+            
+            // Detect locus unit must use GroupEnumUnitsOfPlayer for Player(11)
+            call GroupEnumUnitsOfPlayer(spikeGroup, Player(11), filter) 
             loop
                 set u = FirstOfGroup(spikeGroup)
                 exitwhen u == null
-                if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID then
-                    // Found a spike unit
-                    set uX = GetUnitX(u)
-                    set uY = GetUnitY(u)
-                    set distance = SquareRoot((uX - heroX) * (uX - heroX) + (uY - heroY) * (uY - heroY))
-                    call this.botLog("Found spike unit at (" + R2S(uX) + ", " + R2S(uY) + "), distance: " + R2S(distance))
-                    // check if spike is ahead (in front of hero's facing direction)
-                    if IsUnitInFrontOfUnit(owner.hero, u) then
-                        call this.botLog("Spike is ahead of hero")
-                        call GroupRemoveUnit(spikeGroup, u)
-                        call DestroyGroup(spikeGroup)
-                        return true
+
+                call GroupRemoveUnit(spikeGroup, u)
+                if IsUnitInRangeXY(u, heroX, heroY, detectRadius)  then
+                    if this.checkSpikeUnit(u) then
+                        set result = true
+                        exitwhen true
                     endif
                 endif
             endloop
             call DestroyGroup(spikeGroup)
             
-
-            return false
+            return result
         endmethod
 
         method onExit takes nothing returns nothing

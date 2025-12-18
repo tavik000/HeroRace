@@ -3,13 +3,29 @@ library KeyUtils
     // --- MATH FUNCTIONS ---
     function Abs takes real value returns real
         if value < 0.0 then
-            return -value
+            return - value
         else
             return value
         endif
     endfunction
 
+    function NormalizeAngle takes real a returns real
+        loop
+            exitwhen a >= 0.0 and a < 360.0
+            if a < 0.0 then
+                set a = a + 360.0
+            else
+                set a = a - 360.0
+            endif
+        endloop
+        return a
+    endfunction
+
     // --- UTILITY FUNCTIONS ---
+    function AntiLeak takes nothing returns boolean
+        return true
+    endfunction
+
     function IsUnitStun takes unit u returns boolean
         if UnitHasBuffBJ(u, 'BSTN') then 
             return true
@@ -166,23 +182,11 @@ library KeyUtils
     endfunction
 
     function IsUnitInFrontOfUnit takes unit source, unit target returns boolean
-        local real sourceX = GetUnitX(source)
-        local real sourceY = GetUnitY(source)
-        local real targetX = GetUnitX(target)
-        local real targetY = GetUnitY(target)
-        local real angleThreshold = 180.0
-        
-        local real dx = targetX - sourceX
-        local real dy = targetY - sourceY
-        local real angleToTarget = Atan2(dy, dx) * 180.0 / bj_PI
-        
-        local real sourceFacing = GetUnitFacing(source)
-        
-        local real angleDiff = Abs(angleToTarget - sourceFacing)
+        local real dx = GetUnitX(target) - GetUnitX(source)
+        local real dy = GetUnitY(target) - GetUnitY(source)
 
-        call BJDebugMsg("Source Facing: " + R2S(sourceFacing) + ", Angle to Target: " + R2S(angleToTarget) + ", Angle Diff: " + R2S(angleDiff))
-        
-        return angleDiff <= angleThreshold
+        local real rad = GetUnitFacing(source) * bj_PI / 180.0
+        return dx * Cos(rad) + dy * Sin(rad) > 0.0
     endfunction
 
 
