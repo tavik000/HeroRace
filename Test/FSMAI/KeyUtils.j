@@ -21,6 +21,34 @@ library KeyUtils
         return a
     endfunction
 
+    function GetMiddleAngle takes real sourceAngle, real targetAngle returns real
+        local real angleDelta
+        local real middleAngle
+
+        // Calculate angle difference
+        set angleDelta = targetAngle - sourceAngle
+
+        // Clamp delta to the shortest arc (-180 to 180)
+        if angleDelta > 180.0 then
+            set angleDelta = angleDelta - 360.0
+        elseif angleDelta < -180.0 then
+            set angleDelta = angleDelta + 360.0
+        endif
+
+        // Move halfway from sourceAngle toward targetAngle
+        set middleAngle = sourceAngle + angleDelta * 0.5
+
+        // Normalize result to 0 - 360 range
+        if middleAngle < 0.0 then
+            set middleAngle = middleAngle + 360.0
+        elseif middleAngle >= 360.0 then
+            set middleAngle = middleAngle - 360.0
+        endif
+
+        return middleAngle
+    endfunction
+
+
     // --- UTILITY FUNCTIONS ---
     function AntiLeak takes nothing returns boolean
         return true

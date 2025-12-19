@@ -650,21 +650,12 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            local rect currentWaypointArea
-            local real x
-            local real y
-
             call this.botLog("Entering Run State")
             call owner.setDebugTextTagContent("Run: Entering")
             call owner.setDebugTextTagColorPreset("GREEN")
-
-            set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
-            set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
-            set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
-            call IssuePointOrder(owner.hero, "move", x, y)
-            
-            set currentWaypointArea = null
+            call owner.moveToNextWaypoint()
         endmethod
+
 
         method onUpdate takes nothing returns nothing
             local rect currentWaypointArea 
@@ -705,18 +696,13 @@ library AIStateMachine requires optional KeyUtils
                 endif
                 
                 // Move to the new waypoint
-                set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
-                set targetX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
-                set targetY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
-                call IssuePointOrder(owner.hero, "move", targetX, targetY)
+                call owner.moveToNextWaypoint()
             elseif currentOrder == 0 then
                 // Hero is idle (no current order) - reissue move command to current waypoint
                 call this.botLog("Hero is idle, reissuing move command")
                 call owner.setDebugTextTagContent("Run: Reissuing Move Command")
                 call owner.setDebugTextTagColorPreset("GREEN")
-                set targetX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
-                set targetY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
-                call IssuePointOrder(owner.hero, "move", targetX, targetY)
+                call owner.moveToNextWaypoint()
             endif
             
             // Check for spike hazards first (highest priority, only between waypoints 7-8)
@@ -810,20 +796,41 @@ library AIStateMachine requires optional KeyUtils
         method onSlowSpikeHazardZoneUpdate takes nothing returns nothing
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
-            local real avoidanceDetectRadiusBase = 300.0
+            local real avoidanceDetectRadiusBase = 150
             local real slowSpikeRadius = SLOW_SPIKE_RADIUS
             local real avoidanceDetectRadius = avoidanceDetectRadiusBase + slowSpikeRadius
+            local boolean isSlowSpikeAhead = false
+            local unit slowSpikeUnit = null
+            local rect currentWaypointArea
             call this.botLog("onSlowSpikeHazardZoneUpdate - Hero Position: (" + R2S(heroX) + ", " + R2S(heroY) + ")")
 
+            set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+            
+            // Check if hero has reached the current waypoint area
+            if RectContainsCoords(currentWaypointArea, heroX, heroY) then
+                call owner.changeState(RunState.create())
+            endif
+
+            if IsUnitInvulnerableOrMagicImmune(owner.hero) then
+                call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
+                call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                return
+            endif
+
+            set slowSpikeUnit = this.GetSlowSpikeAhead(avoidanceDetectRadius)
+            set isSlowSpikeAhead = slowSpikeUnit != null
+
             // detect slow spike ahead within certain radius
-            if isSlowSpikeAhead(avoidanceDetectRadius) then
+            if isSlowSpikeAhead then
                 call this.botLog("Slow Spike detected ahead, issuing dodge maneuver")
                 call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike")
                 call owner.setDebugTextTagColorPreset("ORANGE")
-                // call owner.executeSlowSpikeDodgeManeuver()
+                call owner.avoidTargetUnit(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
             else
                 // No more spikes ahead, return to Run State
                 call this.botLog("No Slow Spikes")
+                call owner.moveToNextWaypoint()
             endif
         endmethod
 
@@ -832,18 +839,23 @@ library AIStateMachine requires optional KeyUtils
             // Aloc is Locus ability
             if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID and GetUnitAbilityLevel(u, 'Aloc') > 0 then
                 if IsUnitInFrontOfUnit(owner.hero, u) then
-                    return true
+                    if not IsUnitInRangeXY(u, GetUnitX(owner.hero), GetUnitY(owner.hero), SLOW_SPIKE_RADIUS) then
+                        call this.botLog("Slow Spike unit detected ahead and within avoidance range.")
+                        return true
+                    else
+                        call this.botLog("Slow Spike unit detected ahead but too close to dodge.")
+                    endif
                 endif
             endif
             return false
         endmethod
 
-        method isSlowSpikeAhead takes real detectRadius returns boolean
+        method GetSlowSpikeAhead takes real detectRadius returns unit
             local group spikeGroup = CreateGroup()
             local unit u
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
-            local boolean result = false
+            local unit resultUnit = null
             local boolexpr filter = Filter(function AntiLeak)
             
             // Detect locus unit must use GroupEnumUnitsOfPlayer for Player(11)
@@ -855,14 +867,14 @@ library AIStateMachine requires optional KeyUtils
                 call GroupRemoveUnit(spikeGroup, u)
                 if IsUnitInRangeXY(u, heroX, heroY, detectRadius)  then
                     if this.checkSpikeUnit(u) then
-                        set result = true
+                        set resultUnit = u
                         exitwhen true
                     endif
                 endif
             endloop
             call DestroyGroup(spikeGroup)
             
-            return result
+            return resultUnit
         endmethod
 
         method onExit takes nothing returns nothing
@@ -1388,6 +1400,19 @@ library AIStateMachine requires optional KeyUtils
             return this
         endmethod
 
+        method moveToNextWaypoint takes nothing returns nothing
+            local rect currentWaypointArea
+            local real x
+            local real y
+
+            set currentWaypointArea = WaypointAreas[currentWaypointIndex]
+            set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
+            set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
+            call IssuePointOrder(hero, "move", x, y)
+            
+            set currentWaypointArea = null
+        endmethod
+
         method shouldEnterCombat takes nothing returns boolean
             local integer i = 0
             local HeroAbility heroAbil
@@ -1507,6 +1532,38 @@ library AIStateMachine requires optional KeyUtils
             call this.setDebugTextTagColorPreset("RED")
             set this.castingAbility = 0
         endmethod
+
+        method avoidTargetUnit takes unit targetUnit, real targetRadius, real targetMoveSpeed returns nothing
+            local real heroX = GetUnitX(this.hero)
+            local real heroY = GetUnitY(this.hero)
+            local real targetUnitX = GetUnitX(targetUnit)
+            local real targetUnitY = GetUnitY(targetUnit)
+            local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD
+            local real heroMovingAngle = GetUnitFacing(this.hero)
+            local real targetUnitMovingAngle = GetUnitFacing(targetUnit)
+            local real predictedTargetUnitX = targetUnitX + targetMoveSpeed * UPDATE_PERIOD * Cos(targetUnitMovingAngle * bj_DEGTORAD)
+            local real predictedTargetUnitY = targetUnitY + targetMoveSpeed * UPDATE_PERIOD * Sin(targetUnitMovingAngle * bj_DEGTORAD)
+            local real predictedTargetUnitToHeroAngle = Atan2(heroY - predictedTargetUnitY, heroX - predictedTargetUnitX) * bj_RADTODEG
+            local real avoidAngle = GetMiddleAngle(heroMovingAngle, predictedTargetUnitToHeroAngle)
+            local real moveX
+            local real moveY
+
+            call this.botLog("Avoiding target unit: " + GetUnitName(targetUnit))
+            call this.botLog("heroMovingAngle: " + R2S(heroMovingAngle) + ", predictedTargetUnitToHeroAngle: " + R2S(predictedTargetUnitToHeroAngle))
+            call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
+            set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
+            set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
+            // if IsTerrainPathable(moveX, moveY, PATHING_TYPE_WALKABILITY) == false then
+            //     // If the calculated position is not pathable, try the opposite direction
+            //     set avoidAngle = ModuloReal(avoidAngle + 180.0, 360.0)
+            //     set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
+            //     set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
+            //     call this.botLog("Adjusted avoidAngle to: " + R2S(avoidAngle) + " due to unpathable terrain")
+            // endif
+
+            call IssuePointOrder(this.hero, "move", moveX, moveY)
+        endmethod
+
 
         method createDebugTextTag takes nothing returns nothing
             set this.debugTextTag = CreateTextTag()
