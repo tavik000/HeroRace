@@ -15,8 +15,12 @@
 		"Fadepoint",
 		"hashtable",
 		"killable",
+		"Pathable",
+		"PATHING",
+		"RADTODEG",
 		"texttag",
-		"thistype"
+		"thistype",
+		"WALKABILITY"
 	],
 	"editor.defaultFormatter": "unouo.jassplus",
 	"[jass]": {
