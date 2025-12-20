@@ -776,7 +776,7 @@ library AIStateMachine requires optional KeyUtils
             if isInSlowSpikeHazardZone(owner) then
                 set this.hazardType = HAZARD_TYPE_SLOW_SPIKE
                 call this.botLog("Detected Slow Spike Hazard Zone")
-                call owner.setDebugTextTagContent("Hazard: Slow Spike Detected")
+                call owner.setDebugTextTagContent("Hazard: Slow Spike Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
             else
                 // Other hazard types can be added here
@@ -799,7 +799,8 @@ library AIStateMachine requires optional KeyUtils
             local real avoidanceDetectRadiusBase = 150
             local real slowSpikeRadius = SLOW_SPIKE_RADIUS
             local real avoidanceDetectRadius = avoidanceDetectRadiusBase + slowSpikeRadius
-            local boolean isSlowSpikeAhead = false
+            local boolean hasSlowSpikeAhead = false
+            local boolean hasSlowSpikeBehind = false
             local unit slowSpikeUnit = null
             local rect currentWaypointArea
             call this.botLog("onSlowSpikeHazardZoneUpdate - Hero Position: (" + R2S(heroX) + ", " + R2S(heroY) + ")")
@@ -809,6 +810,7 @@ library AIStateMachine requires optional KeyUtils
             // Check if hero has reached the current waypoint area
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
                 call owner.changeState(RunState.create())
+                return
             endif
 
             if IsUnitInvulnerableOrMagicImmune(owner.hero) then
@@ -818,45 +820,84 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
 
-            set slowSpikeUnit = this.GetSlowSpikeAhead(avoidanceDetectRadius)
-            set isSlowSpikeAhead = slowSpikeUnit != null
+            set slowSpikeUnit = this.GetSlowSpikeAround(avoidanceDetectRadius, false)
+            set hasSlowSpikeAhead = slowSpikeUnit != null
 
             // detect slow spike ahead within certain radius
-            if isSlowSpikeAhead then
+            if hasSlowSpikeAhead then
                 call this.botLog("Slow Spike detected ahead, issuing dodge maneuver")
-                call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike")
+                call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike Ahead")
                 call owner.setDebugTextTagColorPreset("ORANGE")
-                call owner.avoidTargetUnit(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
-            else
-                // No more spikes ahead, return to Run State
-                call this.botLog("No Slow Spikes")
-                call owner.moveToNextWaypoint()
+                call owner.avoidTargetUnitAhead(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
+                return
+            else 
+                // check back
+                set slowSpikeUnit = this.GetSlowSpikeAround(avoidanceDetectRadius, true)
+                set hasSlowSpikeBehind = slowSpikeUnit != null
+                if hasSlowSpikeBehind then
+                    call this.botLog("Slow Spike detected behind, issuing dodge maneuver")
+                    call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike Behind")
+                    call owner.setDebugTextTagColorPreset("ORANGE")
+                    // TODO:  check if target toward hero is more forward next waypoint., if so get middle angle between next waypoint and targettowardunit
+                    call owner.avoidTargetUnitBehind(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
+                    return
+                endif
             endif
+
+            // No more spikes around, keep moving to next waypoint
+            call this.botLog("No Slow Spikes")
+            call owner.moveToNextWaypoint()
         endmethod
 
-        method checkSpikeUnit takes unit u returns boolean
+        method checkSlowSpikeUnit takes unit u, boolean bCheckBehind returns boolean
+            local real targetUnitX = GetUnitX(u)
+            local real targetUnitY = GetUnitY(u)
+            local real targetMoveSpeed = SLOW_SPIKE_SPEED
+            local real targetUnitMovingAngle = GetUnitFacing(u)
+            local real predictedTargetUnitX = targetUnitX + targetMoveSpeed * UPDATE_PERIOD * Cos(targetUnitMovingAngle * bj_DEGTORAD)
+            local real predictedTargetUnitY = targetUnitY + targetMoveSpeed * UPDATE_PERIOD * Sin(targetUnitMovingAngle * bj_DEGTORAD)
+            local real ownerHeroX = GetUnitX(owner.hero)
+            local real ownerHeroY = GetUnitY(owner.hero)
+
             call this.botLog("Checking spike unit: " + GetUnitName(u) + " (Type ID: " + I2S(GetUnitTypeId(u)) + ")")
             // Aloc is Locus ability
             if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID and GetUnitAbilityLevel(u, 'Aloc') > 0 then
-                if IsUnitInFrontOfUnit(owner.hero, u) then
-                    if not IsUnitInRangeXY(u, GetUnitX(owner.hero), GetUnitY(owner.hero), SLOW_SPIKE_RADIUS) then
-                        call this.botLog("Slow Spike unit detected ahead and within avoidance range.")
-                        return true
-                    else
-                        call this.botLog("Slow Spike unit detected ahead but too close to dodge.")
+                if not bCheckBehind then
+                    if IsUnitInFrontOfUnit(owner.hero, u) then
+                        if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, SLOW_SPIKE_RADIUS) then
+                            call this.botLog("Slow Spike unit detected ahead and within avoidance range.")
+                            return true
+                        else
+                            call this.botLog("Slow Spike unit detected ahead but too close to dodge.")
+                        endif
+                    endif
+                else
+                    if not IsUnitInFrontOfUnit(owner.hero, u) then
+                        if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, SLOW_SPIKE_RADIUS) then
+                            call this.botLog("Slow Spike unit detected behind and within avoidance range.")
+                            return true
+                        else
+                            call this.botLog("Slow Spike unit detected behind but too close to dodge.")
+                        endif
+                        // if DistanceBetweenXY(ownerHeroX, ownerHeroY, predictedTargetUnitX, predictedTargetUnitY) < SLOW_SPIKE_RADIUS then
+                        //     call this.botLog("Slow Spike unit is in back of hero and will hit.")
+                        //     return true
+                        // endif
                     endif
                 endif
             endif
             return false
         endmethod
 
-        method GetSlowSpikeAhead takes real detectRadius returns unit
+        method GetSlowSpikeAround takes real detectRadius, boolean bCheckBehind returns unit
             local group spikeGroup = CreateGroup()
             local unit u
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
             local unit resultUnit = null
             local boolexpr filter = Filter(function AntiLeak)
+            local real closestDistance = 99999.0
+            local real currentTargetDistance
             
             // Detect locus unit must use GroupEnumUnitsOfPlayer for Player(11)
             call GroupEnumUnitsOfPlayer(spikeGroup, Player(11), filter) 
@@ -866,9 +907,12 @@ library AIStateMachine requires optional KeyUtils
 
                 call GroupRemoveUnit(spikeGroup, u)
                 if IsUnitInRangeXY(u, heroX, heroY, detectRadius)  then
-                    if this.checkSpikeUnit(u) then
-                        set resultUnit = u
-                        exitwhen true
+                    if this.checkSlowSpikeUnit(u, bCheckBehind) then
+                        set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
+                        if currentTargetDistance < closestDistance then
+                            set closestDistance = currentTargetDistance
+                            set resultUnit = u
+                        endif
                     endif
                 endif
             endloop
@@ -1452,6 +1496,10 @@ library AIStateMachine requires optional KeyUtils
         endmethod
         
         method shouldEnterHazardState takes nothing returns boolean
+            if this.difficulty < DIFF_HARD then
+                return false
+            endif
+
             // Only check for slow spikes waypoints  8
             if this.currentWaypointIndex != 8 then
                 return false
@@ -1533,7 +1581,7 @@ library AIStateMachine requires optional KeyUtils
             set this.castingAbility = 0
         endmethod
 
-        method avoidTargetUnit takes unit targetUnit, real targetRadius, real targetMoveSpeed returns nothing
+        method avoidTargetUnitAhead takes unit targetUnit, real targetRadius, real targetMoveSpeed returns nothing
             local real heroX = GetUnitX(this.hero)
             local real heroY = GetUnitY(this.hero)
             local real targetUnitX = GetUnitX(targetUnit)
@@ -1553,13 +1601,25 @@ library AIStateMachine requires optional KeyUtils
             call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
             set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
             set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
-            // if IsTerrainPathable(moveX, moveY, PATHING_TYPE_WALKABILITY) == false then
-            //     // If the calculated position is not pathable, try the opposite direction
-            //     set avoidAngle = ModuloReal(avoidAngle + 180.0, 360.0)
-            //     set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
-            //     set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
-            //     call this.botLog("Adjusted avoidAngle to: " + R2S(avoidAngle) + " due to unpathable terrain")
-            // endif
+
+            call IssuePointOrder(this.hero, "move", moveX, moveY)
+        endmethod
+
+        method avoidTargetUnitBehind takes unit targetUnit, real targetRadius, real targetMoveSpeed returns nothing
+            local real heroX = GetUnitX(this.hero)
+            local real heroY = GetUnitY(this.hero)
+            local real targetUnitX = GetUnitX(targetUnit)
+            local real targetUnitY = GetUnitY(targetUnit)
+            local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD
+            local real targetUnitToHeroAngle = Atan2(heroY - targetUnitY, heroX - targetUnitX) * bj_RADTODEG
+            local real avoidAngle = targetUnitToHeroAngle
+            local real moveX
+            local real moveY
+
+            call this.botLog("Avoiding target unit behind: " + GetUnitName(targetUnit))
+            call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
+            set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
+            set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
 
             call IssuePointOrder(this.hero, "move", moveX, moveY)
         endmethod
