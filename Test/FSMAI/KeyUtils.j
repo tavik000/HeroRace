@@ -54,6 +54,28 @@ library KeyUtils
         return SquareRoot(dx * dx + dy * dy)
     endfunction
 
+    function AngleDiff takes real a, real b returns real
+        local real d = a - b
+
+        loop
+            exitwhen d <= 180.0
+            set d = d - 360.0
+        endloop
+
+        loop
+            exitwhen d >= -180.0
+            set d = d + 360.0
+        endloop
+
+        // -90 < d <= 90
+        return d
+    endfunction
+
+    function IsWithinForwardArc takes real angle, real referenceAngle returns boolean
+        // True if angle is within +/-90 degrees of referenceAngle
+        return RAbsBJ(AngleDiff(angle, referenceAngle)) <= 90.0
+    endfunction
+
 
     // --- UTILITY FUNCTIONS ---
     function AntiLeak takes nothing returns boolean

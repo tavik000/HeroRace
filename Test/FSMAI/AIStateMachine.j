@@ -820,6 +820,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
 
+            // check ahead
             set slowSpikeUnit = this.GetSlowSpikeAround(avoidanceDetectRadius, false)
             set hasSlowSpikeAhead = slowSpikeUnit != null
 
@@ -831,14 +832,13 @@ library AIStateMachine requires optional KeyUtils
                 call owner.avoidTargetUnitAhead(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
                 return
             else 
-                // check back
+                // check behind
                 set slowSpikeUnit = this.GetSlowSpikeAround(avoidanceDetectRadius, true)
                 set hasSlowSpikeBehind = slowSpikeUnit != null
                 if hasSlowSpikeBehind then
                     call this.botLog("Slow Spike detected behind, issuing dodge maneuver")
                     call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike Behind")
                     call owner.setDebugTextTagColorPreset("ORANGE")
-                    // TODO:  check if target toward hero is more forward next waypoint., if so get middle angle between next waypoint and targettowardunit
                     call owner.avoidTargetUnitBehind(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
                     return
                 endif
@@ -1589,8 +1589,8 @@ library AIStateMachine requires optional KeyUtils
             local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD
             local real heroMovingAngle = GetUnitFacing(this.hero)
             local real targetUnitMovingAngle = GetUnitFacing(targetUnit)
-            local real predictedTargetUnitX = targetUnitX + targetMoveSpeed * UPDATE_PERIOD * Cos(targetUnitMovingAngle * bj_DEGTORAD)
-            local real predictedTargetUnitY = targetUnitY + targetMoveSpeed * UPDATE_PERIOD * Sin(targetUnitMovingAngle * bj_DEGTORAD)
+            local real predictedTargetUnitX = targetUnitX + targetMoveSpeed * 2 * UPDATE_PERIOD * Cos(targetUnitMovingAngle * bj_DEGTORAD)
+            local real predictedTargetUnitY = targetUnitY + targetMoveSpeed * 2 * UPDATE_PERIOD * Sin(targetUnitMovingAngle * bj_DEGTORAD)
             local real predictedTargetUnitToHeroAngle = Atan2(heroY - predictedTargetUnitY, heroX - predictedTargetUnitX) * bj_RADTODEG
             local real avoidAngle = GetMiddleAngle(heroMovingAngle, predictedTargetUnitToHeroAngle)
             local real moveX
@@ -1612,9 +1612,19 @@ library AIStateMachine requires optional KeyUtils
             local real targetUnitY = GetUnitY(targetUnit)
             local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD
             local real targetUnitToHeroAngle = Atan2(heroY - targetUnitY, heroX - targetUnitX) * bj_RADTODEG
-            local real avoidAngle = targetUnitToHeroAngle
+            local rect currentWaypointArea = WaypointAreas[currentWaypointIndex]
+            local real nextWaypointX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
+            local real nextWaypointY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
+            local real heroToNextWaypointAngle = Atan2(nextWaypointY - heroY, nextWaypointX - heroX) * bj_RADTODEG
+            local real avoidAngle
             local real moveX
             local real moveY
+            
+            if IsWithinForwardArc(heroToNextWaypointAngle, targetUnitToHeroAngle) then
+                set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
+            else
+                set avoidAngle = GetMiddleAngle(NormalizeAngle(heroToNextWaypointAngle + 180.0), targetUnitToHeroAngle)
+            endif
 
             call this.botLog("Avoiding target unit behind: " + GetUnitName(targetUnit))
             call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
