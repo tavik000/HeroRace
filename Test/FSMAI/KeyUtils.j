@@ -237,6 +237,23 @@ library KeyUtils
         return false
     endfunction
 
+    // Alive, not Flying, not Building.
+    function IsUnitValid takes unit filterUnit returns boolean
+        if not IsUnitAliveBJ(filterUnit) then
+            return false
+        endif
+        if IsUnitType(filterUnit, UNIT_TYPE_FLYING) then
+            return false
+        endif
+        if IsUnitType(filterUnit, UNIT_TYPE_STRUCTURE) then
+            return false
+        endif
+        if IsUnitHiddenBJ(filterUnit) then
+            return false
+        endif
+        return true
+    endfunction
+
     function IsUnitInFrontOfUnit takes unit source, unit target returns boolean
         local real dx = GetUnitX(target) - GetUnitX(source)
         local real dy = GetUnitY(target) - GetUnitY(source)

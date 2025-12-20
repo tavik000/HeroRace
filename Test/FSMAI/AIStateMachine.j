@@ -664,6 +664,10 @@ library AIStateMachine requires optional KeyUtils
             local real targetX
             local real targetY
             local integer currentOrder
+            local unit blockingUnit
+            local boolean hasBlockingUnitAhead
+            local boolean hasBlockingUnitBehind
+            local real blockDetectRadius = 100.0
             
             // Safety check - ensure hero is alive
             if not IsUnitAliveBJ(owner.hero) then
@@ -697,6 +701,7 @@ library AIStateMachine requires optional KeyUtils
                 
                 // Move to the new waypoint
                 call owner.moveToNextWaypoint()
+                return
             elseif currentOrder == 0 then
                 // Hero is idle (no current order) - reissue move command to current waypoint
                 call this.botLog("Hero is idle, reissuing move command")
@@ -721,6 +726,27 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
 
+            // Check for blocking units ahead
+            set blockingUnit = this.getBlockingUnitAround(blockDetectRadius, false)
+            set hasBlockingUnitAhead = blockingUnit != null
+            if hasBlockingUnitAhead then
+                call this.botLog("Blocking unit detected ahead, dodging")
+                call owner.setDebugTextTagContent("Run: Dodging Blocking Unit Ahead")
+                call owner.setDebugTextTagColorPreset("YELLOW")
+                call owner.avoidTargetUnitAhead(blockingUnit, GetUnitMoveSpeed(blockingUnit) * 0.1, 2.0, true)
+                return
+            endif
+            // Check for blocking units behind
+            set blockingUnit = this.getBlockingUnitAround(blockDetectRadius, true)
+            set hasBlockingUnitBehind = blockingUnit != null
+            if hasBlockingUnitBehind then
+                call this.botLog("Blocking unit detected behind, dodging")
+                call owner.setDebugTextTagContent("Run: Dodging Blocking Unit Behind")
+                call owner.setDebugTextTagColorPreset("YELLOW")
+                call owner.avoidTargetUnitBehind(blockingUnit, false, 2.0, true)
+                return
+            endif
+
             set currentWaypointArea = null
         endmethod
 
@@ -729,6 +755,56 @@ library AIStateMachine requires optional KeyUtils
             call owner.setDebugTextTagContent("Run: Exiting")
             call owner.setDebugTextTagColorPreset("GREEN")
         endmethod
+
+        method getBlockingUnitAround takes real detectRadius, boolean bCheckBehind returns unit
+            local group blockingUnitGroup = CreateGroup()
+            local unit u // for enumerating units
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local unit resultUnit = null
+            local boolexpr filter = Filter(function AntiLeak)
+            local real closestDistance = 99999.0
+            local real currentTargetDistance
+            
+            call GroupEnumUnitsInRange(blockingUnitGroup, heroX, heroY, detectRadius, filter)
+            loop
+                set u = FirstOfGroup(blockingUnitGroup)
+                exitwhen u == null
+
+                call GroupRemoveUnit(blockingUnitGroup, u)
+                if this.checkBlockingUnit(u, bCheckBehind) then
+                    set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
+                    if currentTargetDistance < closestDistance then
+                        set closestDistance = currentTargetDistance
+                        set resultUnit = u
+                    endif
+                endif
+            endloop
+            call DestroyGroup(blockingUnitGroup)
+            
+            return resultUnit
+        endmethod
+
+        method checkBlockingUnit takes unit u, boolean bCheckBehind returns boolean
+            if u == owner.hero then
+                return false
+            endif
+            if not IsUnitValid(u) then
+                return false
+            endif
+            if bCheckBehind then
+                if IsUnitInFrontOfUnit(owner.hero, u) then
+                    return false
+                endif
+            else
+                if not IsUnitInFrontOfUnit(owner.hero, u) then
+                    return false
+                endif
+            endif
+            call owner.botLog("Blocking unit found: " + GetUnitName(u))
+            return true
+        endmethod
+
     endstruct
 
     struct DeadState extends AIState
@@ -821,7 +897,7 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             // check ahead
-            set slowSpikeUnit = this.GetSlowSpikeAround(avoidanceDetectRadius, false)
+            set slowSpikeUnit = this.getSlowSpikeAround(avoidanceDetectRadius, false)
             set hasSlowSpikeAhead = slowSpikeUnit != null
 
             // detect slow spike ahead within certain radius
@@ -829,17 +905,17 @@ library AIStateMachine requires optional KeyUtils
                 call this.botLog("Slow Spike detected ahead, issuing dodge maneuver")
                 call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike Ahead")
                 call owner.setDebugTextTagColorPreset("ORANGE")
-                call owner.avoidTargetUnitAhead(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
+                call owner.avoidTargetUnitAhead(slowSpikeUnit, SLOW_SPIKE_SPEED, 1.0, false)
                 return
             else 
                 // check behind
-                set slowSpikeUnit = this.GetSlowSpikeAround(avoidanceDetectRadius, true)
+                set slowSpikeUnit = this.getSlowSpikeAround(avoidanceDetectRadius, true)
                 set hasSlowSpikeBehind = slowSpikeUnit != null
                 if hasSlowSpikeBehind then
                     call this.botLog("Slow Spike detected behind, issuing dodge maneuver")
                     call owner.setDebugTextTagContent("Hazard: Dodging Slow Spike Behind")
                     call owner.setDebugTextTagColorPreset("ORANGE")
-                    call owner.avoidTargetUnitBehind(slowSpikeUnit, SLOW_SPIKE_RADIUS, SLOW_SPIKE_SPEED)
+                    call owner.avoidTargetUnitBehind(slowSpikeUnit, true, 1.0, false)
                     return
                 endif
             endif
@@ -889,7 +965,7 @@ library AIStateMachine requires optional KeyUtils
             return false
         endmethod
 
-        method GetSlowSpikeAround takes real detectRadius, boolean bCheckBehind returns unit
+        method getSlowSpikeAround takes real detectRadius, boolean bCheckBehind returns unit
             local group spikeGroup = CreateGroup()
             local unit u
             local real heroX = GetUnitX(owner.hero)
@@ -1415,7 +1491,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 7
+            set this.currentWaypointIndex = 1
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
@@ -1462,6 +1538,8 @@ library AIStateMachine requires optional KeyUtils
             local HeroAbility heroAbil
             local real currentMana
             local boolean hasReadyAbility = false
+            
+            return false // Disabled for testing
 
             if IsUnitStunOrSilence(this.hero) then
                 call BotLog("Cannot enter combat, hero is stunned or silenced.")
@@ -1581,17 +1659,17 @@ library AIStateMachine requires optional KeyUtils
             set this.castingAbility = 0
         endmethod
 
-        method avoidTargetUnitAhead takes unit targetUnit, real targetRadius, real targetMoveSpeed returns nothing
+        method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing
             local real heroX = GetUnitX(this.hero)
             local real heroY = GetUnitY(this.hero)
             local real targetUnitX = GetUnitX(targetUnit)
             local real targetUnitY = GetUnitY(targetUnit)
-            local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD
+            local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD * moveDistanceScale
             local real heroMovingAngle = GetUnitFacing(this.hero)
             local real targetUnitMovingAngle = GetUnitFacing(targetUnit)
             local real predictedTargetUnitX = targetUnitX + targetMoveSpeed * 2 * UPDATE_PERIOD * Cos(targetUnitMovingAngle * bj_DEGTORAD)
             local real predictedTargetUnitY = targetUnitY + targetMoveSpeed * 2 * UPDATE_PERIOD * Sin(targetUnitMovingAngle * bj_DEGTORAD)
-            local real predictedTargetUnitToHeroAngle = Atan2(heroY - predictedTargetUnitY, heroX - predictedTargetUnitX) * bj_RADTODEG
+            local real predictedTargetUnitToHeroAngle = NormalizeAngle(Atan2(heroY - predictedTargetUnitY, heroX - predictedTargetUnitX) * bj_RADTODEG)
             local real avoidAngle = GetMiddleAngle(heroMovingAngle, predictedTargetUnitToHeroAngle)
             local real moveX
             local real moveY
@@ -1599,31 +1677,46 @@ library AIStateMachine requires optional KeyUtils
             call this.botLog("Avoiding target unit: " + GetUnitName(targetUnit))
             call this.botLog("heroMovingAngle: " + R2S(heroMovingAngle) + ", predictedTargetUnitToHeroAngle: " + R2S(predictedTargetUnitToHeroAngle))
             call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
+            if bLeanTowardWaypoint then
+                set avoidAngle = GetMiddleAngle(heroMovingAngle, avoidAngle)
+                call this.botLog("Leaning 2x toward waypoint, new avoidAngle: " + R2S(avoidAngle))
+            endif
+
+
             set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
             set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
 
             call IssuePointOrder(this.hero, "move", moveX, moveY)
         endmethod
 
-        method avoidTargetUnitBehind takes unit targetUnit, real targetRadius, real targetMoveSpeed returns nothing
+        method avoidTargetUnitBehind takes unit targetUnit, boolean canGoBackward, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing
             local real heroX = GetUnitX(this.hero)
             local real heroY = GetUnitY(this.hero)
             local real targetUnitX = GetUnitX(targetUnit)
             local real targetUnitY = GetUnitY(targetUnit)
-            local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD
-            local real targetUnitToHeroAngle = Atan2(heroY - targetUnitY, heroX - targetUnitX) * bj_RADTODEG
+            local real moveDistance = GetUnitMoveSpeed(this.hero) * UPDATE_PERIOD * moveDistanceScale
+            local real targetUnitToHeroAngle = NormalizeAngle(Atan2(heroY - targetUnitY, heroX - targetUnitX) * bj_RADTODEG)
             local rect currentWaypointArea = WaypointAreas[currentWaypointIndex]
             local real nextWaypointX = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
             local real nextWaypointY = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))
-            local real heroToNextWaypointAngle = Atan2(nextWaypointY - heroY, nextWaypointX - heroX) * bj_RADTODEG
+            local real heroToNextWaypointAngle = NormalizeAngle(Atan2(nextWaypointY - heroY, nextWaypointX - heroX) * bj_RADTODEG)
             local real avoidAngle
             local real moveX
             local real moveY
             
-            if IsWithinForwardArc(heroToNextWaypointAngle, targetUnitToHeroAngle) then
-                set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
+            if canGoBackward then
+                if IsWithinForwardArc(heroToNextWaypointAngle, targetUnitToHeroAngle) then
+                    set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
+                else
+                    set avoidAngle = GetMiddleAngle(NormalizeAngle(heroToNextWaypointAngle + 180.0), targetUnitToHeroAngle)
+                endif
             else
-                set avoidAngle = GetMiddleAngle(NormalizeAngle(heroToNextWaypointAngle + 180.0), targetUnitToHeroAngle)
+                set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
+                call this.botLog("Initial avoidAngle (backward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
+                if bLeanTowardWaypoint then
+                    set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, avoidAngle)
+                    call this.botLog("Leaning 2x toward waypoint, new avoidAngle: " + R2S(avoidAngle))
+                endif
             endif
 
             call this.botLog("Avoiding target unit behind: " + GetUnitName(targetUnit))
