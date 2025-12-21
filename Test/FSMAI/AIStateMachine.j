@@ -28,11 +28,16 @@ library AIStateMachine requires optional KeyUtils
         constant integer HAZARD_TYPE_NET = 3
         constant integer HAZARD_TYPE_SPIDER_NET = 4
         
-        // Spike Hazard Settings 
+        // Slow Spike Hazard Settings 
         constant real SLOW_SPIKE_SPEED = 155.0
         constant real SLOW_SPIKE_RADIUS = 110.0
         constant integer SLOW_SPIKE_UNIT_TYPE_ID = 'e047'
-        
+
+        // Net Hazard Settings
+        constant real NET_SPEED = 155.0
+        constant real NET_RADIUS = 110.0
+        constant integer NET_UNIT_TYPE_ID = 'e048'
+
         // Combat settings
         constant real EASY_CD_MULTIPLIER = 2.0
         constant real NORMAL_CD_MULTIPLIER = 1.0
@@ -182,6 +187,16 @@ library AIStateMachine requires optional KeyUtils
         local integer wpi = aiHero.currentWaypointIndex
         if IsTriggerEnabled(gg_trg_FastSpike) then
             if wpi == 10 then
+                return true
+            endif
+        endif
+        return false
+    endfunction
+
+    function isInNetHazardZone takes AIHero aiHero returns boolean
+        local integer wpi = aiHero.currentWaypointIndex
+        if IsTriggerEnabled(gg_trg_Net01) then
+            if wpi == 12 then
                 return true
             endif
         endif
@@ -881,6 +896,11 @@ library AIStateMachine requires optional KeyUtils
                 call this.botLog("Detected Fast Spike Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Fast Spike Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
+            elseif isInNetHazardZone(owner) then
+                set this.hazardType = HAZARD_TYPE_NET
+                call this.botLog("Detected Net Hazard Zone")
+                call owner.setDebugTextTagContent("Hazard: Net Zone")
+                call owner.setDebugTextTagColorPreset("ORANGE")
             else
                 // Other hazard types can be added here
                 call this.botLogError("Unknown hazard type detected!")
@@ -895,6 +915,8 @@ library AIStateMachine requires optional KeyUtils
                 call this.onSlowSpikeHazardZoneUpdate()
             elseif this.hazardType == HAZARD_TYPE_FAST_SPIKE then
                 call this.onFastSpikeHazardZoneUpdate()
+            elseif this.hazardType == HAZARD_TYPE_NET then
+                call this.onNetHazardZoneUpdate()
             else
                 call this.botLogError("Unknown hazard type in update!")
             endif
@@ -928,7 +950,7 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             // check ahead
-            set slowSpikeUnit = this.getSlowSpikeAround(avoidanceDetectRadius, false)
+            set slowSpikeUnit = this.getHazardAround(avoidanceDetectRadius, false, SLOW_SPIKE_UNIT_TYPE_ID, SLOW_SPIKE_SPEED)
             set hasSlowSpikeAhead = slowSpikeUnit != null
 
             // detect slow spike ahead within certain radius
@@ -940,7 +962,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             else 
                 // check behind
-                set slowSpikeUnit = this.getSlowSpikeAround(avoidanceDetectRadius, true)
+                set slowSpikeUnit = this.getHazardAround(avoidanceDetectRadius, true, SLOW_SPIKE_UNIT_TYPE_ID, SLOW_SPIKE_SPEED)
                 set hasSlowSpikeBehind = slowSpikeUnit != null
                 if hasSlowSpikeBehind then
                     call this.botLog("Slow Spike detected behind, issuing dodge maneuver")
@@ -956,10 +978,10 @@ library AIStateMachine requires optional KeyUtils
             call owner.moveToNextWaypoint()
         endmethod
 
-        method checkSlowSpikeUnit takes unit u, boolean bCheckBehind returns boolean
+        method checkHazardUnit takes unit u, boolean bCheckBehind, integer checkingUnitTypeId, real checkingUnitMoveSpeed returns boolean
             local real targetUnitX = GetUnitX(u)
             local real targetUnitY = GetUnitY(u)
-            local real targetMoveSpeed = SLOW_SPIKE_SPEED
+            local real targetMoveSpeed = checkingUnitMoveSpeed
             local real targetUnitMovingAngle = GetUnitFacing(u)
             local real predictedTargetUnitX = targetUnitX + targetMoveSpeed * UPDATE_PERIOD * Cos(targetUnitMovingAngle * bj_DEGTORAD)
             local real predictedTargetUnitY = targetUnitY + targetMoveSpeed * UPDATE_PERIOD * Sin(targetUnitMovingAngle * bj_DEGTORAD)
@@ -967,7 +989,7 @@ library AIStateMachine requires optional KeyUtils
             local real ownerHeroY = GetUnitY(owner.hero)
 
             // Aloc is Locus ability
-            if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID and GetUnitAbilityLevel(u, 'Aloc') > 0 then
+            if GetUnitTypeId(u) == checkingUnitTypeId and GetUnitAbilityLevel(u, 'Aloc') > 0 then
                 if not bCheckBehind then
                     if IsUnitInFrontOfUnit(owner.hero, u) then
                         if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, SLOW_SPIKE_RADIUS) then
@@ -985,17 +1007,13 @@ library AIStateMachine requires optional KeyUtils
                         else
                             call this.botLog("Slow Spike unit detected behind but too close to dodge.")
                         endif
-                        // if DistanceBetweenXY(ownerHeroX, ownerHeroY, predictedTargetUnitX, predictedTargetUnitY) < SLOW_SPIKE_RADIUS then
-                        //     call this.botLog("Slow Spike unit is in back of hero and will hit.")
-                        //     return true
-                        // endif
                     endif
                 endif
             endif
             return false
         endmethod
 
-        method getSlowSpikeAround takes real detectRadius, boolean bCheckBehind returns unit
+        method getHazardAround takes real detectRadius, boolean bCheckBehind, integer hazardUnitTypeId, real hazardUnitMoveSpeed returns unit
             local group spikeGroup = CreateGroup()
             local unit u
             local real heroX = GetUnitX(owner.hero)
@@ -1013,7 +1031,7 @@ library AIStateMachine requires optional KeyUtils
 
                 call GroupRemoveUnit(spikeGroup, u)
                 if IsUnitInRangeXY(u, heroX, heroY, detectRadius)  then
-                    if this.checkSlowSpikeUnit(u, bCheckBehind) then
+                    if this.checkHazardUnit(u, bCheckBehind, hazardUnitTypeId, hazardUnitMoveSpeed) then
                         set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
                         if currentTargetDistance < closestDistance then
                             set closestDistance = currentTargetDistance
@@ -1072,6 +1090,69 @@ library AIStateMachine requires optional KeyUtils
                 call owner.setDebugTextTagColorPreset("ORANGE")
                 call IssueImmediateOrder(owner.hero, "stop")
             endif
+        endmethod
+
+        method onNetHazardZoneUpdate takes nothing returns nothing
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local real avoidanceDetectRadiusBase = 150
+            local real netRadius = NET_RADIUS
+            local real avoidanceDetectRadius = avoidanceDetectRadiusBase + netRadius
+            local boolean hasNetAhead = false
+            local boolean hasNetBehind = false
+            local unit netUnit = null
+            local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+
+
+            if not IsTriggerEnabled(gg_trg_Net01) then
+                call this.botLog("Net trigger is disabled, skipping hazard handling")
+                call owner.setDebugTextTagContent("Hazard: Net Trigger Disabled")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                call owner.moveToNextWaypoint()
+                call owner.changeState(RunState.create())
+                return
+            endif
+
+            // Check if hero has reached the current waypoint area
+            if RectContainsCoords(currentWaypointArea, heroX, heroY) then
+                call owner.changeState(RunState.create())
+                return
+            endif
+
+            if IsUnitInvulnerableOrMagicImmune(owner.hero) then
+                call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
+                call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                return
+            endif
+
+            // check ahead
+            set netUnit = this.getHazardAround(avoidanceDetectRadius, false, NET_UNIT_TYPE_ID, NET_SPEED)
+            set hasNetAhead = netUnit != null
+
+            // detect net ahead within certain radius
+            if hasNetAhead then
+                call this.botLog("Net detected ahead, issuing dodge maneuver")
+                call owner.setDebugTextTagContent("Hazard: Dodging Net Ahead")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                call owner.avoidTargetUnitAhead(netUnit, NET_SPEED, 1.0, false)
+                return
+            else 
+                // check behind
+                set netUnit = this.getHazardAround(avoidanceDetectRadius, true, NET_UNIT_TYPE_ID, NET_SPEED)
+                set hasNetBehind = netUnit != null
+                if hasNetBehind then
+                    call this.botLog("Net detected behind, issuing dodge maneuver")
+                    call owner.setDebugTextTagContent("Hazard: Dodging Net Behind")
+                    call owner.setDebugTextTagColorPreset("ORANGE")
+                    call owner.avoidTargetUnitBehind(netUnit, true, 1.0, false)
+                    return
+                endif
+            endif
+
+            // No more net around, keep moving to next waypoint
+            call this.botLog("No Nets")
+            call owner.moveToNextWaypoint()
         endmethod
 
 
@@ -1649,7 +1730,7 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
 
-            if isInSlowSpikeHazardZone(this) or isInFastSpikeHazardZone(this) then
+            if isInSlowSpikeHazardZone(this) or isInFastSpikeHazardZone(this) or isInNetHazardZone(this) then
                 return true
             endif
             
