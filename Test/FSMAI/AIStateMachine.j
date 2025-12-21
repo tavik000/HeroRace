@@ -24,7 +24,9 @@ library AIStateMachine requires optional KeyUtils
         // Hazard Types
         constant integer HAZARD_TYPE_NONE = 0
         constant integer HAZARD_TYPE_SLOW_SPIKE = 1
-        constant integer HAZARD_TYPE_NET = 2
+        constant integer HAZARD_TYPE_FAST_SPIKE = 2
+        constant integer HAZARD_TYPE_NET = 3
+        constant integer HAZARD_TYPE_SPIDER_NET = 4
         
         // Spike Hazard Settings 
         constant real SLOW_SPIKE_SPEED = 155.0
@@ -168,6 +170,24 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
+    function isInSlowSpikeHazardZone takes AIHero aiHero returns boolean
+        local integer wpi = aiHero.currentWaypointIndex
+        if wpi == 8 then
+            return true
+        endif
+        return false
+    endfunction
+
+    function isInFastSpikeHazardZone takes AIHero aiHero returns boolean
+        local integer wpi = aiHero.currentWaypointIndex
+        if IsTriggerEnabled(gg_trg_FastSpike) then
+            if wpi == 10 then
+                return true
+            endif
+        endif
+        return false
+    endfunction
+
     // Initialize hero cast points (Pre-swing) by unit type
     private function InitializeHeroCastPoints takes nothing returns nothing
         // Configure cast points for different hero types
@@ -283,7 +303,7 @@ library AIStateMachine requires optional KeyUtils
     // This function will run once at map initialization to set up the waypoints.
     private function InitializeWaypoints takes nothing returns nothing
         // IMPORTANT: Create regions in the World Editor and replace these
-        set WaypointAreas[0] = gg_rct_AIWayPointArea01
+        set WaypointAreas[0] = gg_rct_AIWayPointArea01 // Not used
         set WaypointAreas[1] = gg_rct_AIWayPointArea01 // After Start Area
         set WaypointAreas[2] = gg_rct_AIWayPointArea02
         set WaypointAreas[3] = gg_rct_AIWayPointArea03 // Left of Upper Strait
@@ -293,11 +313,12 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[7] = gg_rct_AIWayPointArea07 // Before Slow Spike Hazard
         set WaypointAreas[8] = gg_rct_AIWayPointArea08 // After Slow Spike Hazard
         set WaypointAreas[9] = gg_rct_AIWayPointArea09 // Before Fast Spike Hazard
-        set WaypointAreas[10] = gg_rct_AIWayPointArea10 // Before Net Hazard
-        set WaypointAreas[11] = gg_rct_AIWayPointArea11 // After Net Hazard
-        set WaypointAreas[12] = gg_rct_AIWayPointArea12
-        set WaypointAreas[13] = gg_rct_Finish
-        set WaypointCount = 13 // Update this to match the number of waypoints you added.
+        set WaypointAreas[10] = gg_rct_AIWayPointArea10 // After Fast Spike Hazard
+        set WaypointAreas[11] = gg_rct_AIWayPointArea11 // Before Net Hazard
+        set WaypointAreas[12] = gg_rct_AIWayPointArea12 // After Net Hazard
+        set WaypointAreas[13] = gg_rct_AIWayPointArea13
+        set WaypointAreas[14] = gg_rct_Finish
+        set WaypointCount = 14 // Update this to match the number of waypoints you added.
     endfunction
 
     // Ability cast types
@@ -674,7 +695,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             endif
             
-            call this.botLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
+            // call this.botLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
             call owner.setDebugTextTagContent("Run: Updating, WPI " + I2S(owner.currentWaypointIndex))
             call owner.setDebugTextTagColorPreset("GREEN")
             
@@ -841,6 +862,7 @@ library AIStateMachine requires optional KeyUtils
 
     struct HazardState extends AIState
         integer hazardType  // 0 = Spike, 1 = Net, etc.
+        boolean bIsGoingThroughFastSpike = false
 
         static method create takes nothing returns thistype
             local thistype this = thistype.allocate()
@@ -854,6 +876,11 @@ library AIStateMachine requires optional KeyUtils
                 call this.botLog("Detected Slow Spike Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Slow Spike Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
+            elseif isInFastSpikeHazardZone(owner) then
+                set this.hazardType = HAZARD_TYPE_FAST_SPIKE
+                call this.botLog("Detected Fast Spike Hazard Zone")
+                call owner.setDebugTextTagContent("Hazard: Fast Spike Zone")
+                call owner.setDebugTextTagColorPreset("ORANGE")
             else
                 // Other hazard types can be added here
                 call this.botLogError("Unknown hazard type detected!")
@@ -866,6 +893,10 @@ library AIStateMachine requires optional KeyUtils
             endif
             if this.hazardType == HAZARD_TYPE_SLOW_SPIKE then
                 call this.onSlowSpikeHazardZoneUpdate()
+            elseif this.hazardType == HAZARD_TYPE_FAST_SPIKE then
+                call this.onFastSpikeHazardZoneUpdate()
+            else
+                call this.botLogError("Unknown hazard type in update!")
             endif
         endmethod
         
@@ -879,7 +910,7 @@ library AIStateMachine requires optional KeyUtils
             local boolean hasSlowSpikeBehind = false
             local unit slowSpikeUnit = null
             local rect currentWaypointArea
-            call this.botLog("onSlowSpikeHazardZoneUpdate - Hero Position: (" + R2S(heroX) + ", " + R2S(heroY) + ")")
+            call this.botLog("onSlowSpikeHazardZoneUpdate")
 
             set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             
@@ -996,19 +1027,60 @@ library AIStateMachine requires optional KeyUtils
             return resultUnit
         endmethod
 
+        method onFastSpikeHazardZoneUpdate takes nothing returns nothing
+            local integer currentOrder
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+
+            if not IsTriggerEnabled(gg_trg_FastSpike) then
+                call this.botLog("Fast Spike trigger is disabled, skipping hazard handling")
+                call owner.setDebugTextTagContent("Hazard: Fast Spike Trigger Disabled")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                call owner.moveToNextWaypoint()
+                call owner.changeState(RunState.create())
+                return
+            endif
+
+            // Check if hero has reached the current waypoint area
+            if RectContainsCoords(currentWaypointArea, heroX, heroY) then
+                call owner.changeState(RunState.create())
+                return
+            endif
+
+            if this.bIsGoingThroughFastSpike then
+                set currentOrder = GetUnitCurrentOrder(owner.hero)
+                if currentOrder == 0 then
+                    // Hero is idle (no current order) - reissue move command to current waypoint
+                    call this.botLog("Hero is idle, reissuing move command")
+                    call owner.setDebugTextTagContent("Hazard: Reissuing Move Command")
+                    call owner.setDebugTextTagColorPreset("ORANGE")
+                    call owner.moveToNextWaypoint()
+                endif
+                return
+            endif
+
+            if udg_bShouldBotGoFastSpike then
+                set bIsGoingThroughFastSpike = true
+                call this.botLog("Fast Spike hazard - going through quickly")
+                call owner.setDebugTextTagContent("Hazard: Fast Spike - Going Through")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                call owner.moveToNextWaypoint()
+            else
+                call this.botLog("Fast Spike hazard - waiting to proceed")
+                call owner.setDebugTextTagContent("Hazard: Fast Spike - Waiting")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                call IssueImmediateOrder(owner.hero, "stop")
+            endif
+        endmethod
+
+
         method onExit takes nothing returns nothing
             call this.botLog("Exiting Slow Spike Hazard State")
             call owner.setDebugTextTagContent("Hazard: Slow Spike Exiting")
             call owner.setDebugTextTagColorPreset("ORANGE")
         endmethod
 
-        method isInSlowSpikeHazardZone takes AIHero aiHero returns boolean
-            local integer wpi = aiHero.currentWaypointIndex
-            if wpi == 8 then
-                return true
-            endif
-            return false
-        endmethod
 
     endstruct
 
@@ -1577,12 +1649,11 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
 
-            // Only check for slow spikes waypoints  8
-            if this.currentWaypointIndex != 8 then
-                return false
+            if isInSlowSpikeHazardZone(this) or isInFastSpikeHazardZone(this) then
+                return true
             endif
             
-            return true
+            return false
         endmethod
 
         method destroy takes nothing returns nothing
