@@ -38,6 +38,10 @@ library AIStateMachine requires optional KeyUtils
         constant real NET_RADIUS = 110.0
         constant integer NET_UNIT_TYPE_ID = 'e048'
 
+        // Spider Net Hazard Settings
+        constant real SPIDER_NET_RADIUS = 155.0
+        constant integer SPIDER_NET_UNIT_TYPE_ID = 'u022'
+
         // Combat settings
         constant real EASY_CD_MULTIPLIER = 2.0
         constant real NORMAL_CD_MULTIPLIER = 1.0
@@ -203,6 +207,18 @@ library AIStateMachine requires optional KeyUtils
         return false
     endfunction
 
+    function isInSpiderNetHazardZone takes AIHero aiHero returns boolean
+        local real heroX = GetUnitX(aiHero.hero)
+        local real heroY = GetUnitY(aiHero.hero)
+        local integer wpi = aiHero.currentWaypointIndex
+        if RectContainsCoords(gg_rct_AISpiderNetArea, heroX, heroY) then
+            if wpi == 14 then
+                return true
+            endif
+        endif
+        return false
+    endfunction
+
     // Initialize hero cast points (Pre-swing) by unit type
     private function InitializeHeroCastPoints takes nothing returns nothing
         // Configure cast points for different hero types
@@ -331,7 +347,7 @@ library AIStateMachine requires optional KeyUtils
         set WaypointAreas[10] = gg_rct_AIWayPointArea10 // After Fast Spike Hazard
         set WaypointAreas[11] = gg_rct_AIWayPointArea11 // Before Net Hazard
         set WaypointAreas[12] = gg_rct_AIWayPointArea12 // After Net Hazard
-        set WaypointAreas[13] = gg_rct_AIWayPointArea13
+        set WaypointAreas[13] = gg_rct_AIWayPointArea13 // Before Spider Net Hazard
         set WaypointAreas[14] = gg_rct_Finish
         set WaypointCount = 14 // Update this to match the number of waypoints you added.
     endfunction
@@ -901,6 +917,11 @@ library AIStateMachine requires optional KeyUtils
                 call this.botLog("Detected Net Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Net Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
+            elseif isInSpiderNetHazardZone(owner) then
+                set this.hazardType = HAZARD_TYPE_SPIDER_NET
+                call this.botLog("Detected Spider Net Hazard Zone")
+                call owner.setDebugTextTagContent("Hazard: Spider Net Zone")
+                call owner.setDebugTextTagColorPreset("ORANGE")
             else
                 // Other hazard types can be added here
                 call this.botLogError("Unknown hazard type detected!")
@@ -917,6 +938,8 @@ library AIStateMachine requires optional KeyUtils
                 call this.onFastSpikeHazardZoneUpdate()
             elseif this.hazardType == HAZARD_TYPE_NET then
                 call this.onNetHazardZoneUpdate()
+            elseif this.hazardType == HAZARD_TYPE_SPIDER_NET then
+                call this.onSpiderNetHazardZoneUpdate()
             else
                 call this.botLogError("Unknown hazard type in update!")
             endif
@@ -1153,6 +1176,67 @@ library AIStateMachine requires optional KeyUtils
             // No more net around, keep moving to next waypoint
             call this.botLog("No Nets")
             call owner.moveToNextWaypoint()
+        endmethod
+
+        method onSpiderNetHazardZoneUpdate takes nothing returns nothing
+            local real heroX = GetUnitX(owner.hero)
+            local real heroY = GetUnitY(owner.hero)
+            local real avoidanceDetectRadiusBase = 150
+            local real netRadius = SPIDER_NET_RADIUS
+            local real avoidanceDetectRadius = avoidanceDetectRadiusBase + netRadius
+            local boolean hasNetAhead = false
+            local boolean hasNetBehind = false
+            local unit netUnit = null
+            local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+            local boolean isNetInvisible = false
+
+            // Check if hero has reached the current waypoint area
+            if not isInSpiderNetHazardZone(owner) then
+                call owner.changeState(RunState.create())
+                return
+            endif
+
+            if IsUnitInvulnerableOrMagicImmune(owner.hero) then
+                call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
+                call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                return
+            endif
+
+            // check ahead
+            set netUnit = this.getHazardAround(avoidanceDetectRadius, false, SPIDER_NET_UNIT_TYPE_ID, 0)
+            if netUnit != null then
+                set isNetInvisible = GetUnitAbilityLevel(netUnit, 'Apiv') > 0
+            endif
+            set hasNetAhead = netUnit != null and not isNetInvisible
+
+            // detect net ahead within certain radius
+            if hasNetAhead then
+                call this.botLog("Spider Net detected ahead, issuing dodge maneuver")
+                call owner.setDebugTextTagContent("Hazard: Dodging Spider Net Ahead")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+                call owner.avoidTargetUnitAhead(netUnit, 0, 1.0, false)
+                return
+            else 
+                // check behind
+                set netUnit = this.getHazardAround(avoidanceDetectRadius, true, SPIDER_NET_UNIT_TYPE_ID, 0)
+                if netUnit != null then
+                    set isNetInvisible = GetUnitAbilityLevel(netUnit, 'Apiv') > 0
+                endif
+                set hasNetBehind = netUnit != null and not isNetInvisible
+                if hasNetBehind then
+                    call this.botLog("Spider Net detected behind, issuing dodge maneuver")
+                    call owner.setDebugTextTagContent("Hazard: Dodging Spider Net Behind")
+                    call owner.setDebugTextTagColorPreset("ORANGE")
+                    call owner.avoidTargetUnitBehind(netUnit, true, 1.0, false)
+                    return
+                endif
+            endif
+
+            // No more spider net around, keep moving to next waypoint
+            call this.botLog("No Spider Nets")
+            call owner.moveToNextWaypoint()
+
         endmethod
 
 
@@ -1643,7 +1727,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 7
+            set this.currentWaypointIndex = 14
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
@@ -1730,10 +1814,22 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
 
-            if isInSlowSpikeHazardZone(this) or isInFastSpikeHazardZone(this) or isInNetHazardZone(this) then
+            if isInSlowSpikeHazardZone(this) then
+                return true
+            endif
+
+            if isInFastSpikeHazardZone(this) then
+                return true
+            endif
+
+            if isInNetHazardZone(this) then
                 return true
             endif
             
+            if isInSpiderNetHazardZone(this) then
+                return true
+            endif
+
             return false
         endmethod
 
