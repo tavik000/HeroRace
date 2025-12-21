@@ -935,7 +935,6 @@ library AIStateMachine requires optional KeyUtils
             local real ownerHeroX = GetUnitX(owner.hero)
             local real ownerHeroY = GetUnitY(owner.hero)
 
-            call this.botLog("Checking spike unit: " + GetUnitName(u) + " (Type ID: " + I2S(GetUnitTypeId(u)) + ")")
             // Aloc is Locus ability
             if GetUnitTypeId(u) == SLOW_SPIKE_UNIT_TYPE_ID and GetUnitAbilityLevel(u, 'Aloc') > 0 then
                 if not bCheckBehind then
@@ -1491,7 +1490,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 1
+            set this.currentWaypointIndex = 7
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
@@ -1705,10 +1704,12 @@ library AIStateMachine requires optional KeyUtils
             local real moveY
             
             if canGoBackward then
-                if IsWithinForwardArc(heroToNextWaypointAngle, targetUnitToHeroAngle) then
+                if AngleDiff(heroToNextWaypointAngle, targetUnitToHeroAngle) <= 135.0 then
                     set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
+                    call this.botLog("Initial avoidAngle (forward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
                 else
                     set avoidAngle = GetMiddleAngle(NormalizeAngle(heroToNextWaypointAngle + 180.0), targetUnitToHeroAngle)
+                    call this.botLog("Initial avoidAngle (backward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
                 endif
             else
                 set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
