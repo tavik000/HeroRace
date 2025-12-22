@@ -9,6 +9,7 @@ library AIStateMachine requires optional KeyUtils
         constant integer STATE_HAZARD = 3
         constant integer STATE_HEALING = 4
         constant integer STATE_DEAD = 5
+        constant integer STATE_PICKUP_ITEM = 6
         
         // Difficulty Levels
         constant integer DIFF_EASY = 0
@@ -1701,6 +1702,32 @@ library AIStateMachine requires optional KeyUtils
         endmethod
     endstruct
 
+    struct PickUpItemState extends AIState
+        static method create takes nothing returns thistype
+            local thistype this = thistype.allocate()
+            set this.stateID = STATE_PICKUP_ITEM
+            return this
+        endmethod
+
+        method onEnter takes nothing returns nothing
+            call this.botLog("Entering Pick Up Item State")
+            call owner.setDebugTextTagContent("Item: Picking Up")
+            call owner.setDebugTextTagColorPreset("CYAN")
+        endmethod
+
+        method onUpdate takes nothing returns nothing
+            // Implement item pickup logic here
+            // For now, just transition back to RunState
+            call owner.changeState(RunState.create())
+        endmethod
+
+        method onExit takes nothing returns nothing
+            call this.botLog("Exiting Pick Up Item State")
+            call owner.setDebugTextTagContent("Item: Exit")
+            call owner.setDebugTextTagColorPreset("CYAN")
+        endmethod
+    endstruct
+
 
     struct AIHero
         unit hero
@@ -1789,6 +1816,10 @@ library AIStateMachine requires optional KeyUtils
                 return true
             endif
             return false
+        endmethod
+
+        method shouldEnterPickupItem takes nothing returns boolean
+            return false // Placeholder - always return false for now
         endmethod
 
         method changeState takes AIState newState returns nothing
