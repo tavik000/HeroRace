@@ -31,16 +31,16 @@ library AIStateMachine requires optional KeyUtils
         
         // Slow Spike Hazard Settings 
         constant real SLOW_SPIKE_SPEED = 155.0
-        constant real SLOW_SPIKE_RADIUS = 111.0
+        constant real SLOW_SPIKE_RADIUS = 110.0
         constant integer SLOW_SPIKE_UNIT_TYPE_ID = 'e047'
 
         // Net Hazard Settings
         constant real NET_SPEED = 155.0
-        constant real NET_RADIUS = 111.0
+        constant real NET_RADIUS = 110.0
         constant integer NET_UNIT_TYPE_ID = 'e048'
 
         // Spider Net Hazard Settings
-        constant real SPIDER_NET_RADIUS = 160.0 // the trigger is 150, add 10 for buffer
+        constant real SPIDER_NET_RADIUS = 200.0 // the trigger is 150, add 50 for buffer
         constant integer SPIDER_NET_UNIT_TYPE_ID = 'u022'
 
         // Pickup Item Range
@@ -1091,19 +1091,19 @@ library AIStateMachine requires optional KeyUtils
                 if not bCheckBehind then
                     if IsUnitInFrontOfUnit(owner.hero, u) then
                         if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, hazardHitRadius) then
-                            call this.botLog("Slow Spike unit detected ahead and within avoidance range.")
+                            call this.botLog("hazard unit detected ahead and within avoidance range.")
                             return true
                         else
-                            call this.botLog("Slow Spike unit detected ahead but too close to dodge.")
+                            call this.botLog("hazard unit detected ahead but too close to dodge.")
                         endif
                     endif
                 else
                     if not IsUnitInFrontOfUnit(owner.hero, u) then
                         if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, hazardHitRadius) then
-                            call this.botLog("Slow Spike unit detected behind and within avoidance range.")
+                            call this.botLog("hazard unit detected behind and within avoidance range.")
                             return true
                         else
-                            call this.botLog("Slow Spike unit detected behind but too close to dodge.")
+                            call this.botLog("hazard unit detected behind but too close to dodge.")
                         endif
                     endif
                 endif
@@ -1256,7 +1256,7 @@ library AIStateMachine requires optional KeyUtils
         method onSpiderNetHazardZoneUpdate takes nothing returns nothing
             local real heroX = GetUnitX(owner.hero)
             local real heroY = GetUnitY(owner.hero)
-            local real avoidanceDetectRadiusBase = 150
+            local real avoidanceDetectRadiusBase = 100
             local real netRadius = SPIDER_NET_RADIUS
             local real avoidanceDetectRadius = avoidanceDetectRadiusBase + netRadius
             local boolean hasNetAhead = false
@@ -1844,7 +1844,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 7
+            set this.currentWaypointIndex = 14
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
