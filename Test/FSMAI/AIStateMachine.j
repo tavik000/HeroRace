@@ -31,16 +31,16 @@ library AIStateMachine requires optional KeyUtils
         
         // Slow Spike Hazard Settings 
         constant real SLOW_SPIKE_SPEED = 155.0
-        constant real SLOW_SPIKE_RADIUS = 110.0
+        constant real SLOW_SPIKE_RADIUS = 111.0
         constant integer SLOW_SPIKE_UNIT_TYPE_ID = 'e047'
 
         // Net Hazard Settings
         constant real NET_SPEED = 155.0
-        constant real NET_RADIUS = 110.0
+        constant real NET_RADIUS = 111.0
         constant integer NET_UNIT_TYPE_ID = 'e048'
 
         // Spider Net Hazard Settings
-        constant real SPIDER_NET_RADIUS = 155.0
+        constant real SPIDER_NET_RADIUS = 160.0 // the trigger is 150, add 10 for buffer
         constant integer SPIDER_NET_UNIT_TYPE_ID = 'u022'
 
         // Pickup Item Range
@@ -245,7 +245,7 @@ library AIStateMachine requires optional KeyUtils
         local real itemAngle = AngleBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
         local boolean bIsInFrontArc = IsWithinForwardArc(itemAngle, tempFoundItemUnitFacingAngle)
         if not bIsInFrontArc then
-            set tempFoundItemRange = tempFoundItemRange * 0.75
+            set tempFoundItemRange = tempFoundItemRange * 0.65
         endif
         if dist < tempFoundItemMinDist and dist <= tempFoundItemRange then
             set tempFoundItemMinDist = dist
@@ -1048,7 +1048,7 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             // check ahead
-            set slowSpikeUnit = this.getHazardAround(avoidanceDetectRadius, false, SLOW_SPIKE_UNIT_TYPE_ID, SLOW_SPIKE_SPEED)
+            set slowSpikeUnit = this.getHazardAround(avoidanceDetectRadius, false, SLOW_SPIKE_UNIT_TYPE_ID, SLOW_SPIKE_SPEED, SLOW_SPIKE_RADIUS)
             set hasSlowSpikeAhead = slowSpikeUnit != null
 
             // detect slow spike ahead within certain radius
@@ -1060,7 +1060,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             else 
                 // check behind
-                set slowSpikeUnit = this.getHazardAround(avoidanceDetectRadius, true, SLOW_SPIKE_UNIT_TYPE_ID, SLOW_SPIKE_SPEED)
+                set slowSpikeUnit = this.getHazardAround(avoidanceDetectRadius, true, SLOW_SPIKE_UNIT_TYPE_ID, SLOW_SPIKE_SPEED, SLOW_SPIKE_RADIUS)
                 set hasSlowSpikeBehind = slowSpikeUnit != null
                 if hasSlowSpikeBehind then
                     call this.botLog("Slow Spike detected behind, issuing dodge maneuver")
@@ -1076,7 +1076,7 @@ library AIStateMachine requires optional KeyUtils
             call owner.moveToNextWaypoint()
         endmethod
 
-        method checkHazardUnit takes unit u, boolean bCheckBehind, integer checkingUnitTypeId, real checkingUnitMoveSpeed returns boolean
+        method checkHazardUnit takes unit u, boolean bCheckBehind, integer checkingUnitTypeId, real checkingUnitMoveSpeed, real hazardHitRadius returns boolean
             local real targetUnitX = GetUnitX(u)
             local real targetUnitY = GetUnitY(u)
             local real targetMoveSpeed = checkingUnitMoveSpeed
@@ -1090,7 +1090,7 @@ library AIStateMachine requires optional KeyUtils
             if GetUnitTypeId(u) == checkingUnitTypeId and GetUnitAbilityLevel(u, 'Aloc') > 0 then
                 if not bCheckBehind then
                     if IsUnitInFrontOfUnit(owner.hero, u) then
-                        if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, SLOW_SPIKE_RADIUS) then
+                        if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, hazardHitRadius) then
                             call this.botLog("Slow Spike unit detected ahead and within avoidance range.")
                             return true
                         else
@@ -1099,7 +1099,7 @@ library AIStateMachine requires optional KeyUtils
                     endif
                 else
                     if not IsUnitInFrontOfUnit(owner.hero, u) then
-                        if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, SLOW_SPIKE_RADIUS) then
+                        if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, hazardHitRadius) then
                             call this.botLog("Slow Spike unit detected behind and within avoidance range.")
                             return true
                         else
@@ -1111,7 +1111,7 @@ library AIStateMachine requires optional KeyUtils
             return false
         endmethod
 
-        method getHazardAround takes real detectRadius, boolean bCheckBehind, integer hazardUnitTypeId, real hazardUnitMoveSpeed returns unit
+        method getHazardAround takes real detectRadius, boolean bCheckBehind, integer hazardUnitTypeId, real hazardUnitMoveSpeed, real hazardHitRadius returns unit
             local group spikeGroup = CreateGroup()
             local unit u
             local real heroX = GetUnitX(owner.hero)
@@ -1129,7 +1129,7 @@ library AIStateMachine requires optional KeyUtils
 
                 call GroupRemoveUnit(spikeGroup, u)
                 if IsUnitInRangeXY(u, heroX, heroY, detectRadius)  then
-                    if this.checkHazardUnit(u, bCheckBehind, hazardUnitTypeId, hazardUnitMoveSpeed) then
+                    if this.checkHazardUnit(u, bCheckBehind, hazardUnitTypeId, hazardUnitMoveSpeed, hazardHitRadius) then
                         set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
                         if currentTargetDistance < closestDistance then
                             set closestDistance = currentTargetDistance
@@ -1225,7 +1225,7 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             // check ahead
-            set netUnit = this.getHazardAround(avoidanceDetectRadius, false, NET_UNIT_TYPE_ID, NET_SPEED)
+            set netUnit = this.getHazardAround(avoidanceDetectRadius, false, NET_UNIT_TYPE_ID, NET_SPEED, NET_RADIUS)
             set hasNetAhead = netUnit != null
 
             // detect net ahead within certain radius
@@ -1237,7 +1237,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             else 
                 // check behind
-                set netUnit = this.getHazardAround(avoidanceDetectRadius, true, NET_UNIT_TYPE_ID, NET_SPEED)
+                set netUnit = this.getHazardAround(avoidanceDetectRadius, true, NET_UNIT_TYPE_ID, NET_SPEED, NET_RADIUS)
                 set hasNetBehind = netUnit != null
                 if hasNetBehind then
                     call this.botLog("Net detected behind, issuing dodge maneuver")
@@ -1279,7 +1279,7 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             // check ahead
-            set netUnit = this.getHazardAround(avoidanceDetectRadius, false, SPIDER_NET_UNIT_TYPE_ID, 0)
+            set netUnit = this.getHazardAround(avoidanceDetectRadius, false, SPIDER_NET_UNIT_TYPE_ID, 0, SPIDER_NET_RADIUS)
             if netUnit != null then
                 set isNetInvisible = GetUnitAbilityLevel(netUnit, 'Apiv') > 0
             endif
@@ -1294,7 +1294,7 @@ library AIStateMachine requires optional KeyUtils
                 return
             else 
                 // check behind
-                set netUnit = this.getHazardAround(avoidanceDetectRadius, true, SPIDER_NET_UNIT_TYPE_ID, 0)
+                set netUnit = this.getHazardAround(avoidanceDetectRadius, true, SPIDER_NET_UNIT_TYPE_ID, 0, SPIDER_NET_RADIUS)
                 if netUnit != null then
                     set isNetInvisible = GetUnitAbilityLevel(netUnit, 'Apiv') > 0
                 endif
@@ -1920,7 +1920,6 @@ library AIStateMachine requires optional KeyUtils
 
             if this.currentState.stateID == STATE_HAZARD or IsFinalWaypoint(this) then
                 set searchRadius = PICKUP_ITEM_RANGE_SMALL
-                call this.botLog("Searching for items within hazard pickup range: " + R2S(searchRadius))
             else
                 set searchRadius = PICKUP_ITEM_RANGE_NORMAL
             endif
