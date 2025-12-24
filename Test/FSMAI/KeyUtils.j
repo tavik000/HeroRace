@@ -1,5 +1,14 @@
 library KeyUtils
 
+    // --- TYPE CONVERSION FUNCTIONS ---
+    function B2S takes boolean b returns string
+        if b then
+            return "true"
+        else
+            return "false"
+        endif
+    endfunction
+
     // --- MATH FUNCTIONS ---
     function Abs takes real value returns real
         if value < 0.0 then
@@ -19,6 +28,16 @@ library KeyUtils
             endif
         endloop
         return a
+    endfunction
+
+    function AngleBetweenXY takes real x1, real y1, real x2, real y2 returns real
+        local real dx = x2 - x1
+        local real dy = y2 - y1
+        local real angle = Atan2(dy, dx) * 180.0 / bj_PI
+        if angle < 0.0 then
+            set angle = angle + 360.0
+        endif
+        return angle
     endfunction
 
     function GetMiddleAngle takes real sourceAngle, real targetAngle returns real
@@ -262,6 +281,8 @@ library KeyUtils
         return dx * Cos(rad) + dy * Sin(rad) > 0.0
     endfunction
 
-
+    function IsUnitInventoryFull takes unit u returns boolean
+        return UnitInventoryCount(u) >= UnitInventorySizeBJ(u)
+    endfunction
 
 endlibrary

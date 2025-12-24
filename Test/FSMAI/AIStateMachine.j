@@ -43,6 +43,10 @@ library AIStateMachine requires optional KeyUtils
         constant real SPIDER_NET_RADIUS = 155.0
         constant integer SPIDER_NET_UNIT_TYPE_ID = 'u022'
 
+        // Pickup Item Range
+        constant real PICKUP_ITEM_RANGE_NORMAL = 800.0
+        constant real PICKUP_ITEM_RANGE_SMALL = 200.0
+
         // Combat settings
         constant real EASY_CD_MULTIPLIER = 2.0
         constant real NORMAL_CD_MULTIPLIER = 1.0
@@ -69,6 +73,14 @@ library AIStateMachine requires optional KeyUtils
         private boolean bTempFilterForAllies
         private unit tempHeroUnit
         private HeroAbility tempHeroAbility
+
+        // Temporary variables for item search
+        item tempFoundItem = null
+        real tempFoundItemX = 0.0
+        real tempFoundItemY = 0.0
+        real tempFoundItemUnitFacingAngle = 0.0
+        real tempFoundItemRange = 0.0
+        real tempFoundItemMinDist = 999999.0
 
         // The array to hold the waypoint regions.
         private rect array WaypointAreas
@@ -180,7 +192,7 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
-    function isInSlowSpikeHazardZone takes AIHero aiHero returns boolean
+    function IsInSlowSpikeHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
         if wpi == 8 then
             return true
@@ -188,7 +200,7 @@ library AIStateMachine requires optional KeyUtils
         return false
     endfunction
 
-    function isInFastSpikeHazardZone takes AIHero aiHero returns boolean
+    function IsInFastSpikeHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
         if IsTriggerEnabled(gg_trg_FastSpike) then
             if wpi == 10 then
@@ -198,7 +210,7 @@ library AIStateMachine requires optional KeyUtils
         return false
     endfunction
 
-    function isInNetHazardZone takes AIHero aiHero returns boolean
+    function IsInNetHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
         if IsTriggerEnabled(gg_trg_Net01) then
             if wpi == 12 then
@@ -208,7 +220,7 @@ library AIStateMachine requires optional KeyUtils
         return false
     endfunction
 
-    function isInSpiderNetHazardZone takes AIHero aiHero returns boolean
+    function IsInSpiderNetHazardZone takes AIHero aiHero returns boolean
         local real heroX = GetUnitX(aiHero.hero)
         local real heroY = GetUnitY(aiHero.hero)
         local integer wpi = aiHero.currentWaypointIndex
@@ -219,6 +231,49 @@ library AIStateMachine requires optional KeyUtils
         endif
         return false
     endfunction
+
+    function IsFinalWaypoint takes AIHero aiHero returns boolean
+        if aiHero.currentWaypointIndex >= WaypointCount then
+            return true
+        endif
+        return false
+    endfunction
+
+    function EnumItemsAction takes nothing returns nothing
+        local item itm = GetEnumItem()
+        local real dist = DistanceBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
+        local real itemAngle = AngleBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
+        local boolean bIsInFrontArc = IsWithinForwardArc(itemAngle, tempFoundItemUnitFacingAngle)
+        if not bIsInFrontArc then
+            set tempFoundItemRange = tempFoundItemRange * 0.75
+        endif
+        if dist < tempFoundItemMinDist and dist <= tempFoundItemRange then
+            set tempFoundItemMinDist = dist
+            set tempFoundItem = itm
+        endif
+    endfunction
+
+    function GetSuitablePickupItemInRange takes unit u, real range returns item
+        local item foundItem = null
+        local real ux = GetUnitX(u)
+        local real uy = GetUnitY(u)
+        local rect rec = Rect(ux - range, uy - range, ux + range, uy + range)
+
+        set tempFoundItem = null
+        set tempFoundItemX = ux
+        set tempFoundItemY = uy
+        set tempFoundItemRange = range
+        set tempFoundItemMinDist = 999999.0
+        set tempFoundItemUnitFacingAngle = GetUnitFacing(u)
+
+        call EnumItemsInRectBJ(rec, function EnumItemsAction)
+        call RemoveRect(rec)
+        set foundItem = tempFoundItem
+
+        return foundItem
+    endfunction
+
+
 
     // Initialize hero cast points (Pre-swing) by unit type
     private function InitializeHeroCastPoints takes nothing returns nothing
@@ -769,6 +824,15 @@ library AIStateMachine requires optional KeyUtils
                 call owner.changeState(HazardState.create())
                 return
             endif
+
+            call owner.searchPickupItemAround()
+            if owner.shouldEnterPickupItemState() then
+                call this.botLog("Pickup item detected - entering pickup item state")
+                call owner.setDebugTextTagContent("Run: Entering Pickup Item")
+                call owner.setDebugTextTagColorPreset("CYAN")
+                call owner.changeState(PickUpItemState.create())
+                return
+            endif
             
             // Check if we should enter combat state
             if owner.shouldEnterCombat() then
@@ -903,22 +967,22 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method onEnter takes nothing returns nothing
-            if isInSlowSpikeHazardZone(owner) then
+            if IsInSlowSpikeHazardZone(owner) then
                 set this.hazardType = HAZARD_TYPE_SLOW_SPIKE
                 call this.botLog("Detected Slow Spike Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Slow Spike Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
-            elseif isInFastSpikeHazardZone(owner) then
+            elseif IsInFastSpikeHazardZone(owner) then
                 set this.hazardType = HAZARD_TYPE_FAST_SPIKE
                 call this.botLog("Detected Fast Spike Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Fast Spike Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
-            elseif isInNetHazardZone(owner) then
+            elseif IsInNetHazardZone(owner) then
                 set this.hazardType = HAZARD_TYPE_NET
                 call this.botLog("Detected Net Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Net Zone")
                 call owner.setDebugTextTagColorPreset("ORANGE")
-            elseif isInSpiderNetHazardZone(owner) then
+            elseif IsInSpiderNetHazardZone(owner) then
                 set this.hazardType = HAZARD_TYPE_SPIDER_NET
                 call this.botLog("Detected Spider Net Hazard Zone")
                 call owner.setDebugTextTagContent("Hazard: Spider Net Zone")
@@ -933,6 +997,16 @@ library AIStateMachine requires optional KeyUtils
             if not IsUnitAliveBJ(owner.hero) then
                 return
             endif
+
+            call owner.searchPickupItemAround()
+            if owner.shouldEnterPickupItemState() then
+                call this.botLog("Pickup item detected - entering pickup item state")
+                call owner.setDebugTextTagContent("Hazard: Entering Pickup Item")
+                call owner.setDebugTextTagColorPreset("CYAN")
+                call owner.changeState(PickUpItemState.create())
+                return
+            endif
+
             if this.hazardType == HAZARD_TYPE_SLOW_SPIKE then
                 call this.onSlowSpikeHazardZoneUpdate()
             elseif this.hazardType == HAZARD_TYPE_FAST_SPIKE then
@@ -1192,7 +1266,7 @@ library AIStateMachine requires optional KeyUtils
             local boolean isNetInvisible = false
 
             // Check if hero has reached the current waypoint area
-            if not isInSpiderNetHazardZone(owner) then
+            if not IsInSpiderNetHazardZone(owner) then
                 call owner.changeState(RunState.create())
                 return
             endif
@@ -1713,12 +1787,27 @@ library AIStateMachine requires optional KeyUtils
             call this.botLog("Entering Pick Up Item State")
             call owner.setDebugTextTagContent("Item: Picking Up")
             call owner.setDebugTextTagColorPreset("CYAN")
+
+            // Pick up the item
+            if owner.pickingUpItem != null then
+                call IssueTargetOrder(owner.hero, "smart", owner.pickingUpItem) 
+            else
+                call this.botLog("No item to pick up")
+                call owner.setDebugTextTagContent("Item: No Item Found")
+                call owner.setDebugTextTagColorPreset("CYAN")
+                // Transition back to RunState if no item found
+                call owner.changeState(RunState.create())
+            endif
         endmethod
 
         method onUpdate takes nothing returns nothing
-            // Implement item pickup logic here
-            // For now, just transition back to RunState
-            call owner.changeState(RunState.create())
+            // check if item has been picked up
+            if owner.pickingUpItem == null or IsItemOwned(owner.pickingUpItem) or IsUnitInventoryFull(owner.hero) then
+                call this.botLog("Item picked up or no item to pick up, transitioning to Run State")
+                call owner.setDebugTextTagContent("Item: Picked Up")
+                call owner.setDebugTextTagColorPreset("CYAN")
+                call owner.changeState(RunState.create())
+            endif
         endmethod
 
         method onExit takes nothing returns nothing
@@ -1745,6 +1834,7 @@ library AIStateMachine requires optional KeyUtils
         texttag debugTextTag
         string debugTextTagContent
         timer debugTextTagTimer
+        item pickingUpItem
         
         // Constructor
         static method create takes unit u, integer inDifficulty returns thistype
@@ -1754,7 +1844,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 14
+            set this.currentWaypointIndex = 7
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
@@ -1762,6 +1852,8 @@ library AIStateMachine requires optional KeyUtils
             set this.comboTargetUnit = null
             set this.debugTextTag = null
             set this.debugTextTagContent = ""
+            set this.debugTextTagTimer = null
+            set this.pickingUpItem = null
 
 
             // Initialize combat data
@@ -1818,8 +1910,27 @@ library AIStateMachine requires optional KeyUtils
             return false
         endmethod
 
-        method shouldEnterPickupItem takes nothing returns boolean
-            return false // Placeholder - always return false for now
+        method searchPickupItemAround takes nothing returns nothing
+            local item itm
+            local real searchRadius
+
+            if this.difficulty < DIFF_NORMAL then
+                return
+            endif
+
+            if this.currentState.stateID == STATE_HAZARD or IsFinalWaypoint(this) then
+                set searchRadius = PICKUP_ITEM_RANGE_SMALL
+                call this.botLog("Searching for items within hazard pickup range: " + R2S(searchRadius))
+            else
+                set searchRadius = PICKUP_ITEM_RANGE_NORMAL
+            endif
+
+            set this.pickingUpItem = GetSuitablePickupItemInRange(this.hero, searchRadius)
+        endmethod
+
+        method shouldEnterPickupItemState takes nothing returns boolean
+            // call this.botLog("shouldenter: Item found to pick up: " + GetItemName(this.pickingUpItem))
+            return this.pickingUpItem != null
         endmethod
 
         method changeState takes AIState newState returns nothing
@@ -1845,19 +1956,19 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
 
-            if isInSlowSpikeHazardZone(this) then
+            if IsInSlowSpikeHazardZone(this) then
                 return true
             endif
 
-            if isInFastSpikeHazardZone(this) then
+            if IsInFastSpikeHazardZone(this) then
                 return true
             endif
 
-            if isInNetHazardZone(this) then
+            if IsInNetHazardZone(this) then
                 return true
             endif
             
-            if isInSpiderNetHazardZone(this) then
+            if IsInSpiderNetHazardZone(this) then
                 return true
             endif
 
