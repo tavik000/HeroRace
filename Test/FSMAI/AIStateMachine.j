@@ -388,6 +388,13 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
+    function OnAIHeroGetItem takes unit u, item itm returns nothing
+        local AIHero aiHero = GetAIHeroFromUnit(u)
+        if aiHero != null then
+            call aiHero.onGetItem(itm)
+        endif
+    endfunction
+
     // This function will run once at map initialization to set up the waypoints.
     private function InitializeWaypoints takes nothing returns nothing
         // IMPORTANT: Create regions in the World Editor and replace these
@@ -429,14 +436,30 @@ library AIStateMachine requires optional KeyUtils
     endglobals
 
     struct AIItem
-        integer itemId
+        integer itemId // item type
+        item itemHandle
         real castRange
+        unit ownerHero
 
-        static method create takes integer newItemId, real newCastRange returns thistype
+        static method create takes item newItemHandle, integer newItemId, real newCastRange, unit newOwnerHero returns thistype
             local thistype this = thistype.allocate()
+            set this.itemHandle = newItemHandle
             set this.itemId = newItemId
             set this.castRange = newCastRange
+            set this.ownerHero = newOwnerHero
             return this
+        endmethod
+
+        method isReadyToUse takes nothing returns boolean
+            // TODO
+            return true
+        endmethod
+
+        method use takes nothing returns nothing
+            local integer itemSlot = GetInventoryIndexOfItemTypeBJ(this.ownerHero, this.itemId)
+            call UnitUseItemTarget( this.ownerHero, this.itemHandle, this.ownerHero )
+            call BotLog("Using item: " + GetItemName(this.itemHandle) + " from slot " + I2S(itemSlot))
+            // TODO
         endmethod
 
         method destroy takes nothing returns nothing
@@ -519,6 +542,7 @@ library AIStateMachine requires optional KeyUtils
         real comboExpectedDamage
         real comboOverkillThresholdPercent
         AIItem array items[MAX_ITEM_PER_HERO]
+        AIHero ownerAIHero
 
         
         static method create takes nothing returns thistype
@@ -542,7 +566,36 @@ library AIStateMachine requires optional KeyUtils
             endif
         endmethod
 
+        method addItem takes item newItemHandle, integer itemId, real castRange, unit ownerHero returns nothing
+            local integer i = 0
+            loop
+                exitwhen i >= MAX_ITEM_PER_HERO
+                if this.items[i] == null then
+                    set this.items[i] = AIItem.create(newItemHandle, itemId, castRange, ownerHero)
+                    return
+                endif
+                set i = i + 1
+            endloop
+            // Exceeded max items - handle error as needed
+            call BotLogError("Exceeded max items for hero combat data.")
+        endmethod
         
+        method removeItem takes item itemHandle returns nothing
+            local integer i = 0
+            loop
+                exitwhen i >= MAX_ITEM_PER_HERO
+                if this.items[i] != null then
+                    if this.items[i].itemHandle == itemHandle then
+                        call this.items[i].destroy()
+                        set this.items[i] = 0
+                        return
+                    endif
+                endif
+                set i = i + 1
+            endloop
+            // Item not found - handle error as needed
+            call BotLogError("Item not found in hero combat data for removal.")
+        endmethod
         
         method destroy takes nothing returns nothing
             local integer i = 0
@@ -746,6 +799,44 @@ library AIStateMachine requires optional KeyUtils
             
             // All remaining combo abilities have cooldowns ready
             return true
+        endmethod
+
+        method hasReadyItem takes nothing returns boolean
+            local AIItem heroItem = this.getReadyItem()
+            if heroItem != 0 then
+                return true
+            endif
+            return false
+        endmethod
+
+        method getReadyItem takes nothing returns AIItem
+            local integer i = 0
+            local AIItem heroItem
+            local real currentMana
+            local unit ownerHero = ownerAIHero.hero
+
+            if ownerHero == null then
+                call BotLogError("Owner hero is null in getReadyItem.")
+                return 0
+            endif
+
+            // Check if any item is ready for use
+            loop
+                exitwhen i >= MAX_ITEM_PER_HERO
+                set heroItem = this.items[i]
+                if heroItem != 0 then
+                    if not UnitHasItem(ownerHero, heroItem.itemHandle) then
+                        call this.removeItem(heroItem.itemHandle)
+                    else
+                        if heroItem.isReadyToUse() then
+                            return heroItem
+                        endif
+                    endif
+                endif
+                set i = i + 1
+            endloop
+
+            return 0
         endmethod
 
     endstruct
@@ -1337,7 +1428,6 @@ library AIStateMachine requires optional KeyUtils
             endif
 
             // No more spider net around, keep moving to next waypoint
-            call this.botLog("No Spider Nets")
             call owner.moveToNextWaypoint()
 
         endmethod
@@ -1390,6 +1480,11 @@ library AIStateMachine requires optional KeyUtils
             if not IsUnitAliveBJ(owner.hero) then
                 return
             endif
+
+            // Use Item
+            if this.tryUseItem() then
+                return
+            endif
             
             if difficulty == DIFF_EASY then
                 if this.tryExecuteEasyCombat() then
@@ -1412,6 +1507,25 @@ library AIStateMachine requires optional KeyUtils
             call owner.changeState(RunState.create())
         endmethod
 
+        method tryUseItem takes nothing returns boolean
+            local AIItem heroItem
+            local integer difficulty = owner.difficulty
+
+            if difficulty < DIFF_NORMAL then
+                return false
+            endif
+
+            set heroItem = owner.combatData.getReadyItem()            
+            if heroItem != 0 then
+                call owner.setDebugTextTagContent("Combat: Using Item " + GetItemName(heroItem.itemHandle))
+                call owner.setDebugTextTagColorPreset("RED")
+                call heroItem.use()
+                return true
+            endif
+            
+            return false
+        endmethod
+
         method tryExecuteEasyCombat takes nothing returns boolean
             local integer i = 0
             local AIHeroAbility heroAbil
@@ -1420,7 +1534,7 @@ library AIStateMachine requires optional KeyUtils
             
             // Cast first available ability with 2x cooldown spacing
             set heroAbil = owner.combatData.getReadyAbility(owner.hero, difficulty)
-            if heroAbil != null then
+            if heroAbil != 0 then
                 if this.tryCastAbility(heroAbil) then
                     set owner.isCasting = true
                     set owner.castingAbility = heroAbil
@@ -1886,6 +2000,7 @@ library AIStateMachine requires optional KeyUtils
 
             // Initialize combat data
             set this.combatData = InitializeHeroCombatData(u, inDifficulty)
+            set this.combatData.ownerAIHero = this
 
             call this.changeState(RunState.create())
 
@@ -1921,14 +2036,18 @@ library AIStateMachine requires optional KeyUtils
             local AIHeroAbility heroAbil
             local real currentMana
             local boolean hasReadyAbility = false
+            local boolean hasReadyItem = false
             
-            return false // Disabled for testing
-
             if IsUnitStunOrSilence(this.hero) then
                 call BotLog("Cannot enter combat, hero is stunned or silenced.")
                 call this.setDebugTextTagContent("Run: Stunned/Silenced")
                 call this.setDebugTextTagColorPreset("YELLOW")
                 return false
+            endif
+
+            set hasReadyItem = this.combatData.hasReadyItem()
+            if hasReadyItem then
+                return true
             endif
 
             set hasReadyAbility = this.combatData.hasReadyAbility(this.hero, this.difficulty)
@@ -2073,6 +2192,13 @@ library AIStateMachine requires optional KeyUtils
             call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " done, CCI: " + I2S(this.currentComboIndex))
             call this.setDebugTextTagColorPreset("RED")
             set this.castingAbility = 0
+        endmethod
+
+        method onGetItem takes item itm returns nothing
+            call this.botLog("Picked up item: " + GetItemName(itm))
+            call this.setDebugTextTagContent("Item: Picked Up " + GetItemName(itm))
+            call this.setDebugTextTagColorPreset("CYAN")
+            call this.combatData.addItem(itm, GetItemTypeId(itm), 99999, this.hero)
         endmethod
 
         method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing
