@@ -54,6 +54,7 @@ library AIStateMachine requires optional KeyUtils
         constant real CRAZY_CD_MULTIPLIER = 1.0
         constant real NIGHTMARE_CD_MULTIPLIER = 0.8 
         constant integer MAX_ABILITIES_PER_HERO = 7
+        constant integer MAX_ITEM_PER_HERO = 6
         
         // Timer to AIHero mapping
         public hashtable udg_TimerHeroMap
@@ -72,7 +73,7 @@ library AIStateMachine requires optional KeyUtils
         private player tempHeroOwner
         private boolean bTempFilterForAllies
         private unit tempHeroUnit
-        private HeroAbility tempHeroAbility
+        private AIHeroAbility tempAIHeroAbility
 
         // Temporary variables for item search
         item tempFoundItem = null
@@ -336,8 +337,8 @@ library AIStateMachine requires optional KeyUtils
             return false
         endif
 
-        if tempHeroAbility != 0 then
-            if not tempHeroAbility.customFilter(filterUnit) then
+        if tempAIHeroAbility != 0 then
+            if not tempAIHeroAbility.customFilter(filterUnit) then
                 set filterUnit = null
                 return false
             endif
@@ -427,7 +428,23 @@ library AIStateMachine requires optional KeyUtils
         constant integer ALLOW_TARGET_TYPE_SELF = 6
     endglobals
 
-    struct HeroAbility
+    struct AIItem
+        integer itemId
+        real castRange
+
+        static method create takes integer newItemId, real newCastRange returns thistype
+            local thistype this = thistype.allocate()
+            set this.itemId = newItemId
+            set this.castRange = newCastRange
+            return this
+        endmethod
+
+        method destroy takes nothing returns nothing
+            call this.deallocate()
+        endmethod
+    endstruct
+
+    struct AIHeroAbility
         integer abilityId
         real baseCooldown
         integer castType
@@ -497,10 +514,12 @@ library AIStateMachine requires optional KeyUtils
     endstruct
 
     struct HeroCombatData
-        HeroAbility array abilities[MAX_ABILITIES_PER_HERO]
+        AIHeroAbility array abilities[MAX_ABILITIES_PER_HERO]
         integer abilityCount
         real comboExpectedDamage
         real comboOverkillThresholdPercent
+        AIItem array items[MAX_ITEM_PER_HERO]
+
         
         static method create takes nothing returns thistype
             local thistype this = thistype.allocate()
@@ -512,7 +531,7 @@ library AIStateMachine requires optional KeyUtils
         
         method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = HeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex, expectedDamage)
+                set this.abilities[this.abilityCount] = AIHeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex, expectedDamage)
                 if comboIndex > 0 then
                     set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
                 endif
@@ -533,7 +552,7 @@ library AIStateMachine requires optional KeyUtils
             call this.deallocate()
         endmethod
 
-        method getAbilityByComboIndex takes integer comboIndex returns HeroAbility
+        method getAbilityByComboIndex takes integer comboIndex returns AIHeroAbility
             local integer i = 0
             loop
                 exitwhen i >= this.abilityCount
@@ -546,16 +565,16 @@ library AIStateMachine requires optional KeyUtils
         endmethod
 
         method hasReadyAbility takes unit hero, integer difficulty returns boolean
-            local HeroAbility heroAbil = this.getReadyAbility(hero, difficulty)
+            local AIAIHeroAbility heroAbil = this.getReadyAbility(hero, difficulty)
             if heroAbil != 0 then
                 return true
             endif
             return false
         endmethod
 
-        method getReadyAbility takes unit hero, integer difficulty returns HeroAbility
+        method getReadyAbility takes unit hero, integer difficulty returns AIAIHeroAbility
             local integer i = 0
-            local HeroAbility heroAbil
+            local AIAIHeroAbility heroAbil
             local real currentMana
             local boolean bCheckCombo = IsApplyingCombo(difficulty)
             local AIHero aiHero = GetAIHeroFromUnit(hero)
@@ -615,10 +634,10 @@ library AIStateMachine requires optional KeyUtils
             return 0
         endmethod
 
-        method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns HeroAbility
+        method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns AIAIHeroAbility
             local integer i = startingComboIndex
-            local HeroAbility heroAbil
-            local HeroAbility resultComboAbility = 0
+            local AIAIHeroAbility heroAbil
+            local AIAIHeroAbility resultComboAbility = 0
             local AIHero aiHero = GetAIHeroFromUnit(hero)
             if aiHero == 0 then
                 call BotLogError("AIHero not found for unit in getReadyComboAbility.")
@@ -671,7 +690,7 @@ library AIStateMachine requires optional KeyUtils
             local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
             local real requiredMana = 0.0
             local integer i = currentComboIndex
-            local HeroAbility heroAbil
+            local AIAIHeroAbility heroAbil
             local AIHero aiHero = GetAIHeroFromUnit(hero)
             
             // Calculate mana cost for remaining combo abilities from currentComboIndex
@@ -695,7 +714,7 @@ library AIStateMachine requires optional KeyUtils
 
         method areComboAbilityCooldownReady takes unit hero, integer difficulty, integer currentComboIndex returns boolean
             local integer i = currentComboIndex
-            local HeroAbility heroAbil
+            local AIAIHeroAbility heroAbil
             
             // Check if combo abilities have their cooldowns ready (starting from currentComboIndex)
             loop
@@ -1386,7 +1405,7 @@ library AIStateMachine requires optional KeyUtils
 
         method tryExecuteEasyCombat takes nothing returns boolean
             local integer i = 0
-            local HeroAbility heroAbil
+            local AIAIHeroAbility heroAbil
             local real currentTime = TimerGetElapsed(gameTimer)
             local integer difficulty = owner.difficulty
             
@@ -1413,7 +1432,7 @@ library AIStateMachine requires optional KeyUtils
             // TODO: Add counter-casting logic based on enemy states
         endmethod
 
-        method canCastAbility takes HeroAbility heroAbil returns boolean
+        method canCastAbility takes AIAIHeroAbility heroAbil returns boolean
             // Check if hero is stunned or silenced
             if IsUnitStunOrSilence(owner.hero) then
                 call BotLog("Cannot cast ability, hero is stunned or silenced.")
@@ -1439,7 +1458,7 @@ library AIStateMachine requires optional KeyUtils
             return true
         endmethod
 
-        method shouldUpdateComboTarget takes HeroAbility heroAbil, unit targetUnit returns boolean
+        method shouldUpdateComboTarget takes AIAIHeroAbility heroAbil, unit targetUnit returns boolean
             if not IsApplyingCombo(owner.difficulty) then
                 return false
             endif
@@ -1455,7 +1474,7 @@ library AIStateMachine requires optional KeyUtils
             return true
         endmethod
 
-        method findTargetForAbility takes HeroAbility heroAbil returns unit
+        method findTargetForAbility takes AIAIHeroAbility heroAbil returns unit
             local unit targetUnit = null
             
             // Check if we should use existing combo target
@@ -1507,13 +1526,13 @@ library AIStateMachine requires optional KeyUtils
             return targetUnit
         endmethod
 
-        method castInstantAbility takes HeroAbility heroAbil returns boolean
+        method castInstantAbility takes AIAIHeroAbility heroAbil returns boolean
             call IssueImmediateOrder(owner.hero, heroAbil.orderString)
             call this.botLog("Casting instant ability: " + heroAbil.orderString)
             return true
         endmethod
 
-        method castPointAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
+        method castPointAbility takes AIAIHeroAbility heroAbil, unit targetUnit returns boolean
             local real heroFacing
             local real offset
             local real targetX
@@ -1535,7 +1554,7 @@ library AIStateMachine requires optional KeyUtils
             return true
         endmethod
 
-        method castUnitAbility takes HeroAbility heroAbil, unit targetUnit returns boolean
+        method castUnitAbility takes AIAIHeroAbility heroAbil, unit targetUnit returns boolean
             if targetUnit != null then
                 call IssueTargetOrder(owner.hero, heroAbil.orderString, targetUnit)
                 call this.botLog("Casting unit target ability: " + heroAbil.orderString)
@@ -1548,7 +1567,7 @@ library AIStateMachine requires optional KeyUtils
             endif
         endmethod
 
-        method tryCastAbility takes HeroAbility heroAbil returns boolean
+        method tryCastAbility takes AIAIHeroAbility heroAbil returns boolean
             local unit targetUnit
             
             call BotLog("Attempting to cast ability: " + heroAbil.orderString)
@@ -1589,7 +1608,7 @@ library AIStateMachine requires optional KeyUtils
             return null  // Placeholder - replace with actual enemy finding logic
         endmethod
 
-        method findRandomHeroInRange takes real range, boolean isForAllies, HeroAbility heroAbil returns unit
+        method findRandomHeroInRange takes real range, boolean isForAllies, AIAIHeroAbility heroAbil returns unit
             local group heroes = CreateGroup()
             local unit randomHero
             
@@ -1597,24 +1616,24 @@ library AIStateMachine requires optional KeyUtils
             set tempHeroOwner = GetOwningPlayer(owner.hero)
             set bTempFilterForAllies = isForAllies
             set tempHeroUnit = owner.hero
-            set tempHeroAbility = heroAbil
+            set tempAIAIHeroAbility = heroAbil
             
             call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterHeroes))
             set randomHero = GroupPickRandomUnit(heroes)
             
             // Clean up
-            set tempHeroAbility = 0
+            set tempAIAIHeroAbility = 0
             call DestroyGroup(heroes)
             set heroes = null
             
             return randomHero
         endmethod
 
-        method findRandomEnemyHeroInRange takes real range, HeroAbility heroAbil returns unit
+        method findRandomEnemyHeroInRange takes real range, AIHeroAbility heroAbil returns unit
             return this.findRandomHeroInRange(range, false, heroAbil)
         endmethod
         
-        method findRandomAllyHeroInRange takes real range, HeroAbility heroAbil returns unit
+        method findRandomAllyHeroInRange takes real range, AIHeroAbility heroAbil returns unit
             return this.findRandomHeroInRange(range, true, heroAbil)
         endmethod
 
@@ -1644,7 +1663,7 @@ library AIStateMachine requires optional KeyUtils
             return bestTarget
         endmethod
 
-        method findBestComboTarget takes real range, HeroAbility heroAbil returns unit
+        method findBestComboTarget takes real range, AIHeroAbility heroAbil returns unit
             local group heroes = CreateGroup()
             local unit currentUnit = null
             local unit bestTarget = null
@@ -1660,7 +1679,7 @@ library AIStateMachine requires optional KeyUtils
             set tempHeroOwner = GetOwningPlayer(owner.hero)
             set bTempFilterForAllies = false
             set tempHeroUnit = owner.hero
-            set tempHeroAbility = heroAbil
+            set tempAIHeroAbility = heroAbil
             call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterHeroes))
             
             // Iterate through filtered enemies to find best target
@@ -1720,11 +1739,11 @@ library AIStateMachine requires optional KeyUtils
                 set bestTarget = this.findFallbackComboTarget(range, heroAbil)
             endif
             
-            set tempHeroAbility = 0            
+            set tempAIHeroAbility = 0            
             return bestTarget
         endmethod
 
-        method findFallbackComboTarget takes real range, HeroAbility heroAbil returns unit
+        method findFallbackComboTarget takes real range, AIHeroAbility heroAbil returns unit
             local group heroes = CreateGroup()
             local unit currentUnit = null
             local unit bestTarget = null
@@ -1736,7 +1755,7 @@ library AIStateMachine requires optional KeyUtils
             set tempHeroOwner = GetOwningPlayer(owner.hero)
             set bTempFilterForAllies = false
             set tempHeroUnit = owner.hero
-            set tempHeroAbility = heroAbil
+            set tempAIHeroAbility = heroAbil
             call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterHeroes))
             
             loop
@@ -1754,7 +1773,7 @@ library AIStateMachine requires optional KeyUtils
             
             call DestroyGroup(heroes)
             set heroes = null
-            set tempHeroAbility = 0
+            set tempAIHeroAbility = 0
             
             if bestTarget != null then
                 call BotLog("Fallback combo target selected: " + GetUnitName(bestTarget))
@@ -1827,7 +1846,7 @@ library AIStateMachine requires optional KeyUtils
         HeroCombatData combatData
         real lastStartCastTime
         boolean isCasting
-        HeroAbility castingAbility
+        AIHeroAbility castingAbility
         timer updateTimer
         integer currentComboIndex
         unit comboTargetUnit
@@ -1890,7 +1909,7 @@ library AIStateMachine requires optional KeyUtils
 
         method shouldEnterCombat takes nothing returns boolean
             local integer i = 0
-            local HeroAbility heroAbil
+            local AIHeroAbility heroAbil
             local real currentMana
             local boolean hasReadyAbility = false
             
