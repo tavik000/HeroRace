@@ -53,6 +53,8 @@ library AIStateMachine requires optional KeyUtils
         constant real HARD_CD_MULTIPLIER = 1.0
         constant real CRAZY_CD_MULTIPLIER = 1.0
         constant real NIGHTMARE_CD_MULTIPLIER = 0.8 
+
+        // Maximum abilities and items per hero
         constant integer MAX_ABILITIES_PER_HERO = 7
         constant integer MAX_ITEM_PER_HERO = 6
         
@@ -193,6 +195,24 @@ library AIStateMachine requires optional KeyUtils
         endif
     endfunction
 
+    function IsUnitInAnyHazardZone takes unit u returns boolean
+        local real ux = GetUnitX(u)
+        local real uy = GetUnitY(u)
+        if RectContainsCoords(gg_rct_HazardSlowSpikeArea, ux, uy) then
+            return true
+        endif
+        if RectContainsCoords(gg_rct_HazardFastSpikeArea, ux, uy) then
+            return true
+        endif
+        if RectContainsCoords(gg_rct_HazardNetArea, ux, uy) then
+            return true
+        endif
+        if RectContainsCoords(gg_rct_HazardSpiderNetArea, ux, uy) then
+            return true
+        endif
+        return false
+    endfunction
+
     function IsInSlowSpikeHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
         if wpi == 8 then
@@ -225,7 +245,7 @@ library AIStateMachine requires optional KeyUtils
         local real heroX = GetUnitX(aiHero.hero)
         local real heroY = GetUnitY(aiHero.hero)
         local integer wpi = aiHero.currentWaypointIndex
-        if RectContainsCoords(gg_rct_AISpiderNetArea, heroX, heroY) then
+        if RectContainsCoords(gg_rct_HazardSpiderNetArea, heroX, heroY) then
             if wpi == 14 then
                 return true
             endif
@@ -293,12 +313,12 @@ library AIStateMachine requires optional KeyUtils
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
             call BotLog("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 200, 2, 866.0)   // Flame Strike
-            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, ALLOW_TARGET_TYPE_ENEMY_HERO, 0, 1, 0.0)   // Banish
-            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, ALLOW_TARGET_TYPE_ALLY_HERO, 0, 0, 0.0) // Blood Lust
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, FIND_TARGET_TYPE_ENEMY_COMBO, 200, 2, 866.0)   // Flame Strike
+            call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, FIND_TARGET_TYPE_ENEMY_COMBO, 0, 1, 0.0)   // Banish
+            call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, FIND_TARGET_TYPE_ALLY_SPEED_UP, 0, 0, 0.0) // Blood Lust
             
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
-            // call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, ALLOW_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
+            // call data.addAbility('AHtc', 6.0, CAST_UNIT, "thunderclap", 75, 250, FIND_TARGET_TYPE_ENEMY_UNIT, 0)      // Thunder Clap
             // Add more hero types as needed...
         endif
         
@@ -416,23 +436,60 @@ library AIStateMachine requires optional KeyUtils
         set WaypointCount = 14 // Update this to match the number of waypoints you added.
     endfunction
 
-    // Ability cast types
+    // Ability AI cast types
     globals
-        constant integer CAST_INSTANT = 0
-        constant integer CAST_POINT_ENEMY_FRONT = 1
-        constant integer CAST_POINT_ENEMY_BEHIND = 2
-        constant integer CAST_POINT_SELF_BEHIND = 3
-        constant integer CAST_POINT_TREE = 4
-        constant integer CAST_POINT_BLINK = 5
-        constant integer CAST_UNIT = 6
+        constant integer CAST_NONE = 0 
+        constant integer CAST_INSTANT = 1
+        constant integer CAST_INSTANT_BACK_ENEMY = 2
+        constant integer CAST_INSTANT_BACK_ENEMY_FOLLOW = 3
+        constant integer CAST_INSTANT_ALL_CROWDED = 4
+        constant integer CAST_INSTANT_ALLY_CROWDED = 5
+        constant integer CAST_INSTANT_ENEMY_CROWDED = 6
+        constant integer CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE = 7
+        constant integer CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE = 8
+        constant integer CAST_INSTANT_HEAL = 9
+        constant integer CAST_INSTANT_HEAL_ALLY_CROWDED = 10
+        constant integer CAST_INSTANT_HAVE_CORPSE = 11
+        constant integer CAST_INSTANT_JUMP = 12
 
-        constant integer ALLOW_TARGET_TYPE_NONE = 0
-        constant integer ALLOW_TARGET_TYPE_ENEMY_HERO = 1
-        constant integer ALLOW_TARGET_TYPE_ENEMY_UNIT = 2
-        constant integer ALLOW_TARGET_TYPE_ALLY_HERO = 3
-        constant integer ALLOW_TARGET_TYPE_ALLY_UNIT = 4
-        constant integer ALLOW_TARGET_TYPE_ALL = 5
-        constant integer ALLOW_TARGET_TYPE_SELF = 6
+
+        constant integer CAST_POINT_ENEMY_FRONT = 20
+        constant integer CAST_POINT_ENEMY_BEHIND = 21 // prioritize Hazard
+        constant integer CAST_POINT_ENEMY_BEHIND_CROWDED = 22 // prioritize Hazard
+        constant integer CAST_POINT_ENEMY_CROWDED = 23
+        constant integer CAST_POINT_ALLY_DEFENSE_AND_CLEANSE = 24
+        constant integer CAST_POINT_SELF_FRONT = 25
+        constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 26
+        constant integer CAST_POINT_TREE = 27
+        constant integer CAST_POINT_BLINK = 28
+
+        constant integer CAST_UNIT = 40 
+        constant integer CAST_TREE_FRONT = 50
+
+        constant integer FIND_TARGET_TYPE_NONE = 0
+        constant integer FIND_TARGET_TYPE_ENEMY_COMBO = 1
+        constant integer FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING = 2
+        constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH = 3
+        constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY = 4
+        constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL = 5
+        constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED = 6
+        constant integer FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK = 7
+        constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 8
+        constant integer FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 9
+
+        constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20
+        constant integer FIND_TARGET_TYPE_ALLY_HEAL = 21
+        constant integer FIND_TARGET_TYPE_ALLY_CHAIN_HEAL = 22
+        constant integer FIND_TARGET_TYPE_ALLY_DEFENSE_AND_CLEANSE = 23
+        constant integer FIND_TARGET_TYPE_ALLY_FOLLOW_ENEMY = 24
+        constant integer FIND_TARGET_TYPE_ALLY_TELEPORT = 25
+        constant integer FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP = 26
+
+        constant integer FIND_TARGET_TYPE_SELF_FORCE_STAFF = 40
+
+        constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 50
+        constant integer FIND_TARGET_TYPE_ALL_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 51
+
     endglobals
 
     struct AIItem
@@ -457,13 +514,21 @@ library AIStateMachine requires optional KeyUtils
 
         method use takes nothing returns nothing
             local integer itemSlot = GetInventoryIndexOfItemTypeBJ(this.ownerHero, this.itemId)
-            call UnitUseItemTarget( this.ownerHero, this.itemHandle, this.ownerHero )
-            call BotLog("Using item: " + GetItemName(this.itemHandle) + " from slot " + I2S(itemSlot))
+            call UnitUseItemTarget( this.ownerHero, this.itemHandle, this.ownerHero)
+            call this.botLog("Using item: " + GetItemName(this.itemHandle) + " from slot " + I2S(itemSlot))
             // TODO
         endmethod
 
         method destroy takes nothing returns nothing
             call this.deallocate()
+        endmethod
+
+        method botLog takes string msg returns nothing
+            call BotLogWithPlayer(GetOwningPlayer(this.ownerHero), msg)
+        endmethod
+
+        method botLogError takes string msg returns nothing
+            call BotLogErrorWithPlayer(GetOwningPlayer(this.ownerHero), msg)
         endmethod
     endstruct
 
@@ -476,11 +541,11 @@ library AIStateMachine requires optional KeyUtils
         string orderString  
         integer manaCost    
         real castRange
-        integer allowTargetType
+        integer findTargetType
         real effectiveRadius
         real expectedDamage  // For combo targeting logic
 
-        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inAllowTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage returns thistype
+        static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage returns thistype
             local thistype this = thistype.allocate()
             set this.abilityId = aid
             set this.baseCooldown = cd
@@ -490,7 +555,7 @@ library AIStateMachine requires optional KeyUtils
             set this.orderString = order
             set this.manaCost = mana
             set this.castRange = inCastRange
-            set this.allowTargetType = inAllowTargetType
+            set this.findTargetType = inFindTargetType
             set this.effectiveRadius = inEffectiveRadius
             set this.expectedDamage = inExpectedDamage
             return this
@@ -553,16 +618,16 @@ library AIStateMachine requires optional KeyUtils
             return this
         endmethod
         
-        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer allowTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
+        method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer findTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
             if this.abilityCount < MAX_ABILITIES_PER_HERO then
-                set this.abilities[this.abilityCount] = AIHeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, allowTargetType, effectiveRadius, comboIndex, expectedDamage)
+                set this.abilities[this.abilityCount] = AIHeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
                 if comboIndex > 0 then
                     set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
                 endif
                 set this.abilityCount = this.abilityCount + 1
             else
                 // Exceeded max abilities - handle error as needed
-                call BotLogError("Exceeded max abilities for hero combat data.")
+                call this.botLogError("Exceeded max abilities for hero combat data.")
             endif
         endmethod
 
@@ -577,7 +642,7 @@ library AIStateMachine requires optional KeyUtils
                 set i = i + 1
             endloop
             // Exceeded max items - handle error as needed
-            call BotLogError("Exceeded max items for hero combat data.")
+            call this.botLogError("Exceeded max items for hero combat data.")
         endmethod
         
         method removeItem takes item itemHandle returns nothing
@@ -594,7 +659,7 @@ library AIStateMachine requires optional KeyUtils
                 set i = i + 1
             endloop
             // Item not found - handle error as needed
-            call BotLogError("Item not found in hero combat data for removal.")
+            call this.botLogError("Item not found in hero combat data for removal.")
         endmethod
         
         method destroy takes nothing returns nothing
@@ -676,12 +741,12 @@ library AIStateMachine requires optional KeyUtils
                     if heroAbil.isCooldownReady(difficulty) then
                         // Check if ability is available
                         if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                            call BotLogError("Ability not available: " + heroAbil.orderString)
+                            call this.botLogError("Ability not available: " + heroAbil.orderString)
                         else
                             // Check if hero has enough mana
                             set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
                             if not heroAbil.isManaReady(hero) then
-                                call BotLog("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
+                                call this.botLog("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
                                 call aiHero.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Mana" + "(" + I2S(heroAbil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
                                 call aiHero.setDebugTextTagColorPreset("RED")
                             else
@@ -702,7 +767,7 @@ library AIStateMachine requires optional KeyUtils
             local AIHeroAbility resultComboAbility = 0
             local AIHero aiHero = GetAIHeroFromUnit(hero)
             if aiHero == 0 then
-                call BotLogError("AIHero not found for unit in getReadyComboAbility.")
+                call this.botLogError("AIHero not found for unit in getReadyComboAbility.")
                 return 0
             endif
 
@@ -715,7 +780,7 @@ library AIStateMachine requires optional KeyUtils
                 
                 // Check cooldown
                 if not heroAbil.isCooldownReady(difficulty) then
-                    call BotLog("Ability cooldown not ready for combo: " + heroAbil.orderString)
+                    call this.botLog("Ability cooldown not ready for combo: " + heroAbil.orderString)
                     call aiHero.setDebugTextTagContent("Combat: Combo CD Not Ready " + heroAbil.orderString)
                     call aiHero.setDebugTextTagColorPreset("RED")
                     return 0
@@ -723,13 +788,13 @@ library AIStateMachine requires optional KeyUtils
                 
                 // Check if ability is available
                 if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                    call BotLogError("Ability not available for combo: " + heroAbil.orderString)
+                    call this.botLogError("Ability not available for combo: " + heroAbil.orderString)
                     return 0
                 endif
                 
                 if i == aiHero.currentComboIndex then
                     set resultComboAbility = heroAbil
-                    call BotLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
+                    call this.botLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
                     call aiHero.setDebugTextTagContent("Combat: Found Combo Ability " + heroAbil.orderString)
                     call aiHero.setDebugTextTagColorPreset("RED")
                 endif
@@ -737,11 +802,11 @@ library AIStateMachine requires optional KeyUtils
             endloop
 
             if not this.hasEnoughManaForCombo(hero, startingComboIndex) then
-                call BotLog("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
+                call this.botLog("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
                 return 0
             endif
 
-            call BotLog("Combo abilities ready, returning ability: " + resultComboAbility.orderString)
+            call this.botLog("Combo abilities ready, returning ability: " + resultComboAbility.orderString)
             call aiHero.setDebugTextTagContent("Combat: Combo Ability Ready " + resultComboAbility.orderString)
             call aiHero.setDebugTextTagColorPreset("RED")
 
@@ -768,7 +833,7 @@ library AIStateMachine requires optional KeyUtils
             if currentMana >= requiredMana then
                 return true
             endif
-            call BotLog("Not enough mana for remaining combo. (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
+            call this.botLog("Not enough mana for remaining combo. (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
             call aiHero.setDebugTextTagContent("Combat: No Mana, (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
             call aiHero.setDebugTextTagColorPreset("RED")
             return false
@@ -816,7 +881,7 @@ library AIStateMachine requires optional KeyUtils
             local unit ownerHero = ownerAIHero.hero
 
             if ownerHero == null then
-                call BotLogError("Owner hero is null in getReadyItem.")
+                call this.botLogError("Owner hero is null in getReadyItem.")
                 return 0
             endif
 
@@ -837,6 +902,14 @@ library AIStateMachine requires optional KeyUtils
             endloop
 
             return 0
+        endmethod
+
+        method botLog takes string msg returns nothing
+            call BotLogWithPlayer(GetOwningPlayer(ownerAIHero.hero), msg)
+        endmethod
+
+        method botLogError takes string msg returns nothing
+            call BotLogErrorWithPlayer(GetOwningPlayer(ownerAIHero.hero), msg)
         endmethod
 
     endstruct
@@ -1558,7 +1631,7 @@ library AIStateMachine requires optional KeyUtils
         method canCastAbility takes AIHeroAbility heroAbil returns boolean
             // Check if hero is stunned or silenced
             if IsUnitStunOrSilence(owner.hero) then
-                call BotLog("Cannot cast ability, hero is stunned or silenced.")
+                call this.botLog("Cannot cast ability, hero is stunned or silenced.")
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Stunned/Silenced")
                 call owner.setDebugTextTagColorPreset("YELLOW")
                 return false
@@ -1572,7 +1645,7 @@ library AIStateMachine requires optional KeyUtils
             
             // Check if hero has enough mana
             if not heroAbil.isManaReady(owner.hero) then
-                call BotLog("Not enough mana for ability: " + heroAbil.orderString)
+                call this.botLog("Not enough mana for ability: " + heroAbil.orderString)
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Not Enough Mana")
                 call owner.setDebugTextTagColorPreset("RED")
                 return false
@@ -1600,51 +1673,42 @@ library AIStateMachine requires optional KeyUtils
         method findTargetForAbility takes AIHeroAbility heroAbil returns unit
             local unit targetUnit = null
             
-            // Check if we should use existing combo target
-            if IsApplyingCombo(owner.difficulty) and owner.comboTargetUnit != null and heroAbil.comboIndex > 0 then
-                set targetUnit = owner.comboTargetUnit
-                call BotLog("Using existing combo target: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Using Combo Target " + GetUnitName(targetUnit))
+            
+            // Find new target based on ability type
+            if heroAbil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
+                // Use smart combo targeting for combo abilities, random for others
+                if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
+                    if owner.comboTargetUnit != null then
+                        // Check if we should use existing combo target
+                        set targetUnit = owner.comboTargetUnit
+                        call this.botLog("Using existing combo target for combo ability: " + GetUnitName(targetUnit))
+                        call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Using Combo Target " + GetUnitName(targetUnit))
+                        call owner.setDebugTextTagColorPreset("RED")
+                        return targetUnit
+                    endif
+                    set targetUnit = this.findBestComboTarget(heroAbil.castRange, heroAbil)
+                    call this.botLog("Finding best combo target, result: " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Combo Target " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagColorPreset("RED")
+                    return targetUnit
+                else
+                    // Fallback to random enemy hero
+                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange, heroAbil)
+                    call this.botLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagColorPreset("RED")
+                    return targetUnit
+                endif
+            endif
+
+            if heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+                set targetUnit = this.findSpeedUpAllyTargetInRange(heroAbil.castRange, heroAbil)
+                call this.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             endif
-            
-            // Find new target based on ability type
-            if heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_HERO then
-                // Use smart combo targeting for combo abilities, random for others
-                if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
-                    set targetUnit = this.findBestComboTarget(heroAbil.castRange, heroAbil)
-                    call BotLog("Finding best combo target, result: " + GetUnitName(targetUnit))
-                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Combo Target " + GetUnitName(targetUnit))
-                    call owner.setDebugTextTagColorPreset("RED")
-                else
-                    set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange, heroAbil)
-                    call BotLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
-                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
-                    call owner.setDebugTextTagColorPreset("RED")
-                endif
-            elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_HERO then
-                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange, heroAbil)
-                call BotLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
 
-            elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ENEMY_UNIT then
-                // For simplicity, use enemy hero targeting for enemy units for now
-                set targetUnit = this.findRandomEnemyHeroInRange(heroAbil.castRange, heroAbil)
-                call BotLog("Finding enemy unit target, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Unit Target" + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
-            elseif heroAbil.allowTargetType == ALLOW_TARGET_TYPE_ALLY_UNIT then
-                // For simplicity, use ally hero targeting for ally units for now
-                set targetUnit = this.findRandomAllyHeroInRange(heroAbil.castRange, heroAbil)
-                call BotLog("Finding ally unit target, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Unit Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
-            else
-                call BotLogError("Unsupported target type for ability: " + heroAbil.orderString)
-                set targetUnit = null
-            endif
             
             return targetUnit
         endmethod
@@ -1662,7 +1726,7 @@ library AIStateMachine requires optional KeyUtils
             local real targetY
             
             if targetUnit == null then
-                call BotLog("No target found for point ability: " + heroAbil.orderString)
+                call this.botLog("No target found for point ability: " + heroAbil.orderString)
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Target")
                 call owner.setDebugTextTagColorPreset("RED")
                 return false
@@ -1683,7 +1747,7 @@ library AIStateMachine requires optional KeyUtils
                 call this.botLog("Casting unit target ability: " + heroAbil.orderString)
                 return true
             else
-                call BotLog("No target found for unit ability: " + heroAbil.orderString)
+                call this.botLog("No target found for unit ability: " + heroAbil.orderString)
                 call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Target")
                 call owner.setDebugTextTagColorPreset("RED")
                 return false
@@ -1693,7 +1757,7 @@ library AIStateMachine requires optional KeyUtils
         method tryCastAbility takes AIHeroAbility heroAbil returns boolean
             local unit targetUnit
             
-            call BotLog("Attempting to cast ability: " + heroAbil.orderString)
+            call this.botLog("Attempting to cast ability: " + heroAbil.orderString)
             call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString)
             call owner.setDebugTextTagColorPreset("RED")
             
@@ -1720,7 +1784,7 @@ library AIStateMachine requires optional KeyUtils
             elseif heroAbil.castType == CAST_UNIT then
                 return this.castUnitAbility(heroAbil, targetUnit)
             else
-                call BotLogError("Unsupported cast type for ability: " + heroAbil.orderString)
+                call this.botLogError("Unsupported cast type for ability: " + heroAbil.orderString)
                 return false
             endif
         endmethod
@@ -1760,6 +1824,93 @@ library AIStateMachine requires optional KeyUtils
             return this.findRandomHeroInRange(range, true, heroAbil)
         endmethod
 
+        method findSpeedUpAllyTargetInRange takes real range, AIHeroAbility heroAbil returns unit
+            local group heroes = CreateGroup()
+            local unit currentUnit = null
+            local real minHpPercent = 50 
+            local unit bestTarget = null
+            local real minSpeed = 200.0
+            local real maxSpeed = 350.0
+
+            // Not Allowed Target: CCed, In Hazard Zone, Speed <200 or >350
+            // Priority Order:
+            // 1. HP >= 50%
+            // 2. Behind
+            // 3. Far from Hero
+            // 3. Self
+
+            // Set temp variables for filter function
+            set tempHeroOwner = GetOwningPlayer(owner.hero)
+            set bTempFilterForAllies = true
+            set tempHeroUnit = owner.hero
+            set tempAIHeroAbility = heroAbil
+            call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterHeroes))
+
+            call this.botLog("group unit count for speed-up ally target: " + I2S(CountUnitsInGroup(heroes)))
+            
+            loop
+                set currentUnit = FirstOfGroup(heroes)
+                exitwhen currentUnit == null
+                call GroupRemoveUnit(heroes, currentUnit)
+                call this.botLog("Evaluating ally unit: " + GetUnitName(currentUnit))
+                call this.botLog(" GetUnitLifePercent(currentUnit): " + R2S(GetUnitLifePercent(currentUnit)))
+                if not IsUnitStunOrSlow(currentUnit) then
+                    if not IsUnitInAnyHazardZone(currentUnit) then
+                        if GetUnitMoveSpeed(currentUnit) >= minSpeed and GetUnitMoveSpeed(currentUnit) <= maxSpeed then
+                            // Valid Target
+                            if bestTarget == null then
+                                set bestTarget = currentUnit
+                                call this.botLog("New best speed-up ally target: " + GetUnitName(currentUnit))
+                            elseif GetUnitLifePercent(currentUnit) >= minHpPercent and GetUnitLifePercent(bestTarget) < minHpPercent then
+                                // Current has >=50% HP, best has <50% HP 
+                                set bestTarget = currentUnit
+                                call this.botLog("New best speed-up ally target based on HP%: " + GetUnitName(currentUnit))
+                            elseif bestTarget == owner.hero then
+                                if IsUnitBehindUnit(owner.hero, currentUnit) then
+                                    // Current is behind, previous best is self
+                                    set bestTarget = currentUnit
+                                    call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
+                                endif
+                            elseif IsUnitInFrontOfUnit(owner.hero, bestTarget) then
+                                if IsUnitBehindUnit(owner.hero, currentUnit) then
+                                    if currentUnit != owner.hero then
+                                        // Current is behind, previous best is in front
+                                        set bestTarget = currentUnit
+                                        call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
+                                    endif
+                                endif
+                            elseif DistanceBetweenUnits(owner.hero, currentUnit) > DistanceBetweenUnits(owner.hero, bestTarget) then
+                                // Both are in same relative position, choose farther one
+                                set bestTarget = currentUnit
+                                call this.botLog("New best speed-up ally target based on Distance: " + GetUnitName(currentUnit))
+                            endif
+                        else
+                            call this.botLog(" Ally unit speed out of range, skipping: " + GetUnitName(currentUnit))
+                        endif
+                    else
+                        call this.botLog(" Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
+                    endif
+                else
+                    call this.botLog(" Ally unit is CCed, skipping: " + GetUnitName(currentUnit))
+                endif
+            endloop
+
+            if IsUnitInFrontOfUnit(owner.hero, bestTarget) then
+                set bestTarget = owner.hero
+                call this.botLog("Ally unit in front, defaulting to self.")
+            endif
+
+            // Clean up
+            call DestroyGroup(heroes)
+            set heroes = null
+            set currentUnit = null
+            set tempAIHeroAbility = 0
+            set tempHeroUnit = null
+            set tempHeroOwner = null
+
+            return bestTarget
+        endmethod
+
         method evaluateComboTarget takes unit currentUnit, unit bestTarget, real bestTargetHp, boolean bestIsKillableTarget, boolean bestIsStunOrSlow, real comboExpectedDamage, real comboMinThreshold returns unit
             local real currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
             local boolean isKillableTarget
@@ -1791,7 +1942,6 @@ library AIStateMachine requires optional KeyUtils
             local unit currentUnit = null
             local unit bestTarget = null
             local real currentHp
-            local real maxHp
             local real bestTargetHp = 0.0
             local boolean bestIsKillableTarget = false
             local boolean bestIsStunOrSlow = false
@@ -1812,7 +1962,6 @@ library AIStateMachine requires optional KeyUtils
                 call GroupRemoveUnit(heroes, currentUnit)
                 
                 set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
-                set maxHp = GetUnitState(currentUnit, UNIT_STATE_MAX_LIFE)
                 
                 //  Current Priority Order:                                                                                     
                 // 1. Avoid Overkill 
@@ -1840,21 +1989,21 @@ library AIStateMachine requires optional KeyUtils
                 // Log selected target details
                 if bestIsKillableTarget then
                     if bestIsStunOrSlow then
-                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1")
+                        call this.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1")
                         call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1)")
                         call owner.setDebugTextTagColorPreset("RED")
                     else
-                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0")
+                        call this.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0")
                         call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0)")
                         call owner.setDebugTextTagColorPreset("RED")
                     endif
                 else
                     if bestIsStunOrSlow then
-                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1")
+                        call this.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1")
                         call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1)")
                         call owner.setDebugTextTagColorPreset("RED")
                     else
-                        call BotLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0")
+                        call this.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0")
                         call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0)")
                     endif
                 endif
@@ -1873,7 +2022,7 @@ library AIStateMachine requires optional KeyUtils
             local real bestTargetHp = 0.0
             local real currentHp
             
-            call BotLog("No suitable combo target found, trying fallback to overkill targets")
+            call this.botLog("No suitable combo target found, trying fallback to overkill targets")
             
             set tempHeroOwner = GetOwningPlayer(owner.hero)
             set bTempFilterForAllies = false
@@ -1899,11 +2048,11 @@ library AIStateMachine requires optional KeyUtils
             set tempAIHeroAbility = 0
             
             if bestTarget != null then
-                call BotLog("Fallback combo target selected: " + GetUnitName(bestTarget))
+                call this.botLog("Fallback combo target selected: " + GetUnitName(bestTarget))
                 call owner.setDebugTextTagContent("Combat: Combo Target (Overkill): " + GetUnitName(bestTarget))
                 call owner.setDebugTextTagColorPreset("RED")
             else
-                call BotLog("No combo targets found at all")
+                call this.botLog("No combo targets found at all")
                 call owner.setDebugTextTagContent("Combat: No Combo Target")
                 call owner.setDebugTextTagColorPreset("RED")
             endif
@@ -1986,7 +2135,7 @@ library AIStateMachine requires optional KeyUtils
             set this.difficulty = inDifficulty
             set this.castPt = GetHeroCastPoint(GetUnitTypeId(u))
             set this.currentState = 0
-            set this.currentWaypointIndex = 14
+            set this.currentWaypointIndex = 1
             set this.lastStartCastTime = 0.0
             set this.isCasting = false
             set this.castingAbility = 0
