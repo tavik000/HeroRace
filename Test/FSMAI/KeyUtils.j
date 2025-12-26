@@ -73,6 +73,10 @@ library KeyUtils
         return SquareRoot(dx * dx + dy * dy)
     endfunction
 
+    function DistanceBetweenUnits takes unit u1, unit u2 returns real
+        return DistanceBetweenXY(GetUnitX(u1), GetUnitY(u1), GetUnitX(u2), GetUnitY(u2))
+    endfunction
+
     function AngleDiff takes real a, real b returns real
         local real d = a - b
 
@@ -273,12 +277,18 @@ library KeyUtils
         return true
     endfunction
 
+    // Check if target is in front of source unit
     function IsUnitInFrontOfUnit takes unit source, unit target returns boolean
         local real dx = GetUnitX(target) - GetUnitX(source)
         local real dy = GetUnitY(target) - GetUnitY(source)
 
         local real rad = GetUnitFacing(source) * bj_PI / 180.0
         return dx * Cos(rad) + dy * Sin(rad) > 0.0
+    endfunction
+
+    // Check if target is behind source unit
+    function IsUnitBehindUnit takes unit source, unit target returns boolean
+        return not IsUnitInFrontOfUnit(source, target)
     endfunction
 
     function IsUnitInventoryFull takes unit u returns boolean
