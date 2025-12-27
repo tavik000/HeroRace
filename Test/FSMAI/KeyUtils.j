@@ -279,7 +279,6 @@ library KeyUtils
 
     // Check if target is in front of source unit
     function IsUnitInFrontOfUnit takes unit source, unit target returns boolean
-        // 
         local real dx = GetUnitX(target) - GetUnitX(source)
         local real dy = GetUnitY(target) - GetUnitY(source)
 
