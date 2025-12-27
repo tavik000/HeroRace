@@ -278,18 +278,18 @@ library KeyUtils
     endfunction
 
 
-    // Check if target is in front of source unit
-    function IsUnitInFrontOfUnit takes unit source, unit target returns boolean
-        local real dx = GetUnitX(target) - GetUnitX(source)
-        local real dy = GetUnitY(target) - GetUnitY(source)
+    // Check if u1 is in front of u2
+    function IsUnitInFrontOfUnit takes unit u1, unit u2 returns boolean
+        local real dx = GetUnitX(u2) - GetUnitX(u1)
+        local real dy = GetUnitY(u2) - GetUnitY(u1)
 
-        local real rad = GetUnitFacing(source) * bj_PI / 180.0
+        local real rad = GetUnitFacing(u2) * bj_PI / 180.0
         return dx * Cos(rad) + dy * Sin(rad) > 0.0
     endfunction
 
     // Check if target is behind source unit
-    function IsUnitBehindUnit takes unit source, unit target returns boolean
-        return not IsUnitInFrontOfUnit(source, target)
+    function IsUnitBehindUnit takes unit u1, unit u2 returns boolean
+        return not IsUnitInFrontOfUnit(u1, u2)
     endfunction
 
     function IsUnitInventoryFull takes unit u returns boolean

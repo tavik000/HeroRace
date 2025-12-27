@@ -1102,11 +1102,11 @@ library AIStateMachine requires optional KeyUtils
                 return false
             endif
             if bCheckBehind then
-                if IsUnitInFrontOfUnit(owner.hero, u) then
+                if IsUnitInFrontOfUnit(u, owner.hero) then
                     return false
                 endif
             else
-                if not IsUnitInFrontOfUnit(owner.hero, u) then
+                if not IsUnitInFrontOfUnit(u, owner.hero) then
                     return false
                 endif
             endif
@@ -1281,7 +1281,7 @@ library AIStateMachine requires optional KeyUtils
             // Aloc is Locus ability
             if GetUnitTypeId(u) == checkingUnitTypeId and GetUnitAbilityLevel(u, 'Aloc') > 0 then
                 if not bCheckBehind then
-                    if IsUnitInFrontOfUnit(owner.hero, u) then
+                    if IsUnitInFrontOfUnit(u, owner.hero) then
                         if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, hazardHitRadius) then
                             call this.botLog("hazard unit detected ahead and within avoidance range.")
                             return true
@@ -1290,7 +1290,7 @@ library AIStateMachine requires optional KeyUtils
                         endif
                     endif
                 else
-                    if not IsUnitInFrontOfUnit(owner.hero, u) then
+                    if not IsUnitInFrontOfUnit(u, owner.hero) then
                         if not IsUnitInRangeXY(u, ownerHeroX, ownerHeroY, hazardHitRadius) then
                             call this.botLog("hazard unit detected behind and within avoidance range.")
                             return true
@@ -1866,13 +1866,13 @@ library AIStateMachine requires optional KeyUtils
                                 set bestTarget = currentUnit
                                 call this.botLog("New best speed-up ally target based on HP%: " + GetUnitName(currentUnit))
                             elseif bestTarget == owner.hero then
-                                if IsUnitBehindUnit(owner.hero, currentUnit) then
+                                if IsUnitBehindUnit(currentUnit, owner.hero) then
                                     // Current is behind, previous best is self
                                     set bestTarget = currentUnit
                                     call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
                                 endif
-                            elseif IsUnitInFrontOfUnit(owner.hero, bestTarget) then
-                                if IsUnitBehindUnit(owner.hero, currentUnit) then
+                            elseif IsUnitInFrontOfUnit(bestTarget, owner.hero) then
+                                if IsUnitBehindUnit(currentUnit, owner.hero) then
                                     if currentUnit != owner.hero then
                                         // Current is behind, previous best is in front
                                         set bestTarget = currentUnit
@@ -1895,7 +1895,7 @@ library AIStateMachine requires optional KeyUtils
                 endif
             endloop
 
-            if IsUnitInFrontOfUnit(owner.hero, bestTarget) then
+            if IsUnitInFrontOfUnit(bestTarget, owner.hero) then
                 set bestTarget = owner.hero
                 call this.botLog("Ally unit in front, defaulting to self.")
             endif
