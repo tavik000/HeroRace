@@ -495,27 +495,34 @@ library AIStateMachine requires optional KeyUtils
     struct AIItem
         integer itemId // item type
         item itemHandle
+        real baseCooldown
+        real lastUseTime
         real castRange
         unit ownerHero
+        boolean bIsPassive
 
-        static method create takes item newItemHandle, integer newItemId, real newCastRange, unit newOwnerHero returns thistype
+
+
+        static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, unit newOwnerHero, boolean bNewIsPassive returns thistype
             local thistype this = thistype.allocate()
             set this.itemHandle = newItemHandle
             set this.itemId = newItemId
+            set this.baseCooldown = newBaseCooldown
             set this.castRange = newCastRange
             set this.ownerHero = newOwnerHero
+            set this.bIsPassive = bNewIsPassive
+            set this.lastUseTime = 0.0
             return this
         endmethod
 
         method isReadyToUse takes nothing returns boolean
-            // TODO
-            return true
+            return not bIsPassive
         endmethod
 
-        method use takes nothing returns nothing
-            local integer itemSlot = GetInventoryIndexOfItemTypeBJ(this.ownerHero, this.itemId)
+        method tryUse takes nothing returns nothing
+            // local integer itemSlot = GetInventoryIndexOfItemTypeBJ(this.ownerHero, this.itemId)
             call UnitUseItemTarget( this.ownerHero, this.itemHandle, this.ownerHero)
-            call this.botLog("Using item: " + GetItemName(this.itemHandle) + " from slot " + I2S(itemSlot))
+            call this.botLog("Using item: " + GetItemName(this.itemHandle))
             // TODO
         endmethod
 
@@ -631,12 +638,12 @@ library AIStateMachine requires optional KeyUtils
             endif
         endmethod
 
-        method addItem takes item newItemHandle, integer itemId, real castRange, unit ownerHero returns nothing
+        method addItem takes item newItemHandle, integer itemId, real baseCooldown, real castRange, unit ownerHero, boolean isPassive returns nothing
             local integer i = 0
             loop
                 exitwhen i >= MAX_ITEM_PER_HERO
                 if this.items[i] == null then
-                    set this.items[i] = AIItem.create(newItemHandle, itemId, castRange, ownerHero)
+                    set this.items[i] = AIItem.create(newItemHandle, itemId, baseCooldown, castRange, ownerHero, isPassive)
                     return
                 endif
                 set i = i + 1
@@ -1590,9 +1597,9 @@ library AIStateMachine requires optional KeyUtils
 
             set heroItem = owner.combatData.getReadyItem()            
             if heroItem != 0 then
-                call owner.setDebugTextTagContent("Combat: Using Item " + GetItemName(heroItem.itemHandle))
+                call owner.setDebugTextTagContent("Combat: Try using item " + GetItemName(heroItem.itemHandle))
                 call owner.setDebugTextTagColorPreset("RED")
-                call heroItem.use()
+                call heroItem.tryUse()
                 return true
             endif
             

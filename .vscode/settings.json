@@ -27,5 +27,6 @@
 	"editor.defaultFormatter": "unouo.jassplus",
 	"[jass]": {
 		"editor.defaultFormatter": "unouo.jassplus"
-	}
+	},
+	"editor.unicodeHighlight.ambiguousCharacters": false
 }
