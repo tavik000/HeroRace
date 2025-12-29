@@ -1,0 +1,1491 @@
+{
+  "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+  "items": [
+    {
+      "label": "STATE_NONE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_NONE\n```\n\n\n---\n\nStates\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_NONE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "STATE_RUN",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_RUN\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_RUN",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "STATE_COMBAT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_COMBAT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_COMBAT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "STATE_HAZARD",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_HAZARD\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_HAZARD",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "STATE_HEALING",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_HEALING\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_HEALING",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "STATE_DEAD",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_DEAD\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_DEAD",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "STATE_PICKUP_ITEM",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer STATE_PICKUP_ITEM\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_STATE_PICKUP_ITEM",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "DIFF_EASY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer DIFF_EASY\n```\n\n\n---\n\nDifficulty Levels\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_DIFF_EASY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "DIFF_NORMAL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer DIFF_NORMAL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_DIFF_NORMAL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "DIFF_HARD",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer DIFF_HARD\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_DIFF_HARD",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "DIFF_CRAZY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer DIFF_CRAZY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_DIFF_CRAZY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "DIFF_NIGHTMARE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer DIFF_NIGHTMARE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_DIFF_NIGHTMARE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HEAL_THRESHOLD",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real HEAL_THRESHOLD\n```\n\n\n---\n\nSettings\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HEAL_THRESHOLD",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "UPDATE_PERIOD",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real UPDATE_PERIOD\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_UPDATE_PERIOD",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HAZARD_TYPE_NONE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer HAZARD_TYPE_NONE\n```\n\n\n---\n\nHazard Types\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HAZARD_TYPE_NONE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HAZARD_TYPE_SLOW_SPIKE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer HAZARD_TYPE_SLOW_SPIKE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HAZARD_TYPE_SLOW_SPIKE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HAZARD_TYPE_FAST_SPIKE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer HAZARD_TYPE_FAST_SPIKE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HAZARD_TYPE_FAST_SPIKE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HAZARD_TYPE_NET",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer HAZARD_TYPE_NET\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HAZARD_TYPE_NET",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HAZARD_TYPE_SPIDER_NET",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer HAZARD_TYPE_SPIDER_NET\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HAZARD_TYPE_SPIDER_NET",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "SLOW_SPIKE_SPEED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real SLOW_SPIKE_SPEED\n```\n\n\n---\n\nSlow Spike Hazard Settings\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_SLOW_SPIKE_SPEED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "SLOW_SPIKE_RADIUS",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real SLOW_SPIKE_RADIUS\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_SLOW_SPIKE_RADIUS",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "SLOW_SPIKE_UNIT_TYPE_ID",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer SLOW_SPIKE_UNIT_TYPE_ID\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_SLOW_SPIKE_UNIT_TYPE_ID",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "NET_SPEED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real NET_SPEED\n```\n\n\n---\n\nNet Hazard Settings\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_NET_SPEED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "NET_RADIUS",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real NET_RADIUS\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_NET_RADIUS",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "NET_UNIT_TYPE_ID",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer NET_UNIT_TYPE_ID\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_NET_UNIT_TYPE_ID",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "SPIDER_NET_RADIUS",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real SPIDER_NET_RADIUS\n```\n\n\n---\n\nSpider Net Hazard Settings\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_SPIDER_NET_RADIUS",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "SPIDER_NET_UNIT_TYPE_ID",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer SPIDER_NET_UNIT_TYPE_ID\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_SPIDER_NET_UNIT_TYPE_ID",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "PICKUP_ITEM_RANGE_NORMAL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real PICKUP_ITEM_RANGE_NORMAL\n```\n\n\n---\n\nPickup Item Range\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_PICKUP_ITEM_RANGE_NORMAL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "PICKUP_ITEM_RANGE_SMALL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real PICKUP_ITEM_RANGE_SMALL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_PICKUP_ITEM_RANGE_SMALL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "EASY_CD_MULTIPLIER",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real EASY_CD_MULTIPLIER\n```\n\n\n---\n\nCombat settings\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_EASY_CD_MULTIPLIER",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "NORMAL_CD_MULTIPLIER",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real NORMAL_CD_MULTIPLIER\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_NORMAL_CD_MULTIPLIER",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "HARD_CD_MULTIPLIER",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real HARD_CD_MULTIPLIER\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_HARD_CD_MULTIPLIER",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CRAZY_CD_MULTIPLIER",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real CRAZY_CD_MULTIPLIER\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CRAZY_CD_MULTIPLIER",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "NIGHTMARE_CD_MULTIPLIER",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real NIGHTMARE_CD_MULTIPLIER\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_NIGHTMARE_CD_MULTIPLIER",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "MAX_ABILITIES_PER_HERO",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer MAX_ABILITIES_PER_HERO\n```\n\n\n---\n\nMaximum abilities and items per hero\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_MAX_ABILITIES_PER_HERO",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "MAX_ITEM_PER_HERO",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer MAX_ITEM_PER_HERO\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_MAX_ITEM_PER_HERO",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_TimerHeroMap",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nhashtable udg_TimerHeroMap\n```\n\n\n---\n\nTimer to AIHero mapping\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_udg_TimerHeroMap",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_DebugTextTagTimerHeroMap",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nhashtable udg_DebugTextTagTimerHeroMap\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_udg_DebugTextTagTimerHeroMap",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_UnitAIHeroMap",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nhashtable udg_UnitAIHeroMap\n```\n\n\n---\n\nUnit to AIHero mapping\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_udg_UnitAIHeroMap",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "gameTimer",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\ntimer gameTimer\n```\n\n\n---\n\nGlobal timer for tracking game time\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_gameTimer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "heroCastPointMap",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nhashtable heroCastPointMap\n```\n\n\n---\n\nHero cast point (pre-swing) mapping by unit type\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_heroCastPointMap",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempHeroOwner",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nplayer tempHeroOwner\n```\n\n\n---\n\nTemporary variables for filtering heroes\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempHeroOwner",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "bTempFilterForAllies",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nboolean bTempFilterForAllies\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_bTempFilterForAllies",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempHeroUnit",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nunit tempHeroUnit\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempHeroUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempAIHeroAbility",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nAIHeroAbility tempAIHeroAbility\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempAIHeroAbility",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempFoundItem",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nitem tempFoundItem\n```\n\n\n---\n\nTemporary variables for item search\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempFoundItem",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempFoundItemX",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal tempFoundItemX\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempFoundItemX",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempFoundItemY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal tempFoundItemY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempFoundItemY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempFoundItemUnitFacingAngle",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal tempFoundItemUnitFacingAngle\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempFoundItemUnitFacingAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempFoundItemRange",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal tempFoundItemRange\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempFoundItemRange",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tempFoundItemMinDist",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal tempFoundItemMinDist\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_tempFoundItemMinDist",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "WaypointAreas",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nrect array WaypointAreas\n```\n\n\n---\n\nThe array to hold the waypoint regions.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_WaypointAreas",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "WaypointCount",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\ninteger WaypointCount\n```\n\n\n---\n\nThe actual number of waypoints initialized.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_WaypointCount",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "TURN_TIME",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real TURN_TIME\n```\n\n\n---\n\nTurn time for 90 degree turns, giving turn rate 0.6\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_TURN_TIME",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "MAX_RANGE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real MAX_RANGE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_MAX_RANGE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_WHITE_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_WHITE_R\n```\n\n\n---\n\nDebug Text Tag Color Presets (RGB 0-100 format)\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_WHITE_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_WHITE_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_WHITE_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_WHITE_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_WHITE_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_WHITE_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_WHITE_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_RED_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_RED_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_RED_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_RED_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_RED_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_RED_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_RED_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_RED_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_RED_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_GREEN_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_GREEN_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_GREEN_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_GREEN_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_GREEN_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_GREEN_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_GREEN_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_GREEN_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_GREEN_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_BLUE_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_BLUE_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_BLUE_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_BLUE_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_BLUE_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_BLUE_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_BLUE_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_BLUE_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_BLUE_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_YELLOW_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_YELLOW_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_YELLOW_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_YELLOW_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_YELLOW_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_YELLOW_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_YELLOW_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_YELLOW_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_YELLOW_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_ORANGE_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_ORANGE_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_ORANGE_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_ORANGE_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_ORANGE_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_ORANGE_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_ORANGE_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_ORANGE_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_ORANGE_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_PURPLE_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_PURPLE_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_PURPLE_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_PURPLE_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_PURPLE_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_PURPLE_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_PURPLE_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_PURPLE_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_PURPLE_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_CYAN_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_CYAN_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_CYAN_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_CYAN_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_CYAN_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_CYAN_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_CYAN_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_CYAN_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_CYAN_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_PINK_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_PINK_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_PINK_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_PINK_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_PINK_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_PINK_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_PINK_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_PINK_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_PINK_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_GRAY_R",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_GRAY_R\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_GRAY_R",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_GRAY_G",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_GRAY_G\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_GRAY_G",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "COLOR_GRAY_B",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant real COLOR_GRAY_B\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_COLOR_GRAY_B",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "BotLog",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction BotLog takes string msg returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_BotLog",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "BotLogWithPlayer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction BotLogWithPlayer takes player p, string msg returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_BotLogWithPlayer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "BotLogError",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction BotLogError takes string msg returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_BotLogError",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "BotLogErrorWithPlayer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction BotLogErrorWithPlayer takes player p, string msg returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_BotLogErrorWithPlayer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetCooldownMultiplier",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetCooldownMultiplier takes integer difficulty returns real\n```\n\n\n---\n\nHelper function to get cooldown multiplier based on difficulty\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_GetCooldownMultiplier",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsApplyingCombo",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsApplyingCombo takes integer difficulty returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsApplyingCombo",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitInAnyHazardZone",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitInAnyHazardZone takes unit u returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsUnitInAnyHazardZone",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsInSlowSpikeHazardZone",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsInSlowSpikeHazardZone takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsInSlowSpikeHazardZone",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsInFastSpikeHazardZone",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsInFastSpikeHazardZone takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsInFastSpikeHazardZone",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsInNetHazardZone",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsInNetHazardZone takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsInNetHazardZone",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsInSpiderNetHazardZone",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsInSpiderNetHazardZone takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsInSpiderNetHazardZone",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsFinalWaypoint",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsFinalWaypoint takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsFinalWaypoint",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "EnumItemsAction",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction EnumItemsAction takes nothing returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_EnumItemsAction",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetSuitablePickupItemInRange",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetSuitablePickupItemInRange takes unit u, real range returns item\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_GetSuitablePickupItemInRange",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitializeHeroCastPoints",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitializeHeroCastPoints takes nothing returns nothing\n```\n\n\n---\n\nInitialize hero cast points (Pre-swing) by unit type\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_InitializeHeroCastPoints",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitializeHeroCombatData",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitializeHeroCombatData takes unit hero, integer difficulty returns HeroCombatData\n```\n\n\n---\n\nInitialize hero-specific abilities (extend this function for different heroes)\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_InitializeHeroCombatData",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetHeroCastPoint",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetHeroCastPoint takes integer heroTypeId returns real\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_GetHeroCastPoint",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsValidHeroTarget",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsValidHeroTarget takes unit filterUnit returns boolean\n```\n\n\n---\n\nHelper function for basic unit validation\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_IsValidHeroTarget",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "FilterHeroes",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction FilterHeroes takes nothing returns boolean\n```\n\n\n---\n\nGeneric filter function for heroes (enemies or allies)\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_FilterHeroes",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAIHeroFromUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAIHeroFromUnit takes unit u returns AIHero\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_GetAIHeroFromUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DestroyAIHero",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DestroyAIHero takes unit u returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_DestroyAIHero",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAIHeroCastComplete",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAIHeroCastComplete takes unit u returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_OnAIHeroCastComplete",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAIHeroGetItem",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAIHeroGetItem takes unit u, item itm returns nothing\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_OnAIHeroGetItem",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitializeWaypoints",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitializeWaypoints takes nothing returns nothing\n```\n\n\n---\n\nThis function will run once at map initialization to set up the waypoints.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_func_InitializeWaypoints",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CAST_NONE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_NONE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_NONE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_BACK_ENEMY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_BACK_ENEMY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_BACK_ENEMY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_BACK_ENEMY_FOLLOW",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_BACK_ENEMY_FOLLOW\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_BACK_ENEMY_FOLLOW",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_ALL_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_ALL_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_ALL_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_ALLY_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_ALLY_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_ALLY_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_ENEMY_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_ENEMY_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_ENEMY_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_HEAL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_HEAL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_HEAL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_HEAL_ALLY_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_HEAL_ALLY_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_HEAL_ALLY_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_HAVE_CORPSE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_HAVE_CORPSE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_HAVE_CORPSE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_INSTANT_JUMP",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_INSTANT_JUMP\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_INSTANT_JUMP",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_ENEMY_FRONT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_ENEMY_FRONT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_ENEMY_FRONT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_ENEMY_BEHIND",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_ENEMY_BEHIND\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_ENEMY_BEHIND",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_ENEMY_BEHIND_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_ENEMY_BEHIND_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_ENEMY_BEHIND_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_ENEMY_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_ENEMY_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_ENEMY_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_ALLY_DEFENSE_AND_CLEANSE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_ALLY_DEFENSE_AND_CLEANSE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_ALLY_DEFENSE_AND_CLEANSE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_SELF_FRONT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_SELF_FRONT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_SELF_FRONT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_SELF_BEHIND_ENEMY_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_SELF_BEHIND_ENEMY_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_TREE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_TREE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_TREE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_POINT_BLINK",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_POINT_BLINK\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_POINT_BLINK",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_UNIT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_UNIT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_UNIT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "CAST_TREE_FRONT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer CAST_TREE_FRONT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_CAST_TREE_FRONT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_NONE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_NONE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_NONE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_COMBO",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_COMBO\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_COMBO",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_LOW_HEALTH",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_LOW_HEALTH",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_FRONT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_FRONT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_FRONT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_SPEED_UP",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_SPEED_UP\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_SPEED_UP",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_HEAL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_HEAL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_HEAL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_CHAIN_HEAL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_CHAIN_HEAL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_CHAIN_HEAL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_DEFENSE_AND_CLEANSE",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_DEFENSE_AND_CLEANSE\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_DEFENSE_AND_CLEANSE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_FOLLOW_ENEMY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_FOLLOW_ENEMY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_FOLLOW_ENEMY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_TELEPORT",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_TELEPORT\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_TELEPORT",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_SELF_FORCE_STAFF",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_SELF_FORCE_STAFF\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_SELF_FORCE_STAFF",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALL_DEATH_COIL",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALL_DEATH_COIL\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALL_DEATH_COIL",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "FIND_TARGET_TYPE_ALL_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nconstant integer FIND_TARGET_TYPE_ALL_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "2_var_FIND_TARGET_TYPE_ALL_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "AIItem",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct AIItem\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_AIItem",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "AIHeroAbility",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct AIHeroAbility\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_AIHeroAbility",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "HeroCombatData",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct HeroCombatData\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_HeroCombatData",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "AIState",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct AIState\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_AIState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "RunState",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct RunState extends AIState\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_RunState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "DeadState",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct DeadState extends AIState\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_DeadState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "HazardState",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct HazardState extends AIState\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_HazardState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "CombatState",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct CombatState extends AIState\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_CombatState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "PickUpItemState",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct PickUpItemState extends AIState\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_PickUpItemState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "AIHero",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct AIHero\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_AIHero",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "Initializer",
+      "kind": 8,
+      "detail": "Module",
+      "documentation": "\n```jass\nmodule Initializer\n```\n\n\n---\n\nThis module ensures our initialization functions are called when the map loads.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_module_Initializer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "ModuleDeclaration"
+    },
+    {
+      "label": "Init",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct Init extends array\n```\n\n\n---\n\nWe use a dummy struct to attach the initializer module to the library.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+      "sortText": "1_struct_Init",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
+      "statementType": "StructDeclaration"
+    }
+  ],
+  "timestamp": 1767034595250
+}

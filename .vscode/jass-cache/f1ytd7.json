@@ -1,0 +1,168 @@
+{
+  "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+  "items": [
+    {
+      "label": "B2S",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction B2S takes boolean b returns string\n```\n\n\n---\n\n--- TYPE CONVERSION FUNCTIONS ---\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_B2S",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Abs",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Abs takes real value returns real\n```\n\n\n---\n\n--- MATH FUNCTIONS ---\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_Abs",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "NormalizeAngle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction NormalizeAngle takes real a returns real\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_NormalizeAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AngleBetweenXY",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AngleBetweenXY takes real x1, real y1, real x2, real y2 returns real\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_AngleBetweenXY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetMiddleAngle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetMiddleAngle takes real sourceAngle, real targetAngle returns real\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_GetMiddleAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DistanceBetweenXY",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DistanceBetweenXY takes real x1, real y1, real x2, real y2 returns real\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_DistanceBetweenXY",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DistanceBetweenUnits",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DistanceBetweenUnits takes unit u1, unit u2 returns real\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_DistanceBetweenUnits",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AngleDiff",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AngleDiff takes real a, real b returns real\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_AngleDiff",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsWithinForwardArc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsWithinForwardArc takes real angle, real referenceAngle returns boolean\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsWithinForwardArc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AntiLeak",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AntiLeak takes nothing returns boolean\n```\n\n\n---\n\n--- UTILITY FUNCTIONS ---\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_AntiLeak",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitStun",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitStun takes unit u returns boolean\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitStun",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitStunOrSilence",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitStunOrSilence takes unit u returns boolean\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitStunOrSilence",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitInvulnerableOrMagicImmune",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitInvulnerableOrMagicImmune takes unit u returns boolean\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitInvulnerableOrMagicImmune",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitStunOrSlow",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitStunOrSlow takes unit u returns boolean\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitStunOrSlow",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitValid",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitValid takes unit filterUnit returns boolean\n```\n\n\n---\n\nAlive, not Flying, not Building.\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitValid",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitInFrontOfUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitInFrontOfUnit takes unit u1, unit u2 returns boolean\n```\n\n\n---\n\nCheck if u1 is in front of u2\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitInFrontOfUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitBehindUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitBehindUnit takes unit u1, unit u2 returns boolean\n```\n\n\n---\n\nCheck if target is behind source unit\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitBehindUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitInventoryFull",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitInventoryFull takes unit u returns boolean\n```\n\n\n**_>:** `Test/FSMAI/KeyUtils.j`",
+      "sortText": "1_func_IsUnitInventoryFull",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\KeyUtils.j",
+      "statementType": "FunctionDeclaration"
+    }
+  ],
+  "timestamp": 1767034512898
+}

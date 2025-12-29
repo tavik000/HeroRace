@@ -565,6 +565,7 @@ library AIStateMachine requires optional KeyUtils
             set this.findTargetType = inFindTargetType
             set this.effectiveRadius = inEffectiveRadius
             set this.expectedDamage = inExpectedDamage
+        
             return this
         endmethod
 

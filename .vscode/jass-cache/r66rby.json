@@ -1,0 +1,2616 @@
+{
+  "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+  "items": [
+    {
+      "label": "udg_currentabi",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\ninteger udg_currentabi\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_currentabi",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_currentcaster",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nunit udg_currentcaster\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_currentcaster",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_currenthurter",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nunit udg_currenthurter\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_currenthurter",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_casters",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\ngroup udg_casters\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_casters",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_delayhack",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal udg_delayhack\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_delayhack",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_castervars",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nreal array udg_castervars\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_castervars",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_sourcehack",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nlocation udg_sourcehack\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_sourcehack",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "udg_cscache",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\ngamecache udg_cscache\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "2_var_udg_cscache",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "Caster_UnitId",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Caster_UnitId takes nothing returns integer\n```\n\n\n---\n\nCaster System 13.1 ( http://wc3campaigns.net/vexorian )\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Caster_UnitId",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Caster_DefaultAttackType",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Caster_DefaultAttackType takes nothing returns attacktype\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Caster_DefaultAttackType",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Caster_DefaultDamageType",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Caster_DefaultDamageType takes nothing returns damagetype\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Caster_DefaultDamageType",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageTreeDetectorId",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageTreeDetectorId takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageTreeDetectorId",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ChangeableFlyingHeightAllowerId",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ChangeableFlyingHeightAllowerId takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ChangeableFlyingHeightAllowerId",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_MaxCollisionSize",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_MaxCollisionSize takes nothing returns real\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_MaxCollisionSize",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_Cycle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_Cycle takes nothing returns real\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_Cycle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_Rawcode2Real",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_Rawcode2Real takes integer i returns real\n```\n\n\n---\n\n=================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_Rawcode2Real",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_LoadRawcodeFromReal",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_LoadRawcodeFromReal takes integer n returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_LoadRawcodeFromReal",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_CopyGroup",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_CopyGroup takes group g returns group\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_CopyGroup",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_IsUnitVisible",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_IsUnitVisible takes unit u, player p returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_IsUnitVisible",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_RectLimitOffSet",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_RectLimitOffSet takes nothing returns real\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_RectLimitOffSet",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_MoveUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_MoveUnit takes unit u, real x, real y returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_MoveUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_MoveUnitLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_MoveUnitLoc takes unit u, location loc returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_MoveUnitLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_EnumUnitsInAOE_Filter",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_EnumUnitsInAOE_Filter takes nothing returns boolean\n```\n\n\n---\n\n==================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_EnumUnitsInAOE_Filter",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_EnumUnitsInAOE",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_EnumUnitsInAOE takes group g, real x, real y, real area, boolexpr bx returns nothing\n```\n\n\n---\n\n==================================================================================================\n\nUse this version when you only have coordinates of the point.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_EnumUnitsInAOE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_EnumUnitsInAOELoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_EnumUnitsInAOELoc takes group g, location loc, real area, boolexpr bx returns nothing\n```\n\n\n---\n\n==================================================================================================\n\nUse this version whenever you already have a location for that point, to save some steps\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_EnumUnitsInAOELoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_H2I",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_H2I takes handle h returns integer\n```\n\n\n---\n\n##Begin of CS Gamecache engine##\n\n=================================================================================================\n\nGameCache - Return bug module : Without gamecache or return bug, JASS would be a\n\nretarded-limited scripting language.\n\n=================================================================================================\n\na.k.a H2I, changed name to CS_H2I to prevent conflicts with other systems (I intended this\n\nsystem to be easy to copy\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_H2I",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CSCache",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CSCache takes nothing returns gamecache\n```\n\n\n---\n\n=================================================================================================\n\nMain Gamecache handler\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CSCache",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachInt takes handle h, string label, integer x returns nothing\n```\n\n\n---\n\n==================================================================================================\n\nAttachable vars : Attacheable variables are what most other people call Handle Variables, they\n\nallow to relate data with any handle, using a label, and its value, the stuff auto flushes if\n\nthe value is 0, false, \"\", or null .\n\nDifferences between Attacheable variables and \"Local Handle Variables\" :\n\n- The names of the functions\n\n- The name of the function group does not cause confusion, it is difficult to say:\n\n\"you should set local handle variables to null at the end of a function\" since\n\nit sounds as if you were talking about the \"Local Handle Variables\"\n\n- Also Have Attacheable Sets.\n\n- And can work together with Tables.\n\nNotes: don't \"attach\" variables on texttags nor those handle types used mostly for parameters\n\n(for example damagetype) , Although there is no reason to do so anyways\n\nGamecache stuff are NOT Case Sensitive, don't ever use \"\" for label (Crashes game!)\n\n============================================================================================================\n\nFor integers\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedInt_FromSet",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedInt_FromSet takes handle h, gamecache g returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedInt_FromSet",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedInt takes handle h, string label returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachReal",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachReal takes handle h, string label, real x returns nothing\n```\n\n\n---\n\n=============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachReal",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedReal",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedReal takes handle h, string label returns real\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedReal",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachBoolean",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachBoolean takes handle h, string label, boolean x returns nothing\n```\n\n\n---\n\n=============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachBoolean",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedBoolean",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedBoolean takes handle h, string label returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedBoolean",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachString",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachString takes handle h, string label, string x returns nothing\n```\n\n\n---\n\n=============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachString",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedString",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedString takes handle h, string label returns string\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedString",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachObject takes handle h, string label, handle x returns nothing\n```\n\n\n---\n\n=============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedObject takes handle h, string label returns handle\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedWidget",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedWidget takes handle h, string label returns widget\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedWidget",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedRect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedRect takes handle h, string label returns rect\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedRect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedRegion",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedRegion takes handle h, string label returns region\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedRegion",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedTimerDialog",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedTimerDialog takes handle h, string label returns timerdialog\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedTimerDialog",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedUnit takes handle h, string label returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedItem",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedItem takes handle h, string label returns item\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedItem",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedEffect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedEffect takes handle h, string label returns effect\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedEffect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedDestructable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedDestructable takes handle h, string label returns destructable\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedDestructable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedTrigger",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedTrigger takes handle h, string label returns trigger\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedTrigger",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedTimer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedTimer takes handle h, string label returns timer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedTimer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedGroup",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedGroup takes handle h, string label returns group\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedGroup",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedTriggerAction",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedTriggerAction takes handle h, string label returns triggeraction\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedTriggerAction",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedLightning",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedLightning takes handle h, string label returns lightning\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedLightning",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedImage",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedImage takes handle h, string label returns image\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedImage",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedUbersplat",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedUbersplat takes handle h, string label returns ubersplat\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedUbersplat",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedSound",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedSound takes handle h, string label returns sound\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedSound",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachedSetAddInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachedSetAddInt takes handle h, string setn, integer int returns nothing\n```\n\n\n---\n\n============================================================================================================\n\nAttached Sets: Attachable Sets are handy in some situations and are a part of attachable variables,\n\nyou can add integers or objects to a set, order doesn't matter and adding the same object twice is\n\nmeaningless. CleanAttachedVars is always ready to clean every set owned by the handle.\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachedSetAddInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachedSetAddObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachedSetAddObject takes handle h, string setn, handle val returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachedSetAddObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachedSetHasInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachedSetHasInt takes handle h, string setn, integer int returns boolean\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachedSetHasInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachedSetHasObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachedSetHasObject takes handle h, string setn, handle val returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachedSetHasObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachedSetSize",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachedSetSize takes handle h, string setn returns integer\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachedSetSize",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachedSetRemInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachedSetRemInt takes handle h, string setn, integer int returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachedSetRemInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AttachedSetRemObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AttachedSetRemObject takes handle h, string setn, handle val returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AttachedSetRemObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "FromSetElement",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction FromSetElement takes string setn, integer index returns string\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_FromSetElement",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ClearAttachedSet",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ClearAttachedSet takes handle h, string setn returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ClearAttachedSet",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CleanAttachedVars",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CleanAttachedVars takes handle h returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CleanAttachedVars",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CleanAttachedVars_NoSets",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CleanAttachedVars_NoSets takes handle h returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CleanAttachedVars_NoSets",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "NewTableIndex",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction NewTableIndex takes nothing returns integer\n```\n\n\n---\n\n=============================================================================================\n\nTables\n\nTables are lame, the real name would be hash tables, they are just abbreviated usage\n\nof gamecache natives with the addition that you can also Copy the values of a table to\n\nanother one, but don't expect it to be automatic, it must use a FieldData object to know\n\nwhich fields and of wich types to copy, Copying a table to another, with a lot of Fields,\n\nshould surelly be lag friendly.\n\nThe other thing about tables is that I can say that the Attached variables of a handle work\n\ninside a table and GetAttachmentTable which is just return bug and I2S , works to allow you\n\nto manipulate a handle's attached variables through a table.\n\nNewTable and DestroyTable were created to allow to create tables in the fly, but you can\n\nsimply use strings for tables, but place the table names should be between \"(\"\")\" for example\n\n\"(mytable)\" to avoid conflicts with other caster system stuff.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_NewTableIndex",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "NewTable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction NewTable takes nothing returns string\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_NewTable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAttachmentTable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAttachmentTable takes handle h returns string\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAttachmentTable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DestroyTable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DestroyTable takes string table returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DestroyTable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ClearTable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ClearTable takes string table returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ClearTable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetTableInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetTableInt takes string table, string field, integer val returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetTableInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableInt",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableInt takes string table, string field returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableInt",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetTableReal",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetTableReal takes string table, string field, real val returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetTableReal",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableReal",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableReal takes string table, string field returns real\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableReal",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetTableBoolean",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetTableBoolean takes string table, string field, boolean val returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetTableBoolean",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableBoolean",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableBoolean takes string table, string field returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableBoolean",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetTableString",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetTableString takes string table, string field, string val returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetTableString",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableString",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableString takes string table, string field returns string\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableString",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetTableObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetTableObject takes string table, string field, handle val returns nothing\n```\n\n\n---\n\n============================================================================================================\n\nYou may ask why am I using thousands of functions instead of multi-use return bug exploiters? Well,\n\nthese make the thing much easier to read (in my opinion) and it is also better in performance since we\n\nhave less function calls (H2U(GetTableObject(\"table\",\"unit\"))) would be worse than GetTableUnit that is\n\nquite direct.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetTableObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableObject",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableObject takes string table, string field returns handle\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableObject",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableWidget",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableWidget takes string table, string field returns widget\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableWidget",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableRect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableRect takes string table, string field returns rect\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableRect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableRegion",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableRegion takes string table, string field returns region\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableRegion",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableTimerDialog",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableTimerDialog takes string table, string field returns timerdialog\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableTimerDialog",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableUnit takes string table, string field returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableItem",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableItem takes string table, string field returns item\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableItem",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableEffect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableEffect takes string table, string field returns effect\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableEffect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableDestructable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableDestructable takes string table, string field returns destructable\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableDestructable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableTrigger",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableTrigger takes string table, string field returns trigger\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableTrigger",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableTimer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableTimer takes string table, string field returns timer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableTimer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableGroup",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableGroup takes string table, string field returns group\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableGroup",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableTriggerAction",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableTriggerAction takes string table, string field returns triggeraction\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableTriggerAction",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableLightning",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableLightning takes string table, string field returns lightning\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableLightning",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableImage",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableImage takes string table, string field returns image\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableImage",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableUbersplat",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableUbersplat takes string table, string field returns ubersplat\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableUbersplat",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTableSound",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTableSound takes string table, string field returns sound\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTableSound",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "HaveSetField",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction HaveSetField takes string table, string field, integer fieldType returns boolean\n```\n\n\n---\n\n============================================================================================================\n\nReturns true if the fiel contains a value different from 0, false,  null, or \"\" (depending on the type)\n\nit is worthless to use this with boolean, since it would be the same as reading the boolean value\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_HaveSetField",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CopyTable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CopyTable takes integer FieldData, string sourceTable, string destTable returns nothing\n```\n\n\n---\n\n============================================================================================================\n\nAllows to copy a table to another one, but it needs a FieldData object to know which fields of which type\n\nit is supposed to copy.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CopyTable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "FieldData_Create",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction FieldData_Create takes nothing returns integer\n```\n\n\n---\n\n=============================================================================================\n\nFieldData inherits from Table, was just designed to be used by CopyTable.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_FieldData_Create",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "FieldData_AddField",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction FieldData_AddField takes integer fielddata, string field, integer valueType returns nothing\n```\n\n\n---\n\n============================================================================================================\n\nvalueType uses the same integer variables from blizzard.j :\n\nbj_GAMECACHE_BOOLEAN, bj_GAMECACHE_INTEGER, bj_GAMECACHE_REAL and bj_GAMECACHE_STRING\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_FieldData_AddField",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "FieldData_Destroy",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction FieldData_Destroy takes integer fielddata returns nothing\n```\n\n\n---\n\n=============================================================================================\n\nDestroys Field Data\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_FieldData_Destroy",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Angles_GetAngleDifference",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Angles_GetAngleDifference takes real a1, real a2 returns real\n```\n\n\n---\n\n##End of CS Gamecache engine##\n\n==================================================================================================\n\nAngle Calculations\n\nI decided to add them to the caster system, because I found myself using them everytime, I am\n\ntrying to convert the caster system into a Spell Development Framework (hehe)\n\n=================================================================================================\n\nReturns the angle distance between angles a1 and a2 (For example: a1=30 , a2=60 , return= 30 )\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Angles_GetAngleDifference",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Angles_GetMidAngle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Angles_GetMidAngle takes real a1, real a2 returns real\n```\n\n\n---\n\n=================================================================================================\n\nReturns the mid angle between a1 and a2 (For example: a1=30 , a2=60 , return= 45 )\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Angles_GetMidAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Angles_MoveAngleTowardsAngle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Angles_MoveAngleTowardsAngle takes real a1, real a2, real i returns real\n```\n\n\n---\n\n=================================================================================================\n\nMakes angle a1 advance i units towards angle a2 (For Example: a1=30, a2=60, i=10, return=40 )\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Angles_MoveAngleTowardsAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Angles_IsAngleBetweenAngles",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Angles_IsAngleBetweenAngles takes real angle, real angle1, real angle2 returns boolean\n```\n\n\n---\n\n=================================================================================================\n\nReturns true if the angle 'angle' is between 'angle1' and 'angle2'\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Angles_IsAngleBetweenAngles",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddCasterFacing",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddCasterFacing takes real fac returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddCasterFacing",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddCaster",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddCaster takes nothing returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddCaster",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_KillTrigger",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_KillTrigger takes trigger t returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_KillTrigger",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_KillTimer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_KillTimer takes timer t returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_KillTimer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CreateCasters",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CreateCasters takes integer n returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CreateCasters",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetACaster",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetACaster takes nothing returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetACaster",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Caster_SetZAngle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Caster_SetZAngle takes unit caster, real ang returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Caster_SetZAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "RecicleCaster",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction RecicleCaster takes unit caster returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_RecicleCaster",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterRecycleTimed_X",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterRecycleTimed_X takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterRecycleTimed_X",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterRecycleTimed",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterRecycleTimed takes unit caster, integer abi, real delay returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterRecycleTimed",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterWaitForEndCast",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterWaitForEndCast takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterWaitForEndCast",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "RecicleCasterAfterCastEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction RecicleCasterAfterCastEx takes unit caster, real delaytime, integer abilid, boolean activeability returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_RecicleCasterAfterCastEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "RecicleCasterAfterCast",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction RecicleCasterAfterCast takes unit caster, integer abilid returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_RecicleCasterAfterCast",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "PreloadAbility",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction PreloadAbility takes integer abilid returns integer\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_PreloadAbility",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityEx takes player owner, real x, real y, real z, integer abilid, integer level, string order, widget target, real delay returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityExLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityExLoc takes player owner, location loc, real z, integer abilid, integer level, string order, widget target, real delay returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityExLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityLevel",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityLevel takes player owner, integer abilid, integer level, string order, widget target, boolean instant returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityLevel",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbility",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbility takes player owner, integer abilid, string order, widget target, boolean instant returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbility",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityPointEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityPointEx takes player owner, real x1, real y1, real z1, integer abilid, integer level, string order, real x2, real y2, real delay returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityPointEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityPointExLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityPointExLoc takes player owner, location loc1, real z1, integer abilid, integer level, string order, location loc2, real delay returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityPointExLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityLevelPoint",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityLevelPoint takes player owner, integer abilid, integer level, string order, real x, real y, boolean instant returns unit\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityLevelPoint",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityPoint",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityPoint takes player owner, integer abilid, string order, real x, real y, boolean instant returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityPoint",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityPointLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityPointLoc takes player owner, integer abilid, string order, location loc, boolean instant returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityPointLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityLevelPointLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityLevelPointLoc takes player owner, integer abilid, integer level, string order, location loc, boolean instant returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityLevelPointLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterUseAbilityLevelStatic_Rec",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterUseAbilityLevelStatic_Rec takes nothing returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterUseAbilityLevelStatic_Rec",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterUseAbilityLevelStatic_X",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterUseAbilityLevelStatic_X takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterUseAbilityLevelStatic_X",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterUseAbilityLevelStatic",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterUseAbilityLevelStatic takes player owner, string modelpath, integer abilityid, integer level, real duration, real x, real y returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterUseAbilityLevelStatic",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterUseAbilityStatic",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterUseAbilityStatic takes player owner, string modelpath, integer abilityid, real duration, real x, real y returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterUseAbilityStatic",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterUseAbilityStaticLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterUseAbilityStaticLoc takes player owner, string modelpath, integer abilityid, real duration, location loc returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterUseAbilityStaticLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterUseAbilityLevelStaticLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterUseAbilityLevelStaticLoc takes player owner, string modelpath, integer abilityid, integer level, real duration, location loc returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterUseAbilityLevelStaticLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityLevelGroup",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityLevelGroup takes player owner, integer abilid, integer level, string order, group targetgroup, boolean instant returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityLevelGroup",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityGroup",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityGroup takes player owner, integer abilid, string order, group targetgroup, boolean instant returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityGroup",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterAOE_IsFilterEnemy",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterAOE_IsFilterEnemy takes nothing returns boolean\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterAOE_IsFilterEnemy",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterAOE_IsFilterAlly",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterAOE_IsFilterAlly takes nothing returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterAOE_IsFilterAlly",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityLevelAOE",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityLevelAOE takes player owner, integer abilid, integer level, string order, real x, real y, real radius, boolean goodeffect, boolean instant returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityLevelAOE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityAOE",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityAOE takes player owner, integer abilid, string order, real x, real y, real radius, boolean goodeffect, boolean instant returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityAOE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityAOELoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityAOELoc takes player owner, integer abilid, string order, location center, real radius, boolean goodeffect, boolean instant returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityAOELoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterCastAbilityLevelAOELoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterCastAbilityLevelAOELoc takes player owner, integer abilid, integer level, string order, location center, real radius, boolean goodeffect, boolean instant returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterCastAbilityLevelAOELoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ResetSourceHack",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ResetSourceHack takes nothing returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ResetSourceHack",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterSetCastSource",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterSetCastSource takes real x, real y returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterSetCastSource",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterSetCastSourceLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterSetCastSourceLoc takes location loc returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterSetCastSourceLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ResetDelayHack",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ResetDelayHack takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ResetDelayHack",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterSetRecycleDelay",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterSetRecycleDelay takes real Delay returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterSetRecycleDelay",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageTypes",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageTypes takes attacktype attT, damagetype dmgT returns integer\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageTypes",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageException",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageException takes unittype Exception, real ExceptionFactor returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageException",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageOnlyTo",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageOnlyTo takes unittype ThisUnitType returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageOnlyTo",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DontDamageSelf",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DontDamageSelf takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DontDamageSelf",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageTrees",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageTrees takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageTrees",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageOnlyVisibles",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageOnlyVisibles takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageOnlyVisibles",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageOnlyEnemies",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageOnlyEnemies takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageOnlyEnemies",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ForceDamageAllies",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ForceDamageAllies takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ForceDamageAllies",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageOnlyAllies",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageOnlyAllies takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageOnlyAllies",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageFactorAbility1",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageFactorAbility1 takes integer spellid, real factor returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageFactorAbility1",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageFactorAbility2",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageFactorAbility2 takes integer spellid, real factor returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageFactorAbility2",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageFactorAbility3",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageFactorAbility3 takes integer spellid, real factor returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageFactorAbility3",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageIgnore",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageIgnore takes unittype ThisUnitType returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageIgnore",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageAlliedFactor",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageAlliedFactor takes real fct returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageAlliedFactor",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ConsiderOnlyDeadUnits",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ConsiderOnlyDeadUnits takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ConsiderOnlyDeadUnits",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IgnoreDeadState",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IgnoreDeadState takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IgnoreDeadState",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsDamageOptionIncluded",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsDamageOptionIncluded takes integer DamageOptions, integer whichDamageOption returns boolean\n```\n\n\n---\n\n===============================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsDamageOptionIncluded",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetDamageFactor",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetDamageFactor takes unit u, attacktype a, damagetype d returns real\n```\n\n\n---\n\n=================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetDamageFactor",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_IsUnitType",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_IsUnitType takes unit u, unittype ut returns boolean\n```\n\n\n---\n\n======================================================================================================\n\nFix for the unit type bugs from blizzard, amphibious units aren't considered ground for some reason\n\nso this considers any non flying unit as ground.\n\nAlso heroes are resistant too, so in case UNIT_TYPE_RESISTANT is used it will return true in case the\n\nunit is a hero too.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_IsUnitType",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetDamageFactorByOptions",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetDamageFactorByOptions takes unit hurter, unit target, integer d returns real\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetDamageFactorByOptions",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitByTypes",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitByTypes takes unit hurter, unit target, real dmg, attacktype attT, damagetype dmgT returns boolean\n```\n\n\n---\n\n======================================================================================================================\n\nThis used to be needed because in 1.17 UnitDamageTarget didn't consider the damagetype argument, this bug\n\nwas fixed in 1.18, and we no longer need this function, left for compatibility.\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitByTypes",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitByOptions",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitByOptions takes unit hurter, unit target, real dmg, integer DamageOptions returns boolean\n```\n\n\n---\n\n=============================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitByOptions",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnit takes player hurter, real damage, unit victim returns boolean\n```\n\n\n---\n\n=============================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitDamageUnitTimed_Child",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitDamageUnitTimed_Child takes nothing returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitDamageUnitTimed_Child",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitDamageUnitTimed",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitDamageUnitTimed takes unit hurter, real damageps, real damageperiod, real duration, unit target, string modelpath, string attachPointName, attacktype attT, damagetype dmgT returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitDamageUnitTimed",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitTimedEx_Child",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitTimedEx_Child takes nothing returns nothing\n```\n\n\n---\n\n=============================================================================================================\n\nLeft for compatibility\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitTimedEx_Child",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitTimedEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitTimedEx takes player owner, real damageps, real damageperiod, real duration, unit target, string modelpath, string attachPointName returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitTimedEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitTimed",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitTimed takes player owner, real damageps, real duration, unit target, string modelpath, string attachPointName returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitTimed",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetDamageOptions_i",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetDamageOptions_i takes gamecache g, integer n, integer DamageOptions returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetDamageOptions_i",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SetDamageOptions",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SetDamageOptions takes integer id, integer DamageOptions returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SetDamageOptions",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CreateDamageOptions",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CreateDamageOptions takes integer DamageOptions returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CreateDamageOptions",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DestroyDamageOptions",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DestroyDamageOptions takes integer id returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DestroyDamageOptions",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "LoadDamageOptions",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction LoadDamageOptions takes integer id returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_LoadDamageOptions",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsDestructableTree_withcs",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsDestructableTree_withcs takes destructable d returns boolean\n```\n\n\n---\n\n==================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsDestructableTree_withcs",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsDestructableTree",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsDestructableTree takes destructable d returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsDestructableTree",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageDestructablesInCircleEnum",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageDestructablesInCircleEnum takes nothing returns nothing\n```\n\n\n---\n\n===============================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageDestructablesInCircleEnum",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageDestructablesInCircle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageDestructablesInCircle takes real x, real y, real radius, real dmg returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageDestructablesInCircle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageDestructablesInCircleLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageDestructablesInCircleLoc takes location loc, real radius, real dmg returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageDestructablesInCircleLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageTreesInCircleEnum",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageTreesInCircleEnum takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageTreesInCircleEnum",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageTreesInCircle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageTreesInCircle takes real x, real y, real radius returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageTreesInCircle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageTreesInCircleLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageTreesInCircleLoc takes location loc, real radius returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageTreesInCircleLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitGroupEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitGroupEx takes unit hurter, real damage, group targetgroup, integer DamageOptions returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitGroupEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitsInAOEEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitsInAOEEx takes unit hurter, real damage, real x, real y, real radius, boolean affectallied, integer DamageOptions returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitsInAOEEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitsInAOEExLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitsInAOEExLoc takes unit hurter, real damage, location loc, real radius, boolean affectallied, integer DamageOptions returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitsInAOEExLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitGroup",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitGroup takes player hurter, real damage, group targetgroup returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitGroup",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitsInAOE",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitsInAOE takes player hurter, real damage, real x, real y, real radius, boolean affectallied returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitsInAOE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageUnitsInAOELoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageUnitsInAOELoc takes player hurter, real damage, location loc, real radius, boolean affectallied returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamageUnitsInAOELoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddAreaDamagerForUnit_Child",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddAreaDamagerForUnit_Child takes nothing returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddAreaDamagerForUnit_Child",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddAreaDamagerForUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddAreaDamagerForUnit takes unit hurter, string modelpath, string targetart, string targetattach, real x, real y, real damage, real damageperiod, real duration, real area, boolean affectallies, integer DamageOptions returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddAreaDamagerForUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddAreaDamagerForUnitLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddAreaDamagerForUnitLoc takes unit hurter, string modelpath, string targetart, string targetattach, location loc, real damage, real damageperiod, real duration, real area, boolean affectallies, integer DamageOptions returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddAreaDamagerForUnitLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddDamagingEffectEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddDamagingEffectEx takes player owner, string modelpath, string targetart, string targetattach, real x, real y, real damage, real damageperiod, real duration, real area, boolean affectallies returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddDamagingEffectEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddDamagingEffectExLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddDamagingEffectExLoc takes player owner, string modelpath, string targetart, string targetattach, location loc, real damage, real damageperiod, real duration, real area, boolean affectallies returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddDamagingEffectExLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddDamagingEffect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddDamagingEffect takes player owner, string modelpath, real x, real y, real damageps, real duration, real area, boolean affectallies returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddDamagingEffect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "AddDamagingEffectLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction AddDamagingEffectLoc takes player owner, string modelpath, location loc, real damageps, real duration, real area, boolean affectallies returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_AddDamagingEffectLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitMoveToAsProjectileAnySpeed_Target",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitMoveToAsProjectileAnySpeed_Target takes gamecache H, string a, string b returns unit\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitMoveToAsProjectileAnySpeed_Target",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitMoveToAsProjectileAnySpeed_Move",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitMoveToAsProjectileAnySpeed_Move takes gamecache H, unit m, string k returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitMoveToAsProjectileAnySpeed_Move",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_Destroyer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_Destroyer takes gamecache H, unit m, string k, trigger T returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_Destroyer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetTriggerCollisionMissile",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetTriggerCollisionMissile takes nothing returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetTriggerCollisionMissile",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_Move",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_Move takes gamecache g, unit m, string k returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_Move",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CasterSystemMovementTimer",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CasterSystemMovementTimer takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CasterSystemMovementTimer",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitMoveToAsProjectileAnySpeed",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitMoveToAsProjectileAnySpeed takes unit m, real speed, real arc, real x2, real y2, unit target, real z2 returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitMoveToAsProjectileAnySpeed",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitMoveToAsProjectileGen",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitMoveToAsProjectileGen takes unit m, real arc, real x2, real y2, unit target, real z2 returns nothing\n```\n\n\n---\n\n========================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitMoveToAsProjectileGen",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitMoveToAsProjectile",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitMoveToAsProjectile takes unit m, real arc, real x2, real y2, real z2 returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitMoveToAsProjectile",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchEx takes player owner, string modelpath, real scale, integer red, integer green, integer blue, integer alpha, real speed, real arc, real x1, real y1, real z1, real x2, real y2, real z2 returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchExLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchExLoc takes player owner, string modelpath, real scale, integer red, integer green, integer blue, integer alpha, real speed, real arc, location loc1, real z1, location loc2, real z2 returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchExLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunch",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunch takes string modelpath, real speed, real arc, real x1, real y1, real z1, real x2, real y2, real z2 returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunch",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchLoc takes string modelpath, real speed, real arc, location loc1, real z1, location loc2, real z2 returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagingProjectileLaunchAOE_Child",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagingProjectileLaunchAOE_Child takes nothing returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagingProjectileLaunchAOE_Child",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagingProjectileLaunchAOE",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagingProjectileLaunchAOE takes unit hurter, string modelpath, real speed, real arc, real x1, real y1, real z1, real x2, real y2, real z2, real aoeradius, real damage, boolean affectallied, integer DamageOptions returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagingProjectileLaunchAOE",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagingProjectileLaunchAOELoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagingProjectileLaunchAOELoc takes unit hurter, string modelpath, real speed, real arc, location loc1, real z1, location loc2, real z2, real aoeradius, real damage, boolean affectallied, integer DamageOptions returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagingProjectileLaunchAOELoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchDamage",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchDamage takes player owner, string modelpath, real speed, real arc, real x1, real y1, real z1, real x2, real y2, real z2, real aoeradius, real damage, boolean affectallied returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchDamage",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchDamageLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchDamageLoc takes player owner, string modelpath, real speed, real arc, location loc1, real z1, location loc2, real z2, real aoeradius, real damage, boolean affectallied returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchDamageLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchKill_Child",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchKill_Child takes nothing returns nothing\n```\n\n\n---\n\n============================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchKill_Child",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchKill",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchKill takes player owner, string modelpath, real speed, real arc, real x1, real y1, real z1, real x2, real y2, real z2 returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchKill",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchKillLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchKillLoc takes player owner, string modelpath, real speed, real arc, location loc1, real z1, location loc2, real z2 returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchKillLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitMoveToUnitAsProjectile",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitMoveToUnitAsProjectile takes unit m, real arc, unit target, real zoffset returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitMoveToUnitAsProjectile",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchToUnitEx",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchToUnitEx takes player owner, string modelpath, real scale, integer red, integer green, integer blue, integer alpha, real speed, real arc, real x1, real y1, real z1, unit target, real zoffset returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchToUnitEx",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchToUnitExLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchToUnitExLoc takes player owner, string modelpath, real scale, integer red, integer green, integer blue, integer alpha, real speed, real arc, location loc1, real z1, unit target, real zoffset returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchToUnitExLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchToUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchToUnit takes string modelpath, real speed, real arc, real x1, real y1, real z1, unit target, real zoffset returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchToUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchToUnitLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchToUnitLoc takes string modelpath, real speed, real arc, location loc1, real z1, unit target, real zoffset returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchToUnitLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagingProjectileLaunchTarget_Child",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagingProjectileLaunchTarget_Child takes nothing returns nothing\n```\n\n\n---\n\n====================================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagingProjectileLaunchTarget_Child",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagingProjectileLaunchTarget",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagingProjectileLaunchTarget takes unit hurter, string modelpath, real speed, real arc, real x1, real y1, real z1, unit target, real zoffset, real damage, attacktype attT, damagetype dmgT returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagingProjectileLaunchTarget",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagingProjectileLaunchTargetLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagingProjectileLaunchTargetLoc takes unit hurter, string modelpath, real speed, real arc, location loc, real z1, unit target, real zoffset, real damage, attacktype attT, damagetype dmgT returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagingProjectileLaunchTargetLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchToUnitDamage",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchToUnitDamage takes player owner, string modelpath, real speed, real arc, real x1, real y1, real z1, unit target, real zoffset, real damage returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchToUnitDamage",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "ProjectileLaunchToUnitDamageLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction ProjectileLaunchToUnitDamageLoc takes player owner, string modelpath, real speed, real arc, location loc1, real z1, unit target, real zoffset, real damage returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_ProjectileLaunchToUnitDamageLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_Destroy",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_Destroy takes unit m returns nothing\n```\n\n\n---\n\n==============================================================================================================================================================================\n\nCaster System Class: CollisionMissile\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_Destroy",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_Create",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_Create takes string MissileModelPath, real x, real y, real dirangle, real speed, real AngleSpeed, real MaxDist, real height, boolean UseNewCaster, real Collision, code OnImpact returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_Create",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_CreateLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_CreateLoc takes string MissileModelPath, location loc, real dirangle, real speed, real AngleSpeed, real MaxDist, real height, boolean UseNewCaster, real Collision, code OnImpact returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_CreateLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_SetAngleSpeed",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_SetAngleSpeed takes unit m, real newAspeed returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_SetAngleSpeed",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_SetSpeed",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_SetSpeed takes unit m, real newspeed returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_SetSpeed",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_SetTargetPoint",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_SetTargetPoint takes unit m, real tx, real ty returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_SetTargetPoint",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_SetTargetPointLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_SetTargetPointLoc takes unit m, location tloc returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_SetTargetPointLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_SetTarget",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_SetTarget takes unit m, widget Target returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_SetTarget",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_ForgetTarget",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_ForgetTarget takes unit m returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_ForgetTarget",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_SetDirAngle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_SetDirAngle takes unit m, real f returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_SetDirAngle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_ResetMaxDist",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_ResetMaxDist takes unit m, real maxdist returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_ResetMaxDist",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CollisionMissile_PeriodicFX",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CollisionMissile_PeriodicFX takes unit m, string fx, real dur returns nothing\n```\n\n\n---\n\n=========================================================================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CollisionMissile_PeriodicFX",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Damager_SetAbility",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Damager_SetAbility takes unit Damager, integer abilid, integer l returns nothing\n```\n\n\n---\n\n==============================================================================================================================================================================\n\nCaster System Class: Damager\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Damager_SetAbility",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Damager_Removage",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Damager_Removage takes unit u, timer t, group g returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Damager_Removage",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Damager_Remove",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Damager_Remove takes unit Damager returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Damager_Remove",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Damager_Expire",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Damager_Expire takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Damager_Expire",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Damager_SetLifeSpan",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Damager_SetLifeSpan takes unit Damager, real lifespan returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Damager_SetLifeSpan",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_Destroy",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_Destroy takes timer DamagerGroup returns nothing\n```\n\n\n---\n\n============================================================================================================\n\nCaster System Class: DamagerGroup\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_Destroy",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_Enum",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_Enum takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_Enum",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_DoDamage",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_DoDamage takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_DoDamage",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_Create",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_Create takes unit hurter, real damage, real damageperiod, real area, integer DamageOptions returns timer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_Create",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_Update",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_Update takes timer DamagerGroup, unit hurter, real damage, real damageperiod, real area, integer DamageOptions returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_Update",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_AddDamager",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_AddDamager takes timer DamagerGroup, string modelpath, real x, real y, real LifeSpan returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_AddDamager",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_AddDamagerLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_AddDamagerLoc takes timer DamagerGroup, string modelpath, location loc, real LifeSpan returns unit\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_AddDamagerLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_OnLifeSpanExpire",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_OnLifeSpanExpire takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_OnLifeSpanExpire",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_SetLifeSpan",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_SetLifeSpan takes timer DamagerGroup, real lifespan returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_SetLifeSpan",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamagerGroup_AutoDestruct",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamagerGroup_AutoDestruct takes timer DamagerGroup, boolean auto returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_DamagerGroup_AutoDestruct",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnLearn1",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnLearn1 takes nothing returns nothing\n```\n\n\n---\n\n**************************************************************************************************\n\n*\n\n* Caster System Special Events:\n\n*\n\n*\n\n**************************************************************************************************\n\n==================================================================================================\n\nEvent: OnAbilityLearn\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnLearn1",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnLearn2",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnLearn2 takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnLearn2",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitLearnEvent",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitLearnEvent takes gamecache g, integer i returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_InitLearnEvent",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAbilityLearn",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAbilityLearn takes integer abilid, string funcname returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_OnAbilityLearn",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAbilityAcquiringUnit",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAbilityAcquiringUnit takes nothing returns unit\n```\n\n\n---\n\n==================================================================================================\n\nEvent: OnAbilityGet\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAbilityAcquiringUnit",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetAcquiredAbilityId",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetAcquiredAbilityId takes nothing returns integer\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_GetAcquiredAbilityId",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "UnitAddAbility_ConsiderEvent",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction UnitAddAbility_ConsiderEvent takes unit whichUnit, integer abilid, integer level returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_UnitAddAbility_ConsiderEvent",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnPassive_Browse",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnPassive_Browse takes gamecache g, unit u, string k returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnPassive_Browse",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnPassive_Do",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnPassive_Do takes gamecache g, unit u, string k, integer n returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnPassive_Do",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnPassive_EnterRect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnPassive_EnterRect takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnPassive_EnterRect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnPassive_InitEnum",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnPassive_InitEnum takes nothing returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnPassive_InitEnum",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitPassiveEvent",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitPassiveEvent takes gamecache g returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_InitPassiveEvent",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAbilityGet",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAbilityGet takes integer abilid, string funcname returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_OnAbilityGet",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnEffect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnEffect takes nothing returns nothing\n```\n\n\n---\n\n==================================================================================================\n\nEvent: OnAbilityEffect\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnEffect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitEffectEvent",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitEffectEvent takes gamecache g returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_InitEffectEvent",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAbilityEffect",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAbilityEffect takes integer abilid, string funcname returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_OnAbilityEffect",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnCast",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnCast takes nothing returns nothing\n```\n\n\n---\n\n==================================================================================================\n\nEvent: OnAbilityCast\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnCast",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitCastEvent",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitCastEvent takes gamecache g returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_InitCastEvent",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAbilityPreCast",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAbilityPreCast takes integer abilid, string funcname returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_OnAbilityPreCast",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Event_OnEndCast",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Event_OnEndCast takes nothing returns nothing\n```\n\n\n---\n\n==================================================================================================\n\nEvent: OnAbilityEndCast\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_Event_OnEndCast",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "InitEndCastEvent",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction InitEndCastEvent takes gamecache g returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_InitEndCastEvent",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "OnAbilityEndCast",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction OnAbilityEndCast takes integer abilid, string funcname returns nothing\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_OnAbilityEndCast",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsPointWater",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsPointWater takes real x, real y returns boolean\n```\n\n\n---\n\n==================================================================================================\n\nSpell Helpers\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsPointWater",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsPointWaterLoc",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsPointWaterLoc takes location loc returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsPointWaterLoc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitSpellImmune",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitSpellImmune takes unit u returns boolean\n```\n\n\n---\n\n==================================================================================================\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsUnitSpellImmune",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitImmuneToPhisical",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitImmuneToPhisical takes unit u returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsUnitImmuneToPhisical",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "IsUnitInvulnerable",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction IsUnitInvulnerable takes unit u returns boolean\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_IsUnitInvulnerable",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "CS_Error",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction CS_Error takes player ForPlayer, string msg returns nothing\n```\n\n\n---\n\n## Utility functions ##\n\n====================================================================================================\n\nMimic an interface error message\n\nForPlayer : The player to show the error\n\nmsg       : The error\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_CS_Error",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "WaterDetectorId",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction WaterDetectorId takes nothing returns integer\n```\n\n\n---\n\n=============================================================================================================\n\nObsolette functions: (Left for compatibility)\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_WaterDetectorId",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "SpellEffectModelPath",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SpellEffectModelPath takes integer abilityid, effecttype t returns string\n```\n\n\n**_>:** `Tools/JassCraft/CasterSystem.j`",
+      "sortText": "1_func_SpellEffectModelPath",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\JassCraft\\CasterSystem.j",
+      "statementType": "FunctionDeclaration"
+    }
+  ],
+  "timestamp": 1767034512920
+}

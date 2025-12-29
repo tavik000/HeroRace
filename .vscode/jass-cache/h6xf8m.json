@@ -1,0 +1,123 @@
+{
+  "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+  "items": [
+    {
+      "label": "Bexpr",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nboolexpr Bexpr\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "2_var_Bexpr",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "Area",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nrect Area\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "2_var_Area",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "tmp_data",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nThread tmp_data\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "2_var_tmp_data",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "yd_loc",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nlocation yd_loc\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "2_var_yd_loc",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "YDVector3",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct YDVector3\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_struct_YDVector3",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "SingleMagic",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction SingleMagic takes unit sour, unit targ, real x, real y, real h, integer uid, integer aid, integer lv, integer order returns nothing\n```\n\n\n---\n\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\nTimer Pattern Union                                              //\n\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_func_SingleMagic",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "GetUnitZ",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetUnitZ takes unit u returns real\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_func_GetUnitZ",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "EnemyFilter",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction EnemyFilter takes unit u, unit caster returns boolean\n```\n\n\n---\n\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\nFilter Funcs                                                //\n\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_func_EnemyFilter",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "TreeFilter",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction TreeFilter takes nothing returns boolean\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_func_TreeFilter",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "DamageFilter",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction DamageFilter takes nothing returns boolean\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_func_DamageFilter",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "TreeKill",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction TreeKill takes nothing returns nothing\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_func_TreeKill",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Thread",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct Thread\n```\n\n\n---\n\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\nMajor Structure Code                                           //\n\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_struct_Thread",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "StructDeclaration"
+    },
+    {
+      "label": "Parabola",
+      "kind": 21,
+      "detail": "Struct",
+      "documentation": "\n```jass\nstruct Parabola extends Thread\n```\n\n\n**_>:** `Test/CustomPush.j`",
+      "sortText": "1_struct_Parabola",
+      "filePath": "f:\\War3Dev\\HeroRace\\Test\\CustomPush.j",
+      "statementType": "StructDeclaration"
+    }
+  ],
+  "timestamp": 1767034512897
+}

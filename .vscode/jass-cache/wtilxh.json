@@ -1,0 +1,60 @@
+{
+  "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+  "items": [
+    {
+      "label": "Except",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\ngroup Except\n```\n\n\n---\n\nprivate constant real MOVE_DIST = 40. //\n\nprivate constant real KEEP_DIST = 50. //\n\n**_>:** `Tools/YDWEMeatHook.j`",
+      "sortText": "2_var_Except",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "Point",
+      "kind": 5,
+      "detail": "Global Variable",
+      "documentation": "\n```jass\nlocation Point\n```\n\n\n**_>:** `Tools/YDWEMeatHook.j`",
+      "sortText": "2_var_Point",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+      "statementType": "VariableDeclaration"
+    },
+    {
+      "label": "GetUnitZ",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction GetUnitZ takes unit u returns real\n```\n\n\n**_>:** `Tools/YDWEMeatHook.j`",
+      "sortText": "1_func_GetUnitZ",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "HookAim",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction HookAim takes string key, unit pudge, real x, real y, real z returns nothing\n```\n\n\n**_>:** `Tools/YDWEMeatHook.j`",
+      "sortText": "1_func_HookAim",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "Cycle",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction Cycle takes nothing returns nothing\n```\n\n\n**_>:** `Tools/YDWEMeatHook.j`",
+      "sortText": "1_func_Cycle",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+      "statementType": "FunctionDeclaration"
+    },
+    {
+      "label": "YDWEMeatHook",
+      "kind": 2,
+      "detail": "Function",
+      "documentation": "\n```jass\nfunction YDWEMeatHook takes unit pudge, location point, integer headid, integer chainid, real length, real distance, real damage, real timeout returns nothing\n```\n\n\n**_>:** `Tools/YDWEMeatHook.j`",
+      "sortText": "1_func_YDWEMeatHook",
+      "filePath": "f:\\War3Dev\\HeroRace\\Tools\\YDWEMeatHook.j",
+      "statementType": "FunctionDeclaration"
+    }
+  ],
+  "timestamp": 1767034512921
+}
