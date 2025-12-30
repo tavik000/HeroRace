@@ -84,7 +84,7 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
-    function EnumItemsAction takes nothing returns nothing
+    function FilterSuitablePickUpItem takes nothing returns nothing
         local item itm = GetEnumItem()
         local real dist = DistanceBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
         local real itemAngle = AngleBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
@@ -111,7 +111,7 @@ library AIUtils requires KeyUtils
         set tempFoundItemMinDist = 999999.0
         set tempFoundItemUnitFacingAngle = GetUnitFacing(u)
 
-        call EnumItemsInRectBJ(rec, function EnumItemsAction)
+        call EnumItemsInRectBJ(rec, function FilterSuitablePickUpItem)
         call RemoveRect(rec)
         set foundItem = tempFoundItem
 
@@ -142,19 +142,12 @@ library AIUtils requires KeyUtils
     endfunction
 
     // Generic filter function for heroes (enemies or allies)
-    function FilterHeroes takes nothing returns boolean
+    function FilterTeamHeroes takes nothing returns boolean
         local unit filterUnit = GetFilterUnit()
         
         if not IsValidHeroTarget(filterUnit) then
             set filterUnit = null
             return false
-        endif
-
-        if tempAIHeroAbility != 0 then
-            if not tempAIHeroAbility.customFilter(filterUnit) then
-                set filterUnit = null
-                return false
-            endif
         endif
 
         // Check if we want allies or enemies
@@ -167,10 +160,6 @@ library AIUtils requires KeyUtils
         else
             // Filter for enemies
             if not IsUnitEnemy(filterUnit, tempHeroOwner) then
-                set filterUnit = null
-                return false
-            endif
-            if IsUnitInvulnerableOrMagicImmune(filterUnit) then
                 set filterUnit = null
                 return false
             endif
