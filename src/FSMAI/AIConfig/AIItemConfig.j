@@ -4,16 +4,24 @@ library AIItemConfig
     endglobals
 
     function InitItemData takes nothing returns nothing
+        local integer BASE_COOLDOWN_KEY = 0
+        local integer CAST_RANGE_KEY = 1
+        local integer EFFECTIVE_RADIUS_KEY = 2
+        local integer CAST_TYPE_KEY = 3
+        local integer FIND_TARGET_TYPE_KEY = 4
+        local integer IS_PASSIVE_KEY = 5
+        local integer currentItemId = 0
+        
         set ItemDataTable = InitHashtable()
     
         // Example: SaveReal(ItemDataTable, itemId, key, value)
-        // Item 'I001' - Force Staff
-        call SaveReal(ItemDataTable, 'I001', 0, 15.0)    // base cooldown
-        call SaveReal(ItemDataTable, 'I001', 1, 600.0)   // cast range
-        call SaveReal(ItemDataTable, 'I001', 2, 150.0)   // effective radius
-        call SaveInteger(ItemDataTable, 'I001', 3, CAST_POINT_SELF_FRONT) // cast type
-        call SaveInteger(ItemDataTable, 'I001', 4, FIND_TARGET_TYPE_SELF_FORCE_STAFF) // find target type
-        call SaveBoolean(ItemDataTable, 'I001', 5, false) // is passive
+        set currentItemId = 'I010' // BloodLust
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 2000.0)  
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_SPEED_UP)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
     
         // Add more items...
     endfunction
