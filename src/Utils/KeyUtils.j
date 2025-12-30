@@ -50,7 +50,7 @@ library KeyUtils
         // Clamp delta to the shortest arc (-180 to 180)
         if angleDelta > 180.0 then
             set angleDelta = angleDelta - 360.0
-        elseif angleDelta < -180.0 then
+        elseif angleDelta < - 180.0 then
             set angleDelta = angleDelta + 360.0
         endif
 
@@ -86,7 +86,7 @@ library KeyUtils
         endloop
 
         loop
-            exitwhen d >= -180.0
+            exitwhen d >= - 180.0
             set d = d + 360.0
         endloop
 
@@ -280,8 +280,8 @@ library KeyUtils
 
     // Check if u1 is in front of u2
     function IsUnitInFrontOfUnit takes unit u1, unit u2 returns boolean
-        local real dx = GetUnitX(u2) - GetUnitX(u1)
-        local real dy = GetUnitY(u2) - GetUnitY(u1)
+        local real dx = GetUnitX(u1) - GetUnitX(u2)
+        local real dy = GetUnitY(u1) - GetUnitY(u2)
 
         local real rad = GetUnitFacing(u2) * bj_PI / 180.0
         return dx * Cos(rad) + dy * Sin(rad) > 0.0
