@@ -27,7 +27,22 @@ struct AIItem
     endmethod
 
     method isReadyToUse takes nothing returns boolean
-        return not bIsPassive
+        if bIsPassive then
+            return false
+        endif
+
+        if this.baseCooldown <= 0.0 then
+            return true
+        endif
+
+        local real currentTime = TimerGetElapsed(gameTimer)
+        if this.lastUseTime == 0.0 then
+            return true
+        endif
+        if currentTime - this.lastUseTime > this.baseCooldown then
+            return true
+        endif
+        return false
     endmethod
 
     method tryUse takes nothing returns nothing
