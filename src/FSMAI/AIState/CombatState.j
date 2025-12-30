@@ -75,8 +75,7 @@ struct CombatState extends AIState
         if heroItem != 0 then
             call owner.setDebugTextTagContent("Combat: Try using item " + GetItemName(heroItem.itemHandle))
             call owner.setDebugTextTagColorPreset("RED")
-            call heroItem.tryUse()
-            return true
+            return heroItem.tryUse()
         endif
             
         return false
@@ -185,7 +184,7 @@ struct CombatState extends AIState
         endif
 
         if heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = this.findSpeedUpAllyTargetInRange(heroAbil.castRange, heroAbil)
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, heroAbil.castRange, heroAbil)
             call this.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
             call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
             call owner.setDebugTextTagColorPreset("RED")
@@ -322,93 +321,6 @@ struct CombatState extends AIState
         return this.findRandomHeroInRange(range, true, heroAbil)
     endmethod
 
-    method findSpeedUpAllyTargetInRange takes real range, AIHeroAbility heroAbil returns unit
-        local group heroes = CreateGroup()
-        local unit currentUnit = null
-        local real minHpPercent = 50 
-        local unit bestTarget = null
-        local real minSpeed = 200.0
-        local real maxSpeed = 350.0
-
-        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >350 
-        // Priority Order:
-        // 1. HP >= 50%
-        // 2. Behind
-        // 3. Far from Hero
-        // 3. Self
-
-        // Set temp variables for filter function
-        set tempHeroOwner = GetOwningPlayer(owner.hero)
-        set bTempFilterForAllies = true
-        set tempHeroUnit = owner.hero
-        set tempAIHeroAbility = heroAbil
-        call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
-
-        call this.botLog("group unit count for speed-up ally target: " + I2S(CountUnitsInGroup(heroes)))
-            
-        loop
-            set currentUnit = FirstOfGroup(heroes)
-            exitwhen currentUnit == null
-            call GroupRemoveUnit(heroes, currentUnit)
-            call this.botLog("Evaluating ally unit: " + GetUnitName(currentUnit))
-            call this.botLog(" GetUnitLifePercent(currentUnit): " + R2S(GetUnitLifePercent(currentUnit)))
-
-            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-                call this.botLog(" Ally unit is invulnerable/magic immune, skipping: " + GetUnitName(currentUnit))
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
-                call this.botLog(" Ally unit failed custom filter, skipping: " + GetUnitName(currentUnit))
-            elseif IsUnitStunOrSlow(currentUnit) then
-                call this.botLog(" Ally unit is CCed, skipping: " + GetUnitName(currentUnit))
-            elseif IsUnitInAnyHazardZone(currentUnit) then
-                call this.botLog(" Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
-            elseif GetUnitMoveSpeed(currentUnit) < minSpeed or GetUnitMoveSpeed(currentUnit) > maxSpeed then
-                call this.botLog(" Ally unit speed out of range, skipping: " + GetUnitName(currentUnit))
-            else
-                // Valid Target
-                if bestTarget == null then
-                    set bestTarget = currentUnit
-                    call this.botLog("New best speed-up ally target: " + GetUnitName(currentUnit))
-                elseif GetUnitLifePercent(currentUnit) >= minHpPercent and GetUnitLifePercent(bestTarget) < minHpPercent then
-                    // Current has >=50% HP, best has <50% HP 
-                    set bestTarget = currentUnit
-                    call this.botLog("New best speed-up ally target based on HP%: " + GetUnitName(currentUnit))
-                elseif bestTarget == owner.hero then
-                    if IsUnitBehindUnit(currentUnit, owner.hero) then
-                        // Current is behind, previous best is self
-                        set bestTarget = currentUnit
-                        call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
-                    endif
-                elseif IsUnitInFrontOfUnit(bestTarget, owner.hero) then
-                    if IsUnitBehindUnit(currentUnit, owner.hero) then
-                        if currentUnit != owner.hero then
-                            // Current is behind, previous best is in front
-                            set bestTarget = currentUnit
-                            call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
-                        endif
-                    endif
-                elseif DistanceBetweenUnits(owner.hero, currentUnit) > DistanceBetweenUnits(owner.hero, bestTarget) then
-                    // Both are in same relative position, choose farther one
-                    set bestTarget = currentUnit
-                    call this.botLog("New best speed-up ally target based on Distance: " + GetUnitName(currentUnit))
-                endif
-            endif
-        endloop
-
-        if IsUnitInFrontOfUnit(bestTarget, owner.hero) then
-            set bestTarget = owner.hero
-            call this.botLog("Ally unit in front, defaulting to self.")
-        endif
-
-        // Clean up
-        call DestroyGroup(heroes)
-        set heroes = null
-        set currentUnit = null
-        set tempAIHeroAbility = 0
-        set tempHeroUnit = null
-        set tempHeroOwner = null
-
-        return bestTarget
-    endmethod
 
     method evaluateComboTarget takes unit currentUnit, unit bestTarget, real bestTargetHp, boolean bestIsKillableTarget, boolean bestIsStunOrSlow, real comboExpectedDamage, real comboMinThreshold returns unit
         local real currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)

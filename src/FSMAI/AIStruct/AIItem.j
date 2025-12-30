@@ -6,6 +6,7 @@ struct AIItem
     real castRange
     real effectiveRadius
     unit ownerHero
+    AIHero ownerAIHero
     boolean bIsPassive
     integer castType
     integer findTargetType
@@ -19,6 +20,7 @@ struct AIItem
         set this.castRange = newCastRange
         set this.effectiveRadius = newEffectiveRadius
         set this.ownerHero = newOwnerHero
+        set this.ownerAIHero = GetAIHeroFromUnit(newOwnerHero)
         set this.bIsPassive = bNewIsPassive
         set this.castType = newCastType
         set this.findTargetType = newFindTargetType
@@ -27,6 +29,8 @@ struct AIItem
     endmethod
 
     method isReadyToUse takes nothing returns boolean
+        local real currentTime = TimerGetElapsed(gameTimer)
+
         if bIsPassive then
             return false
         endif
@@ -35,7 +39,6 @@ struct AIItem
             return true
         endif
 
-        local real currentTime = TimerGetElapsed(gameTimer)
         if this.lastUseTime == 0.0 then
             return true
         endif
@@ -45,10 +48,20 @@ struct AIItem
         return false
     endmethod
 
-    method tryUse takes nothing returns nothing
+    method tryUse takes nothing returns boolean
+        local unit targetUnit = null
         // local integer itemSlot = GetInventoryIndexOfItemTypeBJ(this.ownerHero, this.itemId)
-        call UnitUseItemTarget( this.ownerHero, this.itemHandle, this.ownerHero)
-        call this.botLog("Using item: " + GetItemName(this.itemHandle))
+
+        set targetUnit = FindTargetForItem(this.ownerAIHero, this)
+        if targetUnit == null then
+            call this.botLog("No valid target found for item: " + GetItemName(this.itemHandle))
+            return false
+        endif
+
+        call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
+        call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(targetUnit))
+        set this.lastUseTime = TimerGetElapsed(gameTimer)
+        return true
         // TODO
     endmethod
 
