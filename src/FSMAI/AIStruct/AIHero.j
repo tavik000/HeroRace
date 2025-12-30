@@ -233,10 +233,18 @@ struct AIHero
     endmethod
 
     method onGetItem takes item itm returns nothing
+        local integer itemId = GetItemTypeId(itm)
+        local real baseCooldown = GetItemBaseCooldown(itemId)
+        local real castRange = GetItemCastRange(itemId)
+        local real effectiveRadius = GetItemEffectiveRadius(itemId)
+        local integer castType = GetItemCastType(itemId)
+        local integer findTargetType = GetItemFindTargetType(itemId)
+        local boolean bIsPassive = GetItemIsPassive(itemId)
+
         call this.botLog("Picked up item: " + GetItemName(itm))
         call this.setDebugTextTagContent("Item: Picked Up " + GetItemName(itm))
         call this.setDebugTextTagColorPreset("CYAN")
-        call this.combatData.addItem(itm, GetItemTypeId(itm), 0.0, 99999, this.hero, false)
+        call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, this.hero, bIsPassive, castType, findTargetType)
     endmethod
 
     method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing

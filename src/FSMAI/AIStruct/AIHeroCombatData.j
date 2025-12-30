@@ -28,12 +28,12 @@ struct HeroCombatData
         endif
     endmethod
 
-    method addItem takes item newItemHandle, integer itemId, real baseCooldown, real castRange, unit ownerHero, boolean isPassive returns nothing
+    method addItem takes item newItemHandle, integer itemId, real baseCooldown, real castRange, real effectiveRadius, unit ownerHero, boolean isPassive, integer castType, integer findTargetType returns nothing
         local integer i = 0
         loop
             exitwhen i >= MAX_ITEM_PER_HERO
             if this.items[i] == null then
-                set this.items[i] = AIItem.create(newItemHandle, itemId, baseCooldown, castRange, ownerHero, isPassive)
+                set this.items[i] = AIItem.create(newItemHandle, itemId, baseCooldown, castRange, effectiveRadius, ownerHero, isPassive, castType, findTargetType)
                 return
             endif
             set i = i + 1

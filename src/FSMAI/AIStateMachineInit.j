@@ -95,6 +95,7 @@ library AIStateMachine requires KeyUtils, AIUtils
         call TimerStart(gameTimer, 999999.0, false, null)
         call InitializeHeroCastPoints()
         call InitializeWaypoints()
+        call InitItemData()
     endmethod
     endmodule
 
