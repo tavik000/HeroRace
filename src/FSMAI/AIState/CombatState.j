@@ -272,12 +272,6 @@ struct CombatState extends AIState
         endif
     endmethod
 
-    method findNearestEnemy takes nothing returns unit
-        // Simple implementation - find first enemy in range
-        // TODO: Implement proper enemy detection based on your map's enemy system
-        return null  // Placeholder - replace with actual enemy finding logic
-    endmethod
-
     method findRandomHeroInRange takes real range, boolean isForAllies, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
@@ -359,47 +353,43 @@ struct CombatState extends AIState
             call this.botLog("Evaluating ally unit: " + GetUnitName(currentUnit))
             call this.botLog(" GetUnitLifePercent(currentUnit): " + R2S(GetUnitLifePercent(currentUnit)))
 
-            if not IsUnitInvulnerableOrMagicImmune(currentUnit) then
-                if tempAIHeroAbility.customFilter(currentUnit) then
-                    if not IsUnitStunOrSlow(currentUnit) then
-                        if not IsUnitInAnyHazardZone(currentUnit) then
-                            if GetUnitMoveSpeed(currentUnit) >= minSpeed and GetUnitMoveSpeed(currentUnit) <= maxSpeed then
-                                // Valid Target
-                                if bestTarget == null then
-                                    set bestTarget = currentUnit
-                                    call this.botLog("New best speed-up ally target: " + GetUnitName(currentUnit))
-                                elseif GetUnitLifePercent(currentUnit) >= minHpPercent and GetUnitLifePercent(bestTarget) < minHpPercent then
-                                    // Current has >=50% HP, best has <50% HP 
-                                    set bestTarget = currentUnit
-                                    call this.botLog("New best speed-up ally target based on HP%: " + GetUnitName(currentUnit))
-                                elseif bestTarget == owner.hero then
-                                    if IsUnitBehindUnit(currentUnit, owner.hero) then
-                                        // Current is behind, previous best is self
-                                        set bestTarget = currentUnit
-                                        call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
-                                    endif
-                                elseif IsUnitInFrontOfUnit(bestTarget, owner.hero) then
-                                    if IsUnitBehindUnit(currentUnit, owner.hero) then
-                                        if currentUnit != owner.hero then
-                                            // Current is behind, previous best is in front
-                                            set bestTarget = currentUnit
-                                            call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
-                                        endif
-                                    endif
-                                elseif DistanceBetweenUnits(owner.hero, currentUnit) > DistanceBetweenUnits(owner.hero, bestTarget) then
-                                    // Both are in same relative position, choose farther one
-                                    set bestTarget = currentUnit
-                                    call this.botLog("New best speed-up ally target based on Distance: " + GetUnitName(currentUnit))
-                                endif
-                            else
-                                call this.botLog(" Ally unit speed out of range, skipping: " + GetUnitName(currentUnit))
-                            endif
-                        else
-                            call this.botLog(" Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
-                        endif
-                    else
-                        call this.botLog(" Ally unit is CCed, skipping: " + GetUnitName(currentUnit))
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                call this.botLog(" Ally unit is invulnerable/magic immune, skipping: " + GetUnitName(currentUnit))
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+                call this.botLog(" Ally unit failed custom filter, skipping: " + GetUnitName(currentUnit))
+            elseif IsUnitStunOrSlow(currentUnit) then
+                call this.botLog(" Ally unit is CCed, skipping: " + GetUnitName(currentUnit))
+            elseif IsUnitInAnyHazardZone(currentUnit) then
+                call this.botLog(" Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
+            elseif GetUnitMoveSpeed(currentUnit) < minSpeed or GetUnitMoveSpeed(currentUnit) > maxSpeed then
+                call this.botLog(" Ally unit speed out of range, skipping: " + GetUnitName(currentUnit))
+            else
+                // Valid Target
+                if bestTarget == null then
+                    set bestTarget = currentUnit
+                    call this.botLog("New best speed-up ally target: " + GetUnitName(currentUnit))
+                elseif GetUnitLifePercent(currentUnit) >= minHpPercent and GetUnitLifePercent(bestTarget) < minHpPercent then
+                    // Current has >=50% HP, best has <50% HP 
+                    set bestTarget = currentUnit
+                    call this.botLog("New best speed-up ally target based on HP%: " + GetUnitName(currentUnit))
+                elseif bestTarget == owner.hero then
+                    if IsUnitBehindUnit(currentUnit, owner.hero) then
+                        // Current is behind, previous best is self
+                        set bestTarget = currentUnit
+                        call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
                     endif
+                elseif IsUnitInFrontOfUnit(bestTarget, owner.hero) then
+                    if IsUnitBehindUnit(currentUnit, owner.hero) then
+                        if currentUnit != owner.hero then
+                            // Current is behind, previous best is in front
+                            set bestTarget = currentUnit
+                            call this.botLog("New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
+                        endif
+                    endif
+                elseif DistanceBetweenUnits(owner.hero, currentUnit) > DistanceBetweenUnits(owner.hero, bestTarget) then
+                    // Both are in same relative position, choose farther one
+                    set bestTarget = currentUnit
+                    call this.botLog("New best speed-up ally target based on Distance: " + GetUnitName(currentUnit))
                 endif
             endif
         endloop
@@ -482,14 +472,18 @@ struct CombatState extends AIState
             // 5. Damage Efficiency
             // 6. Fallback to Overkill
 
-            if not IsUnitInvulnerableOrMagicImmune(currentUnit) then
-                if tempAIHeroAbility.customFilter(currentUnit) then
-                    set bestTarget = this.evaluateComboTarget(currentUnit, bestTarget, bestTargetHp, bestIsKillableTarget, bestIsStunOrSlow, comboExpectedDamage, comboMinThreshold)
-                    if bestTarget == currentUnit then
-                        set bestTargetHp = currentHp
-                        set bestIsKillableTarget = (currentHp <= comboExpectedDamage)
-                        set bestIsStunOrSlow = IsUnitStunOrSlow(currentUnit)
-                    endif
+            // Skip if unit is invulnerable
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                // Skip this unit
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+                // Skip - doesn't pass custom filter
+            else
+                // Valid target - evaluate
+                set bestTarget = this.evaluateComboTarget(currentUnit, bestTarget, bestTargetHp, bestIsKillableTarget, bestIsStunOrSlow, comboExpectedDamage, comboMinThreshold)
+                if bestTarget == currentUnit then
+                    set bestTargetHp = currentHp
+                    set bestIsKillableTarget = (currentHp <= comboExpectedDamage)
+                    set bestIsStunOrSlow = IsUnitStunOrSlow(currentUnit)
                 endif
             endif
 
@@ -550,16 +544,20 @@ struct CombatState extends AIState
             exitwhen currentUnit == null
             call GroupRemoveUnit(heroes, currentUnit)
 
-            if tempAIHeroAbility != 0 then
-                if tempAIHeroAbility.customFilter(currentUnit) then
-                    if not IsUnitInvulnerableOrMagicImmune(currentUnit) then
-                        set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
+            // Skip if no ability to check
+            if tempAIHeroAbility == 0 then
+                // Skip this unit
+            elseif not tempAIHeroAbility.customFilter(currentUnit) then
+                // Skip - doesn't pass custom filter
+            elseif IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                // Skip - invulnerable unit
+            else
+                // Valid target - check HP
+                set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
                 
-                        if bestTarget == null or currentHp > bestTargetHp then
-                            set bestTarget = currentUnit
-                            set bestTargetHp = currentHp
-                        endif
-                    endif
+                if bestTarget == null or currentHp > bestTargetHp then
+                    set bestTarget = currentUnit
+                    set bestTargetHp = currentHp
                 endif
             endif
                 
