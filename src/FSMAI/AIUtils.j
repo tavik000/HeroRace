@@ -327,6 +327,8 @@ library AIUtils requires KeyUtils
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Hero Target " + GetUnitName(targetUnit))
             call owner.setDebugTextTagColorPreset("RED")
+        else
+            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
         endif
         return targetUnit
     endfunction
