@@ -35,6 +35,10 @@ struct AIItem
             return false
         endif
 
+        if this.castType == CAST_INSTANT_HEAL then
+            return GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+        endif
+
         if this.baseCooldown <= 0.0 then
             return true
         endif
@@ -50,7 +54,17 @@ struct AIItem
 
     method tryUse takes nothing returns boolean
         local unit targetUnit = null
-        // local integer itemSlot = GetInventoryIndexOfItemTypeBJ(this.ownerHero, this.itemId)
+
+        if this.castType == CAST_INSTANT_HEAL then
+            if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
+                call UnitUseItem(this.ownerHero, this.itemHandle)
+                call this.botLog("Using instant heal item: " + GetItemName(this.itemHandle))
+                set this.lastUseTime = TimerGetElapsed(gameTimer)
+                return true
+            else
+                return false
+            endif
+        endif
 
         set targetUnit = FindTargetForItem(this.ownerAIHero, this)
         if targetUnit == null then

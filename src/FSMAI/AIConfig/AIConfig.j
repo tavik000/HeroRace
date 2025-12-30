@@ -45,6 +45,9 @@ globals
     constant real PICKUP_ITEM_RANGE_NORMAL = 800.0
     constant real PICKUP_ITEM_RANGE_SMALL = 200.0
 
+    // Self Heal Threshold
+    constant real SELF_HEAL_HP_PERCENTAGE_THRESHOLD = 40.0 // 40%
+
     // Combat settings
     constant real EASY_CD_MULTIPLIER = 2.0
     constant real NORMAL_CD_MULTIPLIER = 1.0
@@ -58,8 +61,9 @@ globals
 
     // Turn time for 90 degree turns, giving turn rate 0.6
     constant real TURN_TIME = 0.2 
-
     constant real MAX_RANGE = 30000.0
+
+    
 
     // Ability AI cast types
     constant integer CAST_NONE = 0 
