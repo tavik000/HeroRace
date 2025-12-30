@@ -66,6 +66,20 @@ struct AIItem
             endif
         endif
 
+        // TODO
+        // if this.castType == CAST_INSTANT_ENEMY_CROWDED then
+        //     set targetUnit = FindCrowdedEnemyTargetInRange(this.ownerHero, this.effectiveRadius)
+        //     if targetUnit == null then
+        //         call this.botLog("No crowded enemy target found for item: " + GetItemName(this.itemHandle))
+        //         return false
+        //     endif
+
+        //     call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
+        //     call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on crowded enemy target: " + GetUnitName(targetUnit))
+        //     set this.lastUseTime = TimerGetElapsed(gameTimer)
+        //     return true
+        // endif
+
         set targetUnit = FindTargetForItem(this.ownerAIHero, this)
         if targetUnit == null then
             call this.botLog("No valid target found for item: " + GetItemName(this.itemHandle))

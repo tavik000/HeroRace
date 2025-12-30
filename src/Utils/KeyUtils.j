@@ -184,6 +184,10 @@ library KeyUtils
         if UnitHasBuffBJ(u, 'BOhx') then 
             return true
         endif
+        // Rat Transform
+        if UnitHasBuffBJ(u, 'B02V') then 
+            return true
+        endif
         // Thunder Axe
         if UnitHasBuffBJ(u, 'B01F') then 
             return true

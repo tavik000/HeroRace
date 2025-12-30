@@ -77,7 +77,7 @@ struct AIHero
         local boolean hasReadyItem = false
             
         if IsUnitStunOrSilence(this.hero) then
-            call BotLog("Cannot enter combat, hero is stunned or silenced.")
+            call this.botLog("Cannot enter combat, hero is stunned or silenced.")
             call this.setDebugTextTagContent("Run: Stunned/Silenced")
             call this.setDebugTextTagColorPreset("YELLOW")
             return false
