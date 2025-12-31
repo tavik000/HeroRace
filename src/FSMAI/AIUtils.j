@@ -366,5 +366,20 @@ library AIUtils requires KeyUtils
         return targetUnit
     endfunction
 
+    function FindForceToUseTargetUnitForItem takes AIHero owner, AIItem itm returns unit
+        local unit targetUnit = null
+        if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            if targetUnit == null then
+                set targetUnit = owner.hero
+            endif
+            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Force Use Ally Hero Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagColorPreset("YELLOW")
+        else
+            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))
+        endif
+        return targetUnit
+    endfunction
+
 
 endlibrary

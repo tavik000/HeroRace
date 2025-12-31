@@ -263,6 +263,21 @@ struct HeroCombatData
         return true
     endmethod
 
+    method prepareTargetForItems takes nothing returns nothing
+        local integer i = 0
+        local AIItem heroItem
+
+        // Prepare target for each item
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            set heroItem = this.items[i]
+            if heroItem != 0 then
+                call heroItem.prepareTarget()
+            endif
+            set i = i + 1
+        endloop
+    endmethod
+
     method hasReadyItem takes nothing returns boolean
         local AIItem heroItem = this.getReadyItem()
         if heroItem != 0 then
@@ -290,7 +305,7 @@ struct HeroCombatData
                 if not UnitHasItem(ownerHero, heroItem.itemHandle) then
                     call this.removeItem(heroItem.itemHandle)
                 else
-                    if heroItem.isReadyToUse() then
+                    if heroItem.isCooldownAndReadyToUse() then
                         return heroItem
                     endif
                 endif

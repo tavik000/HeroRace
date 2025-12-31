@@ -10,7 +10,10 @@ struct AIItem
     boolean bIsPassive
     integer castType
     integer findTargetType
-
+    boolean bIsReadyToUse
+    real readyTargetPointX
+    real readyTargetPointY
+    unit readyTargetUnit
 
     static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
         local thistype this = thistype.allocate()
@@ -25,35 +28,88 @@ struct AIItem
         set this.castType = newCastType
         set this.findTargetType = newFindTargetType
         set this.lastUseTime = 0.0
+        set this.bIsReadyToUse = false
+        set this.readyTargetPointX = 0.0
+        set this.readyTargetPointY = 0.0
+        set this.readyTargetUnit = null
         return this
     endmethod
 
-    method isReadyToUse takes nothing returns boolean
+    method isForceToUse takes nothing returns boolean
+        return GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD
+    endmethod
+
+    // For items that need target preparation before use
+    method prepareTarget takes nothing returns nothing
+        local integer targetUnitCount
+
+        if this.bIsPassive then
+            return
+        endif
+
+        if this.castType == CAST_NONE then
+            // Cannot prepare target for CAST_NONE
+            return
+        elseif this.castType == CAST_INSTANT_HEAL then
+            if this.isForceToUse() then
+                set this.bIsReadyToUse = true
+            else
+                set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+            endif
+        elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
+            if this.isForceToUse() then
+                set this.bIsReadyToUse = true
+                return
+            endif
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set this.bIsReadyToUse = targetUnitCount >= 2
+        elseif this.castType == CAST_UNIT then
+            if this.findTargetType == FIND_TARGET_TYPE_NONE then
+                call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
+                return
+            endif
+            if this.isForceToUse() then
+                set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
+            else
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
+        else
+            call this.botLogError("Item cast type not implemented for prepare target: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
+            return
+            set this.readyTargetUnit = null
+            set this.bIsReadyToUse = false
+        endif
+
+    endmethod
+
+    method isCooldownAndReadyToUse takes nothing returns boolean
         local real currentTime = TimerGetElapsed(gameTimer)
 
-        if bIsPassive then
-            return false
-        endif
-
-        if GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD then
-            return true
-        endif
-
-        if this.castType == CAST_INSTANT_HEAL then
-            return GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
-        endif
-
         if this.baseCooldown <= 0.0 then
-            return true
+            return this.bIsReadyToUse
         endif
-
         if this.lastUseTime == 0.0 then
-            return true
+            return this.bIsReadyToUse
         endif
         if currentTime - this.lastUseTime > this.baseCooldown then
-            return true
+            return this.bIsReadyToUse
         endif
         return false
+    endmethod
+
+    method useInstant takes nothing returns nothing
+        call UnitUseItem(this.ownerHero, this.itemHandle)
+        call this.botLog("Using item: " + GetItemName(this.itemHandle))
+        set this.lastUseTime = TimerGetElapsed(gameTimer)
+        set this.bIsReadyToUse = false
+    endmethod
+
+    method useToTargetUnit takes unit targetUnit returns nothing
+        call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
+        call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(targetUnit))
+        set this.lastUseTime = TimerGetElapsed(gameTimer)
+        set this.bIsReadyToUse = false
     endmethod
 
     method tryUse takes nothing returns boolean
@@ -64,48 +120,27 @@ struct AIItem
             call this.botLogError("Item cast type is CAST_NONE, cannot use item: " + GetItemName(this.itemHandle))
             return false
         elseif this.castType == CAST_INSTANT_HEAL then
-            if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
-                call UnitUseItem(this.ownerHero, this.itemHandle)
-                call this.botLog("Using instant heal item: " + GetItemName(this.itemHandle))
-                set this.lastUseTime = TimerGetElapsed(gameTimer)
+            if this.bIsReadyToUse then
+                call this.useInstant()
                 return true
             else
                 return false
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
-            if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
-                call UnitUseItem(this.ownerHero, this.itemHandle)
-                call this.botLog("Using item: " + GetItemName(this.itemHandle))
-                set this.lastUseTime = TimerGetElapsed(gameTimer)
+            if this.bIsReadyToUse then
+                call this.useInstant()
                 return true
-            endif
-
-            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
-            if targetUnitCount < 2 then
-                call this.botLog("Not enough crowded enemies (" + I2S(targetUnitCount) + ") for item: " + GetItemName(this.itemHandle))
+            else
                 return false
             endif
-
-            call UnitUseItem(this.ownerHero, this.itemHandle)
-            call this.botLog("Using item: " + GetItemName(this.itemHandle))
-            set this.lastUseTime = TimerGetElapsed(gameTimer)
-            return true
         elseif this.castType == CAST_UNIT then
-            if this.findTargetType == FIND_TARGET_TYPE_NONE then
-                call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot use item: " + GetItemName(this.itemHandle))
-                return false
-            endif
-
-            // Find target based on findTargetType
-            set targetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            set targetUnit = this.readyTargetUnit
             if targetUnit == null then
-                call this.botLog("No valid target found for item: " + GetItemName(this.itemHandle))
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
                 return false
             endif
 
-            call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
-            call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(targetUnit))
-            set this.lastUseTime = TimerGetElapsed(gameTimer)
+            call this.useToTargetUnit(targetUnit)
             return true
         else
             call this.botLogError("Item cast type not implemented: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
