@@ -47,6 +47,8 @@ globals
 
     // Self Heal Threshold
     constant real SELF_HEAL_HP_PERCENTAGE_THRESHOLD = 40.0 // 40%
+    // Force Use Item Threshold
+    constant real FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD = 30.0 // 30%
 
     // Combat settings
     constant real EASY_CD_MULTIPLIER = 2.0
@@ -118,6 +120,11 @@ globals
     constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 50
     constant integer FIND_TARGET_TYPE_ALL_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 51
 
+
+    constant integer FIND_TEAM_TYPE_NONE = 0
+    constant integer FIND_TEAM_TYPE_ALLIES = 1
+    constant integer FIND_TEAM_TYPE_ENEMIES = 2
+    constant integer FIND_TEAM_TYPE_ALL = 3
 
     // Debug Text Tag Color Presets (RGB 0-100 format)
     constant real COLOR_WHITE_R = 100.0

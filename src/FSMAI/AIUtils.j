@@ -151,18 +151,22 @@ library AIUtils requires KeyUtils
         endif
 
         // Check if we want allies or enemies
-        if bTempFilterForAllies then
+        if tempFindTeamType == FIND_TEAM_TYPE_ALLIES then
             // Filter for allies (same team, but not the same unit)
             if IsUnitEnemy(filterUnit, tempHeroOwner) then
                 set filterUnit = null
                 return false
             endif
-        else
+        elseif tempFindTeamType == FIND_TEAM_TYPE_ENEMIES then
             // Filter for enemies
             if not IsUnitEnemy(filterUnit, tempHeroOwner) then
                 set filterUnit = null
                 return false
             endif
+        elseif tempFindTeamType == FIND_TEAM_TYPE_NONE then
+            // No team filtering
+        elseif tempFindTeamType == FIND_TEAM_TYPE_ALL then
+            // FIND_TEAM_TYPE_ALL - no filtering needed
         endif
         
         set filterUnit = null
@@ -249,7 +253,7 @@ library AIUtils requires KeyUtils
 
         // Set temp variables for filter function
         set tempHeroOwner = heroOwner
-        set bTempFilterForAllies = true
+        set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
         set tempAIHeroAbility = heroAbil
         call GroupEnumUnitsInRange(heroes, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterTeamHeroes))
@@ -316,12 +320,41 @@ library AIUtils requires KeyUtils
         set tempAIHeroAbility = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
         set heroOwner = null
 
         return bestTarget
     endfunction
 
-    function FindTargetForItem takes AIHero owner, AIItem itm returns unit
+    function GetHeroGroupAroundUnit takes unit centerUnit, real radius, integer findTeamType returns group
+        local group heroGroup = CreateGroup()
+        local player centerPlayer = GetOwningPlayer(centerUnit)
+
+        // Set temp variables for filter function
+        set tempHeroOwner = centerPlayer
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = centerUnit
+
+        call GroupEnumUnitsInRange(heroGroup, GetUnitX(centerUnit), GetUnitY(centerUnit), radius, Filter(function FilterTeamHeroes))
+
+        // Clean up temp variables
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set centerPlayer = null
+
+        return heroGroup
+    endfunction
+
+    function GetHeroCountAroundUnit takes unit centerUnit, real radius, integer findTeamType returns integer
+        local group heroGroup = GetHeroGroupAroundUnit(centerUnit, radius, findTeamType)
+        local integer count = CountUnitsInGroup(heroGroup)
+        call DestroyGroup(heroGroup)
+        set heroGroup = null
+        return count
+    endfunction
+
+    function FindTargetUnitForItem takes AIHero owner, AIItem itm returns unit
         local unit targetUnit = null
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)

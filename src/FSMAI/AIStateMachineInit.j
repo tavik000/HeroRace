@@ -14,7 +14,7 @@ globals
         
     // Temporary variables for filtering heroes
     player tempHeroOwner
-    boolean bTempFilterForAllies
+    integer tempFindTeamType
     unit tempHeroUnit
     AIHeroAbility tempAIHeroAbility
 

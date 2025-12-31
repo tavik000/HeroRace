@@ -271,7 +271,7 @@ struct CombatState extends AIState
         endif
     endmethod
 
-    method findRandomHeroInRange takes real range, boolean isForAllies, AIHeroAbility heroAbil returns unit
+    method findRandomHeroInRange takes real range, integer findTeamType, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
         local unit currentUnit
@@ -280,7 +280,7 @@ struct CombatState extends AIState
 
         // Set temp variables for filter function
         set tempHeroOwner = GetOwningPlayer(owner.hero)
-        set bTempFilterForAllies = isForAllies
+        set tempFindTeamType = findTeamType
         set tempHeroUnit = owner.hero
         set tempAIHeroAbility = heroAbil
             
@@ -309,16 +309,19 @@ struct CombatState extends AIState
         set tempAIHeroAbility = 0
         call DestroyGroup(heroes)
         set heroes = null
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
             
         return randomHero
     endmethod
 
     method findRandomEnemyHeroInRange takes real range, AIHeroAbility heroAbil returns unit
-        return this.findRandomHeroInRange(range, false, heroAbil)
+        return this.findRandomHeroInRange(range, FIND_TEAM_TYPE_ENEMIES, heroAbil)
     endmethod
         
     method findRandomAllyHeroInRange takes real range, AIHeroAbility heroAbil returns unit
-        return this.findRandomHeroInRange(range, true, heroAbil)
+        return this.findRandomHeroInRange(range, FIND_TEAM_TYPE_ALLIES, heroAbil)
     endmethod
 
 
@@ -361,7 +364,7 @@ struct CombatState extends AIState
             
         // Set temp variables for filter function
         set tempHeroOwner = GetOwningPlayer(owner.hero)
-        set bTempFilterForAllies = false
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = owner.hero
         set tempAIHeroAbility = heroAbil
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
@@ -405,6 +408,10 @@ struct CombatState extends AIState
         call DestroyGroup(heroes)
         set heroes = null
         set currentUnit = null
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set tempAIHeroAbility = 0
             
         if bestTarget != null then
             // Log selected target details
@@ -446,7 +453,7 @@ struct CombatState extends AIState
         call this.botLog("No suitable combo target found, trying fallback to overkill targets")
             
         set tempHeroOwner = GetOwningPlayer(owner.hero)
-        set bTempFilterForAllies = false
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = owner.hero
         set tempAIHeroAbility = heroAbil
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
@@ -478,6 +485,9 @@ struct CombatState extends AIState
         call DestroyGroup(heroes)
         set heroes = null
         set tempAIHeroAbility = 0
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set tempHeroUnit = null
+        set tempHeroOwner = null
             
         if bestTarget != null then
             call this.botLog("Fallback combo target selected: " + GetUnitName(bestTarget))

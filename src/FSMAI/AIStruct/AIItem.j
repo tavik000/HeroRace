@@ -35,6 +35,10 @@ struct AIItem
             return false
         endif
 
+        if GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD then
+            return true
+        endif
+
         if this.castType == CAST_INSTANT_HEAL then
             return GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
         endif
@@ -54,8 +58,12 @@ struct AIItem
 
     method tryUse takes nothing returns boolean
         local unit targetUnit = null
+        local integer targetUnitCount = 0
 
-        if this.castType == CAST_INSTANT_HEAL then
+        if this.castType == CAST_NONE then
+            call this.botLogError("Item cast type is CAST_NONE, cannot use item: " + GetItemName(this.itemHandle))
+            return false
+        elseif this.castType == CAST_INSTANT_HEAL then
             if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
                 call UnitUseItem(this.ownerHero, this.itemHandle)
                 call this.botLog("Using instant heal item: " + GetItemName(this.itemHandle))
@@ -64,33 +72,45 @@ struct AIItem
             else
                 return false
             endif
-        endif
+        elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
+            if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
+                call UnitUseItem(this.ownerHero, this.itemHandle)
+                call this.botLog("Using item: " + GetItemName(this.itemHandle))
+                set this.lastUseTime = TimerGetElapsed(gameTimer)
+                return true
+            endif
 
-        // TODO
-        // if this.castType == CAST_INSTANT_ENEMY_CROWDED then
-        //     set targetUnit = FindCrowdedEnemyTargetInRange(this.ownerHero, this.effectiveRadius)
-        //     if targetUnit == null then
-        //         call this.botLog("No crowded enemy target found for item: " + GetItemName(this.itemHandle))
-        //         return false
-        //     endif
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            if targetUnitCount < 2 then
+                call this.botLog("Not enough crowded enemies (" + I2S(targetUnitCount) + ") for item: " + GetItemName(this.itemHandle))
+                return false
+            endif
 
-        //     call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
-        //     call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on crowded enemy target: " + GetUnitName(targetUnit))
-        //     set this.lastUseTime = TimerGetElapsed(gameTimer)
-        //     return true
-        // endif
+            call UnitUseItem(this.ownerHero, this.itemHandle)
+            call this.botLog("Using item: " + GetItemName(this.itemHandle))
+            set this.lastUseTime = TimerGetElapsed(gameTimer)
+            return true
+        elseif this.castType == CAST_UNIT then
+            if this.findTargetType == FIND_TARGET_TYPE_NONE then
+                call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot use item: " + GetItemName(this.itemHandle))
+                return false
+            endif
 
-        set targetUnit = FindTargetForItem(this.ownerAIHero, this)
-        if targetUnit == null then
-            call this.botLog("No valid target found for item: " + GetItemName(this.itemHandle))
+            // Find target based on findTargetType
+            set targetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            if targetUnit == null then
+                call this.botLog("No valid target found for item: " + GetItemName(this.itemHandle))
+                return false
+            endif
+
+            call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
+            call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(targetUnit))
+            set this.lastUseTime = TimerGetElapsed(gameTimer)
+            return true
+        else
+            call this.botLogError("Item cast type not implemented: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
             return false
         endif
-
-        call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetUnit)
-        call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(targetUnit))
-        set this.lastUseTime = TimerGetElapsed(gameTimer)
-        return true
-        // TODO
     endmethod
 
     method destroy takes nothing returns nothing
