@@ -269,7 +269,7 @@ library AIUtils requires KeyUtils
         local real maxSpeed = 350.0
         local player heroOwner = GetOwningPlayer(ownerHero)
 
-        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >350 
+        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >350, Goaled Hero
         // Priority Order:
         // 1. HP >= 50%
         // 2. Behind
@@ -302,6 +302,8 @@ library AIUtils requires KeyUtils
                 call BotLogWithPlayer(heroOwner, " Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
             elseif GetUnitMoveSpeed(currentUnit) < minSpeed or GetUnitMoveSpeed(currentUnit) > maxSpeed then
                 call BotLogWithPlayer(heroOwner, " Ally unit speed out of range, skipping: " + GetUnitName(currentUnit))
+            elseif IsHeroGoaled(currentUnit) then
+                call BotLogWithPlayer(heroOwner, " Ally unit is goaled, skipping: " + GetUnitName(currentUnit))
             else
                 // Valid Target
                 if bestTarget == null then
