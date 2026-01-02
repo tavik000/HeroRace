@@ -7,6 +7,7 @@ struct AIHero
     HeroCombatData combatData
     real lastStartCastTime
     boolean isCasting
+    real currentRequiredCastTime
     AIHeroAbility castingAbility
     timer updateTimer
     integer currentComboIndex
@@ -27,6 +28,7 @@ struct AIHero
         set this.currentWaypointIndex = 1
         set this.lastStartCastTime = 0.0
         set this.isCasting = false
+        set this.currentRequiredCastTime = 0.0
         set this.castingAbility = 0
         set this.currentComboIndex = 1 // only for difficulty HARD and above
         set this.comboTargetUnit = null
@@ -206,7 +208,6 @@ struct AIHero
                 call this.currentState.onUpdate()
             endif
         endif
-
     endmethod
 
     method onCastComplete takes nothing returns nothing
@@ -240,11 +241,12 @@ struct AIHero
         local integer castType = GetItemCastType(itemId)
         local integer findTargetType = GetItemFindTargetType(itemId)
         local boolean bIsPassive = GetItemIsPassive(itemId)
+        local real requiredCastTime = GetItemRequiredCastTime(itemId)
 
         call this.botLog("Picked up item: " + GetItemName(itm))
         call this.setDebugTextTagContent("Item: Picked Up " + GetItemName(itm))
         call this.setDebugTextTagColorPreset("CYAN")
-        call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, this.hero, bIsPassive, castType, findTargetType)
+        call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, this.hero, bIsPassive, castType, findTargetType)
     endmethod
 
     method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing

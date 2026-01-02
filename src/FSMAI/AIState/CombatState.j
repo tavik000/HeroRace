@@ -14,15 +14,17 @@ struct CombatState extends AIState
     method onUpdate takes nothing returns nothing
         local real currentTime = TimerGetElapsed(gameTimer)
         local integer difficulty = owner.difficulty
-        local boolean isCastOvertime = currentTime > owner.lastStartCastTime + owner.castPt + TURN_TIME // Turn Time and Pre-swing 
+        // Turn Time and Pre-swing and ability required cast time
+        local boolean isCastOvertime = currentTime > (owner.lastStartCastTime + owner.castPt + TURN_TIME + owner.currentRequiredCastTime)
         local boolean isCastFailed = owner.isCasting and isCastOvertime
 
         if isCastFailed then
-            call this.botLog("Casting failed or interrupted, resetting casting state")
+            call this.botLog("Casting failed detected for ability: " + owner.castingAbility.orderString)
             call owner.setDebugTextTagContent("Combat: Cast Failed " + owner.castingAbility.orderString)
             call owner.setDebugTextTagColorPreset("RED")
             set owner.isCasting = false
             set owner.castingAbility = 0
+            set owner.currentRequiredCastTime = 0
         endif
 
         if owner.isCasting then
@@ -30,6 +32,19 @@ struct CombatState extends AIState
             call owner.setDebugTextTagContent("Combat: Casting " + owner.castingAbility.orderString)
             call owner.setDebugTextTagColorPreset("RED")
             return
+        endif
+
+        if owner.currentRequiredCastTime > 0 then
+            if isCastOvertime then
+                call this.botLog("Casting Finished for ability: " + owner.castingAbility.orderString)
+                set owner.isCasting = false
+                set owner.castingAbility = 0
+                set owner.currentRequiredCastTime = 0
+            else
+                call this.botLog("Casting ability with required cast time: " + owner.castingAbility.orderString + ", skippingg update")
+                call owner.setDebugTextTagColorPreset("RED")
+                return
+            endif
         endif
 
         // Safety check - ensure hero is alive
@@ -66,6 +81,7 @@ struct CombatState extends AIState
     method tryUseItem takes nothing returns boolean
         local AIItem heroItem
         local integer difficulty = owner.difficulty
+        local real currentTime = TimerGetElapsed(gameTimer)
 
         if difficulty < DIFF_NORMAL then
             return false
@@ -75,7 +91,11 @@ struct CombatState extends AIState
         if heroItem != 0 then
             call owner.setDebugTextTagContent("Combat: Try using item " + GetItemName(heroItem.itemHandle))
             call owner.setDebugTextTagColorPreset("RED")
-            return heroItem.tryUse()
+            if heroItem.tryUse() then
+                set owner.currentRequiredCastTime = heroItem.requiredCastTime
+                set owner.lastStartCastTime = currentTime
+                return true
+            endif
         endif
             
         return false

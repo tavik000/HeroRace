@@ -5,6 +5,7 @@ struct AIItem
     real lastUseTime
     real castRange
     real effectiveRadius
+    real requiredCastTime
     unit ownerHero
     AIHero ownerAIHero
     boolean bIsPassive
@@ -16,13 +17,14 @@ struct AIItem
     unit readyTargetUnit
     location readyTargetPoint
 
-    static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
+    static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, real requiredCastTime, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
         local thistype this = thistype.allocate()
         set this.itemHandle = newItemHandle
         set this.itemId = newItemId
         set this.baseCooldown = newBaseCooldown
         set this.castRange = newCastRange
         set this.effectiveRadius = newEffectiveRadius
+        set this.requiredCastTime = requiredCastTime
         set this.ownerHero = newOwnerHero
         set this.ownerAIHero = GetAIHeroFromUnit(newOwnerHero)
         set this.bIsPassive = bNewIsPassive

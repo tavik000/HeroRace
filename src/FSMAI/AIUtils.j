@@ -268,6 +268,7 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+
     function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
@@ -361,6 +362,79 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindTeleportAllyTargetInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+        local group targets = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local unit ownerHero = owner.hero
+        local player heroOwner = GetOwningPlayer(ownerHero)
+
+        // Not Allowed Target: customFilter, In Hazard Zone, Behind
+        // Priority Order:
+        // 1. HP >= 50%
+        // 2. CCed
+        // 3. Far from owner
+        // 4. Goaled Hero
+
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterTeamHeroes))
+
+        call owner.botLog("Found " + I2S(CountUnitsInGroup(targets)) + " potential teleport ally targets in range.")
+
+        loop
+            set currentUnit = FirstOfGroup(targets)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(targets, currentUnit)
+            call owner.botLog("Evaluating ally unit: " + GetUnitName(currentUnit))
+
+            if tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+                call owner.botLog(" Ally unit failed custom filter, skipping: " + GetUnitName(currentUnit))
+            elseif IsUnitInAnyHazardZone(currentUnit) then
+                call owner.botLog(" Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
+            elseif IsUnitBehindUnit(currentUnit, ownerHero) then
+                call owner.botLog(" Ally unit is behind owner, skipping: " + GetUnitName(currentUnit))
+            else
+                // Valid Target
+                if bestTarget == null then
+                    set bestTarget = currentUnit
+                    call owner.botLog("New best teleport ally target: " + GetUnitName(currentUnit))
+                elseif GetUnitLifePercent(currentUnit) >= 50.0 and GetUnitLifePercent(bestTarget) < 50.0 then
+                    // Current has >=50% HP, best has <50% HP 
+                    set bestTarget = currentUnit
+                    call owner.botLog("New best teleport ally target based on HP%: " + GetUnitName(currentUnit))
+                elseif IsUnitStunOrSlow(currentUnit) and not IsUnitStunOrSlow(bestTarget) then
+                    // Current is CCed, best is not
+                    set bestTarget = currentUnit
+                    call owner.botLog("New best teleport ally target based on CC status: " + GetUnitName(currentUnit))
+                elseif DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
+                    // Both are in front, choose farther one
+                    set bestTarget = currentUnit
+                    call owner.botLog("New best teleport ally target based on Distance: " + GetUnitName(currentUnit))
+                elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
+                    // Current is goaled, best is not
+                    set bestTarget = currentUnit
+                    call owner.botLog("New best teleport ally target based on Goaled status: " + GetUnitName(currentUnit))
+                endif
+            endif
+        endloop
+
+        // clean up
+        call DestroyGroup(targets)
+        set targets = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set heroOwner = null
+
+        return bestTarget
+    endfunction
+
     function GetHeroGroupAroundUnit takes unit centerUnit, real radius, integer findTeamType returns group
         local group heroGroup = CreateGroup()
         local player centerPlayer = GetOwningPlayer(centerUnit)
@@ -387,33 +461,6 @@ library AIUtils requires KeyUtils
         call DestroyGroup(heroGroup)
         set heroGroup = null
         return count
-    endfunction
-
-    function FindTargetUnitForItem takes AIHero owner, AIItem itm returns unit
-        local unit targetUnit = null
-        if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
-            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Hero Target " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagColorPreset("RED")
-        else
-            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
-        endif
-        return targetUnit
-    endfunction
-
-    function FindForceToUseTargetUnitForItem takes AIHero owner, AIItem itm returns unit
-        local unit targetUnit = null
-        if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
-            if targetUnit == null then
-                set targetUnit = owner.hero
-            endif
-            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Force Use Ally Hero Target " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagColorPreset("YELLOW")
-        else
-            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))
-        endif
-        return targetUnit
     endfunction
 
     function EvaluateComboTarget takes AIHero owner, unit currentUnit, unit bestTarget, real comboExpectedDamage, real comboMinHpThreshold returns unit
@@ -555,16 +602,16 @@ library AIUtils requires KeyUtils
             // set bestTarget = FindFallbackComboTarget(owner, range, heroAbil)
         endif
 
-            
         set tempAIHeroAbility = 0            
         return bestTarget
     endfunction
-
 
     function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
         local unit currentUnit
+        local integer findCount = 0
+        local integer i = 0
 
         // Not allow: Invulnerable/Magic Immune
 
@@ -575,11 +622,12 @@ library AIUtils requires KeyUtils
         set tempAIHeroAbility = heroAbil
             
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
+        set findCount = CountUnitsInGroup(heroes)
 
-        if CountUnitsInGroup(heroes) > 0 then
+        if findCount > 0 then
             loop
                 set currentUnit = FirstOfGroup(heroes)
-                exitwhen currentUnit == null
+                exitwhen i >= findCount
 
                 if tempAIHeroAbility != 0 then
                     if not tempAIHeroAbility.customFilter(currentUnit) then
@@ -590,6 +638,8 @@ library AIUtils requires KeyUtils
                 if IsUnitInvulnerableOrMagicImmune(currentUnit) then
                     call GroupRemoveUnit(heroes, currentUnit)
                 endif
+
+                set i = i + 1
             endloop
         endif
 
@@ -754,5 +804,37 @@ library AIUtils requires KeyUtils
         return targetUnit
     endfunction
 
+    function FindTargetUnitForItem takes AIHero owner, AIItem itm returns unit
+        local unit targetUnit = null
+        if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Hero Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagColorPreset("RED")
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
+            set targetUnit = FindTeleportAllyTargetInRange(owner, itm.castRange, 0)
+            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Teleport Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagColorPreset("RED")
+        else
+            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
+        endif
+        return targetUnit
+    endfunction
+
+    function FindForceToUseTargetUnitForItem takes AIHero owner, AIItem itm returns unit
+        local unit targetUnit = null
+        if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            if targetUnit == null then
+                set targetUnit = owner.hero
+            endif
+            call owner.botLog("Force using speed-up item on ally: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
+            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
+            call owner.botLog("Force using teleport item on random ally: " + GetUnitName(targetUnit))
+        else
+            call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))
+        endif
+        return targetUnit
+    endfunction
 
 endlibrary

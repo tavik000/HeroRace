@@ -10,6 +10,7 @@ library AIItemConfig
         local integer CAST_TYPE_KEY = 3
         local integer FIND_TARGET_TYPE_KEY = 4
         local integer IS_PASSIVE_KEY = 5
+        local integer REQUIRED_CAST_TIME = 6
         local integer currentItemId = 0
         
         set ItemDataTable = InitHashtable()
@@ -21,6 +22,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_NONE)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, true)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'bspd' // BootsOfSpeed
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 0.0)  
@@ -28,6 +30,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_NONE)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, true)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'pghe' // PotionOfGreaterHealing
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 0.0)  
@@ -35,6 +38,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_INSTANT_HEAL)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'I01E' // PotionOfGreaterHealing, same as pghe
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 0.0)  
@@ -42,6 +46,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_INSTANT_HEAL)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'I01Q' // RatTransformer
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 3000.0)  
@@ -49,6 +54,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_SPEED_UP)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'I01N' // IceArmor
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 0.0)  
@@ -56,6 +62,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_INSTANT_ENEMY_CROWDED)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'I016' // SilenceStaff
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, MAX_RANGE)  
@@ -63,6 +70,15 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_POINT_ENEMY_CROWDED)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
+        set currentItemId = 'I00I' // StaffOfTeleportation
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 2000.0)  
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_TELEPORT)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 1.5)
         set currentItemId = 'I010' // BloodLust
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 2000.0)  
@@ -70,6 +86,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_SPEED_UP)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
     
         // Add more items...
     endfunction
@@ -97,4 +114,9 @@ library AIItemConfig
     function GetItemIsPassive takes integer itemId returns boolean
         return LoadBoolean(ItemDataTable, itemId, 5)
     endfunction
+
+    function GetItemRequiredCastTime takes integer itemId returns real
+        return LoadReal(ItemDataTable, itemId, 6)
+    endfunction
+
 endlibrary
