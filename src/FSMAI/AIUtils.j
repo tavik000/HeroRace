@@ -614,6 +614,93 @@ library AIUtils requires KeyUtils
         return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, heroAbil)
     endfunction
 
+    function FindPointAroundCrowdedHeroes takes AIHero owner, real rangeRadius, integer findTeamType returns location
+        local group allTargets = GetHeroGroupAroundUnit(owner.hero, MAX_RANGE, findTeamType)
+        local unit array u
+        local integer count = 0
+        local integer i = 0
+        local integer j = 0
+        local real midX = 0
+        local real midY = 0
+        local integer currentScore = 0
+        local integer bestScore = - 1
+        local real bestX = 0
+        local real bestY = 0
+        local group tempGroup = CreateGroup()
+        local unit fallbackUnit
+        local real tempTargetDis = 0
+
+        if CountUnitsInGroup(allTargets) == 0 then
+            call DestroyGroup(allTargets)
+            call DestroyGroup(tempGroup)
+            set allTargets = null
+            set tempGroup = null
+            return Location(0.0, 0.0)
+        endif
+    
+        set fallbackUnit = GroupPickRandomUnit(allTargets)
+        set bestX = GetUnitX(fallbackUnit)
+        set bestY = GetUnitY(fallbackUnit)
+
+        // 1. Transfer group to array for nested looping (JASS requirement)
+        loop
+            set u[count] = FirstOfGroup(allTargets)
+            exitwhen u[count] == null
+            call GroupRemoveUnit(allTargets, u[count])
+            set count = count + 1
+        endloop
+
+        // Set temp variables for filter function
+        set tempHeroOwner = GetOwningPlayer(owner.hero)
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = owner.hero
+        set tempAIHeroAbility = 0
+    
+        // 2. Pairwise Centroid Check
+        set i = 0
+        loop
+            exitwhen i >= count
+            set j = i // Start j at i to check the unit itself AND midpoints with others
+            loop
+                exitwhen j >= count
+                
+                set tempTargetDis = DistanceBetweenUnits(u[i], u[j])
+                if tempTargetDis <= rangeRadius * 2 then
+                    // Only consider pairs within double the range radius
+
+                    // Calculate midpoint between unit i and unit j
+                    set midX = (GetUnitX(u[i]) + GetUnitX(u[j])) / 2
+                    set midY = (GetUnitY(u[i]) + GetUnitY(u[j])) / 2
+    
+                    // Evaluation: How many units are inside rangeRadius from this midpoint?
+                    call GroupClear(tempGroup)
+                    call GroupEnumUnitsInRange(tempGroup, midX, midY, rangeRadius, Filter(function FilterTeamHeroes))
+                    set currentScore = CountUnitsInGroup(tempGroup)
+    
+                    if currentScore > bestScore then
+                        set bestScore = currentScore
+                        set bestX = midX
+                        set bestY = midY
+                    endif
+                endif
+                
+                set j = j + 1
+            endloop
+            set i = i + 1
+        endloop
+    
+        // Clean up
+        call DestroyGroup(allTargets)
+        call DestroyGroup(tempGroup)
+        set allTargets = null
+        set tempGroup = null
+        set tempAIHeroAbility = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return Location(bestX, bestY)
+    endfunction
 
     function FindTargetForAbility takes AIHero owner, AIHeroAbility heroAbil returns unit
         local unit targetUnit = null
@@ -632,7 +719,7 @@ library AIUtils requires KeyUtils
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             else
-                call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(heroAbil.findTargetType))o
+                call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(heroAbil.findTargetType))
             endif
             return null
         endif

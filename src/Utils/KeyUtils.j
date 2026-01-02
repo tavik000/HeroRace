@@ -99,6 +99,9 @@ library KeyUtils
         return RAbsBJ(AngleDiff(angle, referenceAngle)) <= 90.0
     endfunction
 
+    function IsNearlyZero takes real value returns boolean
+        return Abs(value) <= 0.01
+    endfunction
 
     // --- UTILITY FUNCTIONS ---
     function AntiLeak takes nothing returns boolean

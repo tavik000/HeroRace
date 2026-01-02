@@ -14,6 +14,7 @@ struct AIItem
     real readyTargetPointX
     real readyTargetPointY
     unit readyTargetUnit
+    location readyTargetPoint
 
     static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
         local thistype this = thistype.allocate()
@@ -63,6 +64,16 @@ struct AIItem
             endif
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set this.bIsReadyToUse = targetUnitCount >= 2
+        elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            set readyTargetPoint = FindPointAroundCrowdedHeroes(this.ownerAIHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set readyTargetPointX = GetLocationX(readyTargetPoint)
+            set readyTargetPointY = GetLocationY(readyTargetPoint)
+            call RemoveLocation(readyTargetPoint)
+            if this.isForceToUse() then
+                set this.bIsReadyToUse = true
+            else
+                set this.bIsReadyToUse = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
+            endif
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
@@ -112,6 +123,13 @@ struct AIItem
         set this.bIsReadyToUse = false
     endmethod
 
+    method useToPoint takes real targetX, real targetY returns nothing
+        call UnitUseItemPoint(this.ownerHero, this.itemHandle, targetX, targetY)
+        call this.botLog("Using item: " + GetItemName(this.itemHandle) + " at point: (" + R2S(targetX) + ", " + R2S(targetY) + ")")
+        set this.lastUseTime = TimerGetElapsed(gameTimer)
+        set this.bIsReadyToUse = false
+    endmethod
+
     method tryUse takes nothing returns boolean
         local unit targetUnit = null
         local integer targetUnitCount = 0
@@ -129,6 +147,13 @@ struct AIItem
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             if this.bIsReadyToUse then
                 call this.useInstant()
+                return true
+            else
+                return false
+            endif
+        elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            if this.bIsReadyToUse then
+                call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
                 return true
             else
                 return false

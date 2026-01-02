@@ -63,7 +63,7 @@ globals
 
     // Turn time for 90 degree turns, giving turn rate 0.6
     constant real TURN_TIME = 0.2 
-    constant real MAX_RANGE = 30000.0
+    constant real MAX_RANGE = 300000.0
 
     
 

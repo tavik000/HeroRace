@@ -54,7 +54,14 @@ library AIItemConfig
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 0.0)  
         call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 900.0)
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_INSTANT_ENEMY_CROWDED)
-        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        set currentItemId = 'I016' // SilenceStaff
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, MAX_RANGE)  
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 350.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_POINT_ENEMY_CROWDED)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
         set currentItemId = 'I010' // BloodLust
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
