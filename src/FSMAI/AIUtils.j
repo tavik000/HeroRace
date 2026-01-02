@@ -58,12 +58,20 @@ library AIUtils requires KeyUtils
         endif
     endfunction
 
-    function IsApplyingCombo takes integer difficulty returns boolean
+    function IsAIHardOrAbove takes integer difficulty returns boolean
         if difficulty == DIFF_HARD or difficulty == DIFF_CRAZY or difficulty == DIFF_NIGHTMARE then
             return true
         else
             return false
         endif
+    endfunction
+
+    function IsApplyingCombo takes integer difficulty returns boolean
+        return IsAIHardOrAbove(difficulty)
+    endfunction
+
+    function IsSmartFindingTarget takes integer difficulty returns boolean
+        return IsAIHardOrAbove(difficulty)
     endfunction
 
     function IsUnitInAnyHazardZone takes unit u returns boolean
@@ -609,11 +617,29 @@ library AIUtils requires KeyUtils
 
     function FindTargetForAbility takes AIHero owner, AIHeroAbility heroAbil returns unit
         local unit targetUnit = null
+
+        if not IsSmartFindingTarget(owner.difficulty) then
+            if heroAbil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, heroAbil.castRange, heroAbil)
+                call owner.botLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+                return targetUnit
+            elseif heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+                set targetUnit = FindRandomAllyHeroInRange(owner, heroAbil.castRange, heroAbil)
+                call owner.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+                return targetUnit
+            else
+                call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(heroAbil.findTargetType))o
+            endif
+            return null
+        endif
             
-        // Find new target based on ability type
         if heroAbil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
             // Use smart combo targeting for combo abilities, random for others
-            if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
+            if heroAbil.comboIndex > 0 then
                 if owner.comboTargetUnit != null then
                     // Check if we should use existing combo target
                     set targetUnit = owner.comboTargetUnit
@@ -628,16 +654,8 @@ library AIUtils requires KeyUtils
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             else
-                // Fallback to random enemy hero
-                set targetUnit = FindRandomEnemyHeroInRange(owner, heroAbil.castRange, heroAbil)
-                call owner.botLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
-                return targetUnit
             endif
-        endif
-
-        if heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+        elseif heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, heroAbil.castRange, heroAbil)
             call owner.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
             call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
