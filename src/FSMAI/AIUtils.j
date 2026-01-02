@@ -8,7 +8,7 @@ library AIUtils requires KeyUtils
     function BotLogWithPlayer takes player p, string msg returns nothing
         local integer playerIndex = GetPlayerId(p) + 1
         local string playerName = ""
-        if udg_bEnableLogBot then
+        if udg_bEnableLogBot then   
             if playerIndex >= 0 and playerIndex <= 12 then
                 set playerName = udg_PlayerNameWithHero[playerIndex]
                 if playerName != null and playerName != "" then
@@ -378,6 +378,280 @@ library AIUtils requires KeyUtils
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))
         endif
+        return targetUnit
+    endfunction
+
+    function EvaluateComboTarget takes unit currentUnit, unit bestTarget, real bestTargetHp, boolean bestIsKillableTarget, boolean bestIsStunOrSlow, real comboExpectedDamage, real comboMinThreshold returns unit
+        local real currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
+        local boolean isKillableTarget
+        local boolean isStunOrSlow
+            
+        if currentHp >= comboMinThreshold then
+            set isKillableTarget = (currentHp <= comboExpectedDamage)
+            set isStunOrSlow = IsUnitStunOrSlow(currentUnit)
+            
+            if bestTarget == null then
+                return currentUnit
+            elseif isStunOrSlow and not bestIsStunOrSlow then
+                return currentUnit
+            elseif (isStunOrSlow == bestIsStunOrSlow) then
+                if isKillableTarget and not bestIsKillableTarget then
+                    return currentUnit
+                elseif isKillableTarget and bestIsKillableTarget and currentHp > bestTargetHp then
+                    return currentUnit
+                elseif not isKillableTarget and not bestIsKillableTarget and currentHp < bestTargetHp then
+                    return currentUnit
+                endif
+            endif
+        endif
+        return bestTarget
+    endfunction
+
+    function FindFallbackComboTarget takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+        local group heroes = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local real bestTargetHp = 0.0
+        local real currentHp
+            
+        call owner.botLog("No suitable combo target found, trying fallback to overkill targets")
+            
+        set tempHeroOwner = GetOwningPlayer(owner.hero)
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempHeroUnit = owner.hero
+        set tempAIHeroAbility = heroAbil
+        call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
+            
+        loop
+            set currentUnit = FirstOfGroup(heroes)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(heroes, currentUnit)
+
+            // Skip if no ability to check
+            if tempAIHeroAbility == 0 then
+                // Skip this unit
+            elseif not tempAIHeroAbility.customFilter(currentUnit) then
+                // Skip - doesn't pass custom filter
+            elseif IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                // Skip - invulnerable unit
+            else
+                // Valid target - check HP
+                set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
+                
+                if bestTarget == null or currentHp > bestTargetHp then
+                    set bestTarget = currentUnit
+                    set bestTargetHp = currentHp
+                endif
+            endif
+                
+        endloop
+            
+        call DestroyGroup(heroes)
+        set heroes = null
+        set tempAIHeroAbility = 0
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+            
+        if bestTarget != null then
+            call owner.botLog("Fallback combo target selected: " + GetUnitName(bestTarget))
+            call owner.setDebugTextTagContent("Combat: Combo Target (Overkill): " + GetUnitName(bestTarget))
+            call owner.setDebugTextTagColorPreset("RED")
+        else
+            call owner.botLog("No combo targets found at all")
+            call owner.setDebugTextTagContent("Combat: No Combo Target")
+            call owner.setDebugTextTagColorPreset("RED")
+        endif
+            
+        return bestTarget
+    endfunction
+
+    function FindBestComboTarget takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+        local group heroes = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local real currentHp
+        local real bestTargetHp = 0.0
+        local boolean bestIsKillableTarget = false
+        local boolean bestIsStunOrSlow = false
+        local real comboExpectedDamage = owner.combatData.comboExpectedDamage
+        local real comboMinThreshold = comboExpectedDamage * owner.combatData.comboOverkillThresholdPercent
+            
+        // Set temp variables for filter function
+        set tempHeroOwner = GetOwningPlayer(owner.hero)
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempHeroUnit = owner.hero
+        set tempAIHeroAbility = heroAbil
+        call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
+            
+        // Iterate through filtered enemies to find best target
+        loop
+            set currentUnit = FirstOfGroup(heroes)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(heroes, currentUnit)
+                
+            set currentHp = GetUnitState(currentUnit, UNIT_STATE_LIFE)
+
+            // Not allow: Invulnerable/Magic Immune
+                
+            //  Current Priority Order:                                                                                     
+            // 1. Avoid Overkill 
+            // 2. Prioritize Stunned/Slowed
+            // 3. Secure Kills
+            // 4. Minimize Overkill Among Kills
+            // 5. Damage Efficiency
+            // 6. Fallback to Overkill
+
+            // Skip if unit is invulnerable
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                // Skip this unit
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+                // Skip - doesn't pass custom filter
+            else
+                // Valid target - evaluate
+                set bestTarget = EvaluateComboTarget(currentUnit, bestTarget, bestTargetHp, bestIsKillableTarget, bestIsStunOrSlow, comboExpectedDamage, comboMinThreshold)
+                if bestTarget == currentUnit then
+                    set bestTargetHp = currentHp
+                    set bestIsKillableTarget = (currentHp <= comboExpectedDamage)
+                    set bestIsStunOrSlow = IsUnitStunOrSlow(currentUnit)
+                endif
+            endif
+
+        endloop
+            
+        // Clean up
+        call DestroyGroup(heroes)
+        set heroes = null
+        set currentUnit = null
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set tempAIHeroAbility = 0
+            
+        if bestTarget != null then
+            // Log selected target details
+            if bestIsKillableTarget then
+                if bestIsStunOrSlow then
+                    call owner.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1")
+                    call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:1)")
+                    call owner.setDebugTextTagColorPreset("RED")
+                else
+                    call owner.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0")
+                    call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:1 Stun/Slow:0)")
+                    call owner.setDebugTextTagColorPreset("RED")
+                endif
+            else
+                if bestIsStunOrSlow then
+                    call owner.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1")
+                    call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:1)")
+                    call owner.setDebugTextTagColorPreset("RED")
+                else
+                    call owner.botLog("Selected combo target: " + GetUnitName(bestTarget) + " HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0")
+                    call owner.setDebugTextTagContent("Combat: Combo Target: " + GetUnitName(bestTarget) + "(HP:" + R2S(bestTargetHp) + " Killable:0 Stun/Slow:0)")
+                endif
+            endif
+        else
+            set bestTarget = FindFallbackComboTarget(owner, range, heroAbil)
+        endif
+            
+        set tempAIHeroAbility = 0            
+        return bestTarget
+    endfunction
+
+
+    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, AIHeroAbility heroAbil returns unit
+        local group heroes = CreateGroup()
+        local unit randomHero
+        local unit currentUnit
+
+        // Not allow: Invulnerable/Magic Immune
+
+        // Set temp variables for filter function
+        set tempHeroOwner = GetOwningPlayer(owner.hero)
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = owner.hero
+        set tempAIHeroAbility = heroAbil
+            
+        call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterTeamHeroes))
+
+        if CountUnitsInGroup(heroes) > 0 then
+            loop
+                set currentUnit = FirstOfGroup(heroes)
+                exitwhen currentUnit == null
+
+                if tempAIHeroAbility != 0 then
+                    if not tempAIHeroAbility.customFilter(currentUnit) then
+                        call GroupRemoveUnit(heroes, currentUnit)
+                    endif
+                endif
+
+                if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                    call GroupRemoveUnit(heroes, currentUnit)
+                endif
+            endloop
+        endif
+
+        set randomHero = GroupPickRandomUnit(heroes)
+            
+        // Clean up
+        set tempAIHeroAbility = 0
+        call DestroyGroup(heroes)
+        set heroes = null
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+            
+        return randomHero
+    endfunction
+
+    function FindRandomEnemyHeroInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ENEMIES, heroAbil)
+    endfunction
+        
+    function FindRandomAllyHeroInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+        return FindRandomHeroInRange(owenr, range, FIND_TEAM_TYPE_ALLIES, heroAbil)
+    endfunction
+
+
+    function FindTargetForAbility takes AIHero owner, AIHeroAbility heroAbil returns unit
+        local unit targetUnit = null
+            
+        // Find new target based on ability type
+        if heroAbil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
+            // Use smart combo targeting for combo abilities, random for others
+            if IsApplyingCombo(owner.difficulty) and heroAbil.comboIndex > 0 then
+                if owner.comboTargetUnit != null then
+                    // Check if we should use existing combo target
+                    set targetUnit = owner.comboTargetUnit
+                    call owner.botLog("Using existing combo target for combo ability: " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Using Combo Target " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagColorPreset("RED")
+                    return targetUnit
+                endif
+                set targetUnit = FindBestComboTarget(owner, heroAbil.castRange, heroAbil)
+                call owner.botLog("Finding best combo target, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Combo Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+                return targetUnit
+            else
+                // Fallback to random enemy hero
+                set targetUnit = FindRandomEnemyHeroInRange(owner, heroAbil.castRange, heroAbil)
+                call owner.botLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+                return targetUnit
+            endif
+        endif
+
+        if heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, heroAbil.castRange, heroAbil)
+            call owner.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagColorPreset("RED")
+            return targetUnit
+        endif
+
+            
         return targetUnit
     endfunction
 
