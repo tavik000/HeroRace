@@ -609,7 +609,7 @@ library AIUtils requires KeyUtils
     endfunction
         
     function FindRandomAllyHeroInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
-        return FindRandomHeroInRange(owenr, range, FIND_TEAM_TYPE_ALLIES, heroAbil)
+        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, heroAbil)
     endfunction
 
 
