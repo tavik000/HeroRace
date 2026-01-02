@@ -268,85 +268,88 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
-
     function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
-        local real minHpPercent = 50 
+        local real minHpPercent = 50.0 
         local unit bestTarget = null
         local real minSpeed = 200.0
         local real maxSpeed = 350.0
         local player heroOwner = GetOwningPlayer(ownerHero)
+    
+        // Comparison variables
+        local real currentHp
+        local real bestHp
+        local boolean isCurrentBehind
+        local boolean isBestBehind
+        local real currentDist
+        local real bestDist
 
         // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >350, Goaled Hero
         // Priority Order:
         // 1. HP >= 50%
         // 2. Behind
         // 3. Far from Hero
-        // 3. Self
+        // 4. Self
 
-        // Set temp variables for filter function
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
         set tempAIHeroAbility = heroAbil
         call GroupEnumUnitsInRange(heroes, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterTeamHeroes))
-
-        call BotLogWithPlayer(heroOwner, "group unit count for speed-up ally target: " + I2S(CountUnitsInGroup(heroes)))
             
         loop
             set currentUnit = FirstOfGroup(heroes)
             exitwhen currentUnit == null
             call GroupRemoveUnit(heroes, currentUnit)
-            call BotLogWithPlayer(heroOwner, "Evaluating ally unit: " + GetUnitName(currentUnit))
-            call BotLogWithPlayer(heroOwner, " GetUnitLifePercent(currentUnit): " + R2S(GetUnitLifePercent(currentUnit)))
 
+            // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-                call BotLogWithPlayer(heroOwner, " Ally unit is invulnerable/magic immune, skipping: " + GetUnitName(currentUnit))
             elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
-                call BotLogWithPlayer(heroOwner, " Ally unit failed custom filter, skipping: " + GetUnitName(currentUnit))
             elseif IsUnitStunOrSlow(currentUnit) then
-                call BotLogWithPlayer(heroOwner, " Ally unit is CCed, skipping: " + GetUnitName(currentUnit))
             elseif IsUnitInAnyHazardZone(currentUnit) then
-                call BotLogWithPlayer(heroOwner, " Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
             elseif GetUnitMoveSpeed(currentUnit) < minSpeed or GetUnitMoveSpeed(currentUnit) > maxSpeed then
-                call BotLogWithPlayer(heroOwner, " Ally unit speed out of range, skipping: " + GetUnitName(currentUnit))
             elseif IsHeroGoaled(currentUnit) then
-                call BotLogWithPlayer(heroOwner, " Ally unit is goaled, skipping: " + GetUnitName(currentUnit))
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
             else
-                // Valid Target
-                if bestTarget == null then
+                // --- PRIORITY TOURNAMENT LAYER ---
+                set currentHp = GetUnitLifePercent(currentUnit)
+                set bestHp = GetUnitLifePercent(bestTarget)
+
+                // 1. HP >= 50% Priority
+                if currentHp >= minHpPercent and bestHp < minHpPercent then
                     set bestTarget = currentUnit
-                    call BotLogWithPlayer(heroOwner, "New best speed-up ally target: " + GetUnitName(currentUnit))
-                elseif GetUnitLifePercent(currentUnit) >= minHpPercent and GetUnitLifePercent(bestTarget) < minHpPercent then
-                    // Current has >=50% HP, best has <50% HP 
-                    set bestTarget = currentUnit
-                    call BotLogWithPlayer(heroOwner, "New best speed-up ally target based on HP%: " + GetUnitName(currentUnit))
-                elseif bestTarget == ownerHero then
-                    if IsUnitBehindUnit(currentUnit, ownerHero) then
-                        // Current is behind, previous best is self
+                elseif currentHp < minHpPercent and bestHp >= minHpPercent then
+                    // Keep bestTarget
+                else
+                    // TIE on HP Bracket (Both >= 50% or Both < 50%)
+                    // 2. Behind Priority
+                    set isCurrentBehind = IsUnitBehindUnit(currentUnit, ownerHero)
+                    set isBestBehind = IsUnitBehindUnit(bestTarget, ownerHero)
+
+                    if isCurrentBehind and not isBestBehind then
                         set bestTarget = currentUnit
-                        call BotLogWithPlayer(heroOwner, "New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
-                    endif
-                elseif IsUnitInFrontOfUnit(bestTarget, ownerHero) then
-                    if IsUnitBehindUnit(currentUnit, ownerHero) then
-                        if currentUnit != ownerHero then
-                            // Current is behind, previous best is in front
+                    elseif not isCurrentBehind and isBestBehind then
+                        // Keep bestTarget
+                    else
+                        // TIE on Position (Both behind or both in front)
+                        // 3. Distance Priority (Farther)
+                        set currentDist = DistanceBetweenUnits(ownerHero, currentUnit)
+                        set bestDist = DistanceBetweenUnits(ownerHero, bestTarget)
+
+                        if currentDist > bestDist then
                             set bestTarget = currentUnit
-                            call BotLogWithPlayer(heroOwner, "New best speed-up ally target based on Position: " + GetUnitName(currentUnit))
                         endif
                     endif
-                elseif DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
-                    // Both are in same relative position, choose farther one
-                    set bestTarget = currentUnit
-                    call BotLogWithPlayer(heroOwner, "New best speed-up ally target based on Distance: " + GetUnitName(currentUnit))
                 endif
             endif
         endloop
 
-        if IsUnitInFrontOfUnit(bestTarget, ownerHero) then
+        // 4. Self Priority (Fallback)
+        // Select self if no valid target found, or if the best found target is in front.
+        if bestTarget == null or IsUnitInFrontOfUnit(bestTarget, ownerHero) then
             set bestTarget = ownerHero
-            call BotLogWithPlayer(heroOwner, "Ally unit in front, defaulting to self.")
         endif
 
         // Clean up
@@ -357,8 +360,7 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
-        set heroOwner = null
-
+    
         return bestTarget
     endfunction
 
@@ -368,8 +370,16 @@ library AIUtils requires KeyUtils
         local unit bestTarget = null
         local unit ownerHero = owner.hero
         local player heroOwner = GetOwningPlayer(ownerHero)
+        
+        // Comparison variables
+        local real currentHpPct
+        local real bestHpPct
+        local boolean isCurrentCCed
+        local boolean isBestCCed
+        local real currentDist
+        local real bestDist
 
-        // Not Allowed Target: customFilter, In Hazard Zone, Behind
+        // Not Allowed Target: customFilter, In Hazard Zone, Behind, Too close(400)
         // Priority Order:
         // 1. HP >= 50%
         // 2. CCed
@@ -382,47 +392,69 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = ownerHero
         set tempAIHeroAbility = heroAbil
         call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterTeamHeroes))
-
-        call owner.botLog("Found " + I2S(CountUnitsInGroup(targets)) + " potential teleport ally targets in range.")
-
+    
         loop
             set currentUnit = FirstOfGroup(targets)
             exitwhen currentUnit == null
             call GroupRemoveUnit(targets, currentUnit)
-            call owner.botLog("Evaluating ally unit: " + GetUnitName(currentUnit))
-
+    
+            // --- VALIDATION LAYER ---
             if tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
-                call owner.botLog(" Ally unit failed custom filter, skipping: " + GetUnitName(currentUnit))
+                // Skip invalid target
             elseif IsUnitInAnyHazardZone(currentUnit) then
-                call owner.botLog(" Ally unit is in hazard zone, skipping: " + GetUnitName(currentUnit))
+                // Skip units in danger
             elseif IsUnitBehindUnit(currentUnit, ownerHero) then
-                call owner.botLog(" Ally unit is behind owner, skipping: " + GetUnitName(currentUnit))
+                // Skip units behind the bot
+            elseif DistanceBetweenUnits(ownerHero, currentUnit) < 400.0 then
+                // Skip units too close
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
             else
-                // Valid Target
-                if bestTarget == null then
+                // --- PRIORITY TOURNAMENT LAYER ---
+                set currentHpPct = GetUnitLifePercent(currentUnit)
+                set bestHpPct = GetUnitLifePercent(bestTarget)
+                
+                // 1. HP >= 50% Priority
+                if currentHpPct >= 50.0 and bestHpPct < 50.0 then
                     set bestTarget = currentUnit
-                    call owner.botLog("New best teleport ally target: " + GetUnitName(currentUnit))
-                elseif GetUnitLifePercent(currentUnit) >= 50.0 and GetUnitLifePercent(bestTarget) < 50.0 then
-                    // Current has >=50% HP, best has <50% HP 
-                    set bestTarget = currentUnit
-                    call owner.botLog("New best teleport ally target based on HP%: " + GetUnitName(currentUnit))
-                elseif IsUnitStunOrSlow(currentUnit) and not IsUnitStunOrSlow(bestTarget) then
-                    // Current is CCed, best is not
-                    set bestTarget = currentUnit
-                    call owner.botLog("New best teleport ally target based on CC status: " + GetUnitName(currentUnit))
-                elseif DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
-                    // Both are in front, choose farther one
-                    set bestTarget = currentUnit
-                    call owner.botLog("New best teleport ally target based on Distance: " + GetUnitName(currentUnit))
-                elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
-                    // Current is goaled, best is not
-                    set bestTarget = currentUnit
-                    call owner.botLog("New best teleport ally target based on Goaled status: " + GetUnitName(currentUnit))
+                elseif currentHpPct < 50.0 and bestHpPct >= 50.0 then
+                    // Keep existing bestTarget
+                
+                else
+                    // TIE on HP Bracket (Both >= 50% or Both < 50%)
+                    // 2. CCed Priority
+                    set isCurrentCCed = IsUnitStunOrSlow(currentUnit)
+                    set isBestCCed = IsUnitStunOrSlow(bestTarget)
+                    
+                    if isCurrentCCed and not isBestCCed then
+                        set bestTarget = currentUnit
+                    elseif not isCurrentCCed and isBestCCed then
+                        // Keep existing bestTarget
+                    
+                    else
+                        // TIE on CC Priority (Both CC'ed or Both Not)
+                        // 3. Distance Priority
+                        set currentDist = DistanceBetweenUnits(ownerHero, currentUnit)
+                        set bestDist = DistanceBetweenUnits(ownerHero, bestTarget)
+                        
+                        if currentDist > bestDist then
+                            set bestTarget = currentUnit
+                        elseif currentDist < bestDist then
+                            // Keep existing bestTarget
+                        
+                        else
+                            // TIE on Distance
+                            // 4. Goaled Hero Priority
+                            if IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
+                                set bestTarget = currentUnit
+                            endif
+                        endif
+                    endif
                 endif
             endif
         endloop
-
-        // clean up
+    
+        // Clean up
         call DestroyGroup(targets)
         set targets = null
         set currentUnit = null
@@ -430,8 +462,7 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
-        set heroOwner = null
-
+        
         return bestTarget
     endfunction
 

@@ -42,6 +42,7 @@ struct CombatState extends AIState
                 set owner.currentRequiredCastTime = 0
             else
                 call this.botLog("Casting ability with required cast time: " + owner.castingAbility.orderString + ", skippingg update")
+                call owner.setDebugTextTagContent("Combat: Casting " + owner.castingAbility.orderString)
                 call owner.setDebugTextTagColorPreset("RED")
                 return
             endif
