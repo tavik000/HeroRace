@@ -470,11 +470,11 @@
 			"statementType": "VariableDeclaration"
 		},
 		{
-			"label": "WaypointCount",
+			"label": "GoalWaypointIndex",
 			"kind": 5,
 			"detail": "Global Variable",
-			"documentation": "\n```jass\ninteger WaypointCount\n```\n\n\n---\n\nThe actual number of waypoints initialized.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
-			"sortText": "2_var_WaypointCount",
+			"documentation": "\n```jass\ninteger GoalWaypointIndex\n```\n\n\n---\n\nThe actual number of waypoints initialized.\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+			"sortText": "2_var_GoalWaypointIndex",
 			"filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
 			"statementType": "VariableDeclaration"
 		},
@@ -866,11 +866,11 @@
 			"statementType": "FunctionDeclaration"
 		},
 		{
-			"label": "IsFinalWaypoint",
+			"label": "IsCurrentGoalWaypoint",
 			"kind": 2,
 			"detail": "Function",
-			"documentation": "\n```jass\nfunction IsFinalWaypoint takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
-			"sortText": "1_func_IsFinalWaypoint",
+			"documentation": "\n```jass\nfunction IsCurrentGoalWaypoint takes AIHero aiHero returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+			"sortText": "1_func_IsCurrentGoalWaypoint",
 			"filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
 			"statementType": "FunctionDeclaration"
 		},

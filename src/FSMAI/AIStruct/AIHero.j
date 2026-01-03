@@ -58,6 +58,10 @@ struct AIHero
         return this
     endmethod
 
+    method setWaypointIndex takes integer newIndex returns nothing
+        set this.currentWaypointIndex = newIndex
+    endmethod
+
     method moveToNextWaypoint takes nothing returns nothing
         local rect currentWaypointArea
         local real x
@@ -69,6 +73,18 @@ struct AIHero
         call IssuePointOrder(hero, "move", x, y)
             
         set currentWaypointArea = null
+    endmethod
+
+    method shouldCrossSeaOrTree takes nothing returns boolean
+        if this.difficulty >= DIFF_HARD then
+            // Have force staff item
+            if this.combatData.hasItemOfFindTargetType(FIND_TARGET_TYPE_SELF_FORCE_STAFF) then
+                return true
+            endif
+            // Have blink-liked ability
+            // TODO:
+        endif
+        return false
     endmethod
 
     method shouldEnterCombat takes nothing returns boolean
@@ -105,7 +121,7 @@ struct AIHero
             return
         endif
 
-        if this.currentState.stateID == STATE_HAZARD or IsFinalWaypoint(this) then
+        if this.currentState.stateID == STATE_HAZARD or IsCurrentGoalWaypoint(this) then
             set searchRadius = PICKUP_ITEM_RANGE_SMALL
         else
             set searchRadius = PICKUP_ITEM_RANGE_NORMAL

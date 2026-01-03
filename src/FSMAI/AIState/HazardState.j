@@ -313,6 +313,15 @@ struct HazardState extends AIState
             return
         endif
 
+        // Pickup force staff in spider net hazard zone
+        if IsCurrentGoalWaypoint(owner) then
+            if owner.shouldCrossSeaOrTree() then
+                call owner.setWaypointIndex(131) // Cross Tree Area
+                call owner.moveToNextWaypoint()
+                return
+            endif
+        endif
+
         if IsUnitInvulnerableOrMagicImmune(owner.hero) then
             call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
             call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")

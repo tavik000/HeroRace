@@ -108,6 +108,7 @@ library KeyUtils
         return true
     endfunction
 
+    // Pure stun check
     function IsUnitStun takes unit u returns boolean
         if UnitHasBuffBJ(u, 'BSTN') then 
             return true
@@ -301,6 +302,31 @@ library KeyUtils
 
     function IsUnitInventoryFull takes unit u returns boolean
         return UnitInventoryCount(u) >= UnitInventorySizeBJ(u)
+    endfunction
+
+    function IsUnitFacingEast takes unit u returns boolean
+        local real facing = GetUnitFacing(u)
+        return facing >= 315.0 or facing < 45.0
+    endfunction
+
+    function IsUnitFacingNorth takes unit u returns boolean
+        local real facing = GetUnitFacing(u)
+        return facing >= 45.0 and facing < 135.0
+    endfunction
+
+    function IsUnitFacingWest takes unit u returns boolean
+        local real facing = GetUnitFacing(u)
+        return facing >= 135.0 and facing < 225.0
+    endfunction
+
+    function IsUnitFacingWestNarrow takes unit u returns boolean
+        local real facing = GetUnitFacing(u)
+        return facing >= 150.0 and facing < 210.0
+    endfunction
+
+    function IsUnitFacingSouth takes unit u returns boolean
+        local real facing = GetUnitFacing(u)
+        return facing >= 225.0 and facing < 315.0
     endfunction
 
 endlibrary

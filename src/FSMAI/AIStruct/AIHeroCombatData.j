@@ -316,6 +316,27 @@ struct HeroCombatData
         return 0
     endmethod
 
+    method hasItemOfFindTargetType takes integer findTargetType returns boolean
+        local integer i = 0
+        local AIItem heroItem
+
+        // Check if any item matches the find target type
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            set heroItem = this.items[i]
+            if heroItem != 0 then
+                if heroItem.findTargetType == findTargetType then
+                    call this.botLog("Found item with find target type: " + I2S(findTargetType))
+                    return true
+                endif
+            endif
+            set i = i + 1
+        endloop
+
+        call this.botLog("No item found with find target type: " + I2S(findTargetType))
+        return false
+    endmethod
+
     method botLog takes string msg returns nothing
         call BotLogWithPlayer(GetOwningPlayer(ownerAIHero.hero), msg)
     endmethod

@@ -72,7 +72,7 @@ The AI system uses a state machine with these states:
 3. Cast types: `CAST_INSTANT`, `CAST_POINT`, `CAST_UNIT`
 
 ### Modifying Waypoints
-Update the `InitializeWaypoints` function (`AIStateMachine.j:39-57`) and adjust `WaypointCount` accordingly.
+Update the `InitializeWaypoints` function (`AIStateMachine.j:39-57`) and adjust `GoalWaypointIndex` accordingly.
 
 ### Debug Output
 Use `BJDebugMsg()` for logging - output appears in Warcraft III's debug console.

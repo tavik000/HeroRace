@@ -28,8 +28,9 @@ globals
 
     // The array to hold the waypoint regions.
     rect array WaypointAreas
+
     // The actual number of waypoints initialized.
-    integer WaypointCount = 0
+    integer GoalWaypointIndex = 14
 
 endglobals
 
@@ -65,11 +66,11 @@ library AIStateMachine requires KeyUtils, AIUtils
     endfunction
     // This function will run once at map initialization to set up the waypoints.
     private function InitializeWaypoints takes nothing returns nothing
-        // IMPORTANT: Create regions in the World Editor and replace these
         set WaypointAreas[0] = gg_rct_AIWayPointArea01 // Not used
         set WaypointAreas[1] = gg_rct_AIWayPointArea01 // After Start Area
         set WaypointAreas[2] = gg_rct_AIWayPointArea02
         set WaypointAreas[3] = gg_rct_AIWayPointArea03 // Left of Upper Strait
+        set WaypointAreas[31] = gg_rct_AIWayPointAreaCrossSea // Cross Sea Area
         set WaypointAreas[4] = gg_rct_AIWayPointArea04
         set WaypointAreas[5] = gg_rct_AIWayPointArea05 // Upper of 3 Fishes
         set WaypointAreas[6] = gg_rct_AIWayPointArea06 // Left of 3 Fishes 
@@ -80,8 +81,9 @@ library AIStateMachine requires KeyUtils, AIUtils
         set WaypointAreas[11] = gg_rct_AIWayPointArea11 // Before Net Hazard
         set WaypointAreas[12] = gg_rct_AIWayPointArea12 // After Net Hazard
         set WaypointAreas[13] = gg_rct_AIWayPointArea13 // Before Spider Net Hazard
+        set WaypointAreas[131] = gg_rct_AIWayPointAreaCrossTree // Before Spider Net Hazard
         set WaypointAreas[14] = gg_rct_Finish
-        set WaypointCount = 14 // Update this to match the number of waypoints you added.
+        set GoalWaypointIndex = 14 // Update this to match the number of waypoints you added.
     endfunction
 
     // This module ensures our initialization functions are called when the map loads.
@@ -97,11 +99,11 @@ library AIStateMachine requires KeyUtils, AIUtils
         call InitializeWaypoints()
         call InitItemData()
     endmethod
-    endmodule
+endmodule
 
-    // We use a dummy struct to attach the initializer module to the library.
-    private struct Init extends array
-    implement Initializer
-    endstruct
+// We use a dummy struct to attach the initializer module to the library.
+private struct Init extends array
+implement Initializer
+endstruct
   
 endlibrary

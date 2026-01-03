@@ -41,24 +41,80 @@ struct RunState extends AIState
         set currentOrder = GetUnitCurrentOrder(owner.hero)
             
         // Check if hero has reached the current waypoint area
-        if RectContainsCoords(currentWaypointArea, heroX, heroY) then
-            call this.botLog("Reached waypoint " + I2S(owner.currentWaypointIndex))
-            call owner.setDebugTextTagContent("Run: Reached Waypoint " + I2S(owner.currentWaypointIndex))
-            call owner.setDebugTextTagColorPreset("GREEN")
-            if owner.currentWaypointIndex >= WaypointCount then
-                call this.botLog("Reached final waypoint")
-                call owner.setDebugTextTagContent("Run: Reached Final Waypoint")
+        if owner.currentWaypointIndex <= GoalWaypointIndex then
+            if RectContainsCoords(currentWaypointArea, heroX, heroY) then
+                call this.botLog("Reached waypoint " + I2S(owner.currentWaypointIndex))
+                call owner.setDebugTextTagContent("Run: Reached Waypoint " + I2S(owner.currentWaypointIndex))
                 call owner.setDebugTextTagColorPreset("GREEN")
-                // TODO Goaled State
-            else
-                // Move to next waypoint
-                set owner.currentWaypointIndex = (owner.currentWaypointIndex + 1)
-            endif
+
+                // Special handling for crossing sea at waypoint 3: Left of Upper Strait
+                if owner.currentWaypointIndex == 3 then
+                    if owner.shouldCrossSeaOrTree() then
+                        // Upper strait - crossing sea
+                        call this.botLog("Going to crossing sea area after waypoint 3")
+                        call owner.setDebugTextTagContent("Run: Crossing Sea Area")
+                        call owner.setDebugTextTagColorPreset("GREEN")
+
+                        call owner.setWaypointIndex(31) // Cross Sea Area
+                        call owner.moveToNextWaypoint()
+                        return
+                    endif
+                endif
+
+                if owner.currentWaypointIndex == 13 then
+                    // Before final waypoint 
+                    if owner.shouldCrossSeaOrTree() then
+                        call owner.setWaypointIndex(131) // Cross Tree Area
+                        call owner.moveToNextWaypoint()
+                        return
+                    endif
+                endif
+
+                if owner.currentWaypointIndex == GoalWaypointIndex then
+                    call this.botLog("Reached final waypoint")
+                    call owner.setDebugTextTagContent("Run: Reached Final Waypoint")
+                    call owner.setDebugTextTagColorPreset("GREEN")
+                    // TODO Goaled State
+                else
+                    // Move to next waypoint
+                    call owner.setWaypointIndex(owner.currentWaypointIndex + 1)
+                endif
                 
-            // Move to the new waypoint
+                // Move to the new waypoint
+                call owner.moveToNextWaypoint()
+                return
+
+            endif
+        endif
+
+        if owner.currentWaypointIndex == 31 then
+            // Crossing sea area
+            if not owner.shouldCrossSeaOrTree() then
+                call owner.setWaypointIndex(4) // Reset to normal run if cannot cross sea
+                call owner.moveToNextWaypoint()
+                return
+            endif
+        endif
+        if owner.currentWaypointIndex == 131 then
+            // Crossing tree area
+            if not owner.shouldCrossSeaOrTree() then
+                call owner.setWaypointIndex(14) // Reset to normal run if cannot cross tree
+                call owner.moveToNextWaypoint()
+                return
+            endif
+        endif
+        if RectContainsCoords(gg_rct_AIWayPointAreaAfterCrossSea, heroX, heroY) then
+            call owner.setWaypointIndex(4) // After Cross Sea Area
             call owner.moveToNextWaypoint()
             return
-        elseif currentOrder == 0 then
+        endif
+        if RectContainsCoords(gg_rct_AIWayPointAreaAfterCrossTree, heroX, heroY) then
+            call owner.setWaypointIndex(14) // After Cross Tree Area
+            call owner.moveToNextWaypoint()
+            return
+        endif
+
+        if currentOrder == 0 then
             // Hero is idle (no current order) - reissue move command to current waypoint
             call this.botLog("Hero is idle, reissuing move command")
             call owner.setDebugTextTagContent("Run: Reissuing Move Command")

@@ -254,15 +254,20 @@ library AIUtils requires KeyUtils
         local real heroY = GetUnitY(aiHero.hero)
         local integer wpi = aiHero.currentWaypointIndex
         if RectContainsCoords(gg_rct_HazardSpiderNetArea, heroX, heroY) then
+            // before finish area
             if wpi == 14 then
+                return true
+            endif
+            // going to crossing tree area
+            if wpi == 131 then
                 return true
             endif
         endif
         return false
     endfunction
 
-    function IsFinalWaypoint takes AIHero aiHero returns boolean
-        if aiHero.currentWaypointIndex >= WaypointCount then
+    function IsCurrentGoalWaypoint takes AIHero aiHero returns boolean
+        if aiHero.currentWaypointIndex == GoalWaypointIndex then
             return true
         endif
         return false
@@ -837,6 +842,9 @@ library AIUtils requires KeyUtils
 
     function FindTargetUnitForItem takes AIHero owner, AIItem itm returns unit
         local unit targetUnit = null
+        local real heroX = GetUnitX(owner.hero)
+        local real heroY = GetUnitY(owner.hero)
+
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Hero Target " + GetUnitName(targetUnit))
@@ -845,6 +853,32 @@ library AIUtils requires KeyUtils
             set targetUnit = FindTeleportAllyTargetInRange(owner, itm.castRange, 0)
             call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Teleport Target " + GetUnitName(targetUnit))
             call owner.setDebugTextTagColorPreset("RED")
+        elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
+            if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
+                if not IsUnitFacingEast(owner.hero) then
+                    // issue move right to face east
+                    call IssuePointOrder(owner.hero, "move", heroX + 10.0, heroY)
+                    call owner.botLog("Adjusting facing direction to east for Force Staff self-use.")
+                    return null
+                endif
+                call IssueImmediateOrder(owner.hero, "stop")
+                set targetUnit = owner.hero
+                call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Self Force Staff Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+            endif
+            if RectContainsCoords(gg_rct_AIWayPointAreaCrossTree, heroX, heroY) then
+                if not IsUnitFacingWestNarrow(owner.hero) then
+                    // issue move up to face west
+                    call IssuePointOrder(owner.hero, "move", heroX - 10.0, heroY)
+                    call owner.botLog("Adjusting facing direction to west for Force Staff self-use.")
+                    return null
+                endif
+                // stop moving before using item
+                call IssueImmediateOrder(owner.hero, "stop")
+                set targetUnit = owner.hero
+                call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Self Force Staff Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagColorPreset("RED")
+            endif
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
         endif
@@ -862,6 +896,12 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
             set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using teleport item on random ally: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            if targetUnit == null then
+                set targetUnit = owner.hero
+            endif
+            call owner.botLog("Force using Force Staff item on self or ally: " + GetUnitName(targetUnit))
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))
         endif
