@@ -38,12 +38,12 @@ struct AIItem
         return this
     endmethod
 
-    method isForceToUse takes nothing returns boolean
+    method isForcedToUse takes nothing returns boolean
         return GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD
     endmethod
 
     // For items that need target preparation before use
-    method prepareTarget takes nothing returns nothing
+    method tryPrepareTarget takes nothing returns nothing
         local integer targetUnitCount
 
         if this.bIsPassive then
@@ -54,13 +54,13 @@ struct AIItem
             // Cannot prepare target for CAST_NONE
             return
         elseif this.castType == CAST_INSTANT_HEAL then
-            if this.isForceToUse() then
+            if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
             else
                 set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
-            if this.isForceToUse() then
+            if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
                 return
             endif
@@ -71,7 +71,7 @@ struct AIItem
             set readyTargetPointX = GetLocationX(readyTargetPoint)
             set readyTargetPointY = GetLocationY(readyTargetPoint)
             call RemoveLocation(readyTargetPoint)
-            if this.isForceToUse() then
+            if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
             else
                 set this.bIsReadyToUse = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
@@ -81,7 +81,7 @@ struct AIItem
                 call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
                 return
             endif
-            if this.isForceToUse() then
+            if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
             else
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)

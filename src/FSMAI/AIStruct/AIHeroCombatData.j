@@ -263,7 +263,7 @@ struct HeroCombatData
         return true
     endmethod
 
-    method prepareTargetForItems takes nothing returns nothing
+    method tryPrepareTargetForItems takes nothing returns nothing
         local integer i = 0
         local AIItem heroItem
 
@@ -272,7 +272,7 @@ struct HeroCombatData
             exitwhen i >= MAX_ITEM_PER_HERO
             set heroItem = this.items[i]
             if heroItem != 0 then
-                call heroItem.prepareTarget()
+                call heroItem.tryPrepareTarget()
             endif
             set i = i + 1
         endloop
