@@ -4,11 +4,11 @@ struct HeroCombatData
     real comboExpectedDamage
     real comboOverkillThresholdPercent
     AIItem array items[MAX_ITEM_PER_HERO]
-    AIHero ownerAIHero
+    AIHero owner
 
-        
-    static method create takes nothing returns thistype
+    static method create takes AIHero inOwner returns thistype
         local thistype this = thistype.allocate()
+        set this.owner = inOwner
         set this.abilityCount = 0
         set this.comboExpectedDamage = 0.0
         set this.comboOverkillThresholdPercent = 0.3 // Default to 30% of combo damage
@@ -17,7 +17,7 @@ struct HeroCombatData
         
     method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer findTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
         if this.abilityCount < MAX_ABILITIES_PER_HERO then
-            set this.abilities[this.abilityCount] = AIHeroAbility.create(abilityId, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
+            set this.abilities[this.abilityCount] = AIHeroAbility.create(abilityId, this.owner, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
             if comboIndex > 0 then
                 set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
             endif
@@ -57,6 +57,18 @@ struct HeroCombatData
         endloop
         // Item not found - handle error as needed
         call this.botLogError("Item not found in hero combat data for removal.")
+    endmethod
+
+    method removeAllItems takes nothing returns nothing
+        local integer i = 0
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            if this.items[i] != null then
+                call this.items[i].destroy()
+                set this.items[i] = 0
+            endif
+            set i = i + 1
+        endloop
     endmethod
         
     method destroy takes nothing returns nothing
@@ -115,7 +127,9 @@ struct HeroCombatData
                         // Cooldown ready and enough mana - proceed with combo
                         set heroAbil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
                         if heroAbil != 0 then
-                            return heroAbil
+                            if heroAbil.bIsReadyToCast then
+                                return heroAbil
+                            endif
                         endif
                     else
                         // Cooldown ready but not enough mana - don't fallback to non-combo abilities, prioritize mana waiting
@@ -147,7 +161,9 @@ struct HeroCombatData
                             call aiHero.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Mana" + "(" + I2S(heroAbil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
                             call aiHero.setDebugTextTagColorPreset("RED")
                         else
-                            return heroAbil
+                            if heroAbil.bIsReadyToCast then
+                                return heroAbil
+                            endif
                         endif
                     endif
                 endif
@@ -190,10 +206,15 @@ struct HeroCombatData
             endif
                 
             if i == aiHero.currentComboIndex then
-                set resultComboAbility = heroAbil
-                call this.botLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
-                call aiHero.setDebugTextTagContent("Combat: Found Combo Ability " + heroAbil.orderString)
-                call aiHero.setDebugTextTagColorPreset("RED")
+                if not heroAbil.bIsReadyToCast then
+                    call this.botLog("Ability not prepared for combo: " + heroAbil.orderString)
+                    return 0
+                else
+                    set resultComboAbility = heroAbil
+                    call this.botLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
+                    call aiHero.setDebugTextTagContent("Combat: Found Combo Ability " + heroAbil.orderString)
+                    call aiHero.setDebugTextTagColorPreset("RED")
+                endif
             endif
             set i = i + 1
         endloop
@@ -259,8 +280,41 @@ struct HeroCombatData
             set i = i + 1
         endloop
             
-        // All remaining combo abilities have cooldowns ready
+        // All remaining combo abilities have cooldown ready
         return true
+    endmethod
+
+    method tryPrepareTargetForAbilities takes nothing returns nothing
+        local integer i = 0
+        local AIHeroAbility heroAbil
+
+        // Prepare target for each ability
+        loop
+            exitwhen i >= this.abilityCount
+            set heroAbil = this.abilities[i]
+            if heroAbil != 0 then
+                if not heroAbil.bIsReadyToCast then
+                    if heroAbil.comboIndex > 0 then
+                        // Only prepare combo abilities if in combo mode
+                        if IsApplyingCombo(owner.difficulty) then
+                            if areComboAbilityCooldownReady(owner.hero, owner.difficulty, 1) then
+                                if this.hasEnoughManaForCombo(owner.hero, 1) then
+                                    call heroAbil.tryPrepareTarget()
+                                endif
+                            endif
+                        endif
+                    else
+                        // Non-combo abilities always prepare
+                        if heroAbil.isCooldownReady(owner.difficulty) then
+                            if heroAbil.isManaReady(owner.hero) then
+                                call heroAbil.tryPrepareTarget()
+                            endif
+                        endif
+                    endif
+                endif
+            endif
+            set i = i + 1
+        endloop
     endmethod
 
     method tryPrepareTargetForItems takes nothing returns nothing
@@ -290,7 +344,7 @@ struct HeroCombatData
         local integer i = 0
         local AIItem heroItem
         local real currentMana
-        local unit ownerHero = ownerAIHero.hero
+        local unit ownerHero = owner.hero
 
         if ownerHero == null then
             call this.botLogError("Owner hero is null in getReadyItem.")
@@ -338,11 +392,11 @@ struct HeroCombatData
     endmethod
 
     method botLog takes string msg returns nothing
-        call BotLogWithPlayer(GetOwningPlayer(ownerAIHero.hero), msg)
+        call BotLogWithPlayer(GetOwningPlayer(owner.hero), msg)
     endmethod
 
     method botLogError takes string msg returns nothing
-        call BotLogErrorWithPlayer(GetOwningPlayer(ownerAIHero.hero), msg)
+        call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), msg)
     endmethod
 
 endstruct

@@ -39,8 +39,7 @@ struct AIHero
 
 
         // Initialize combat data
-        set this.combatData = InitializeHeroCombatData(u, inDifficulty)
-        set this.combatData.ownerAIHero = this
+        set this.combatData = InitializeHeroCombatData(this, inDifficulty)
 
         call this.changeState(RunState.create())
 
@@ -89,8 +88,6 @@ struct AIHero
 
     method shouldEnterCombat takes nothing returns boolean
         local integer i = 0
-        local AIHeroAbility heroAbil
-        local real currentMana
         local boolean hasReadyAbility = false
         local boolean hasReadyItem = false
             

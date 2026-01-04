@@ -929,11 +929,11 @@
 			"statementType": "FunctionDeclaration"
 		},
 		{
-			"label": "FilterTeamHeroes",
+			"label": "FilterValidVisibleTeamHeroes",
 			"kind": 2,
 			"detail": "Function",
-			"documentation": "\n```jass\nfunction FilterTeamHeroes takes nothing returns boolean\n```\n\n\n---\n\nGeneric filter function for heroes (enemies or allies)\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
-			"sortText": "1_func_FilterTeamHeroes",
+			"documentation": "\n```jass\nfunction FilterValidVisibleTeamHeroes takes nothing returns boolean\n```\n\n\n---\n\nGeneric filter function for heroes (enemies or allies)\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+			"sortText": "1_func_FilterValidVisibleTeamHeroes",
 			"filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
 			"statementType": "FunctionDeclaration"
 		},

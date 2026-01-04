@@ -123,6 +123,7 @@ struct AIItem
         call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(targetUnit))
         set this.lastUseTime = TimerGetElapsed(gameTimer)
         set this.bIsReadyToUse = false
+        set this.readyTargetUnit = null
     endmethod
 
     method useToPoint takes real targetX, real targetY returns nothing
@@ -130,36 +131,32 @@ struct AIItem
         call this.botLog("Using item: " + GetItemName(this.itemHandle) + " at point: (" + R2S(targetX) + ", " + R2S(targetY) + ")")
         set this.lastUseTime = TimerGetElapsed(gameTimer)
         set this.bIsReadyToUse = false
+        set this.readyTargetPointX = 0.0
+        set this.readyTargetPointY = 0.0
+        set this.readyTargetPoint = null
+        set this.readyTargetUnit = null
     endmethod
 
     method tryUse takes nothing returns boolean
         local unit targetUnit = null
         local integer targetUnitCount = 0
 
+        if not this.bIsReadyToUse then
+            return false
+        endif
+
         if this.castType == CAST_NONE then
             call this.botLogError("Item cast type is CAST_NONE, cannot use item: " + GetItemName(this.itemHandle))
             return false
         elseif this.castType == CAST_INSTANT_HEAL then
-            if this.bIsReadyToUse then
-                call this.useInstant()
-                return true
-            else
-                return false
-            endif
+            call this.useInstant()
+            return true
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
-            if this.bIsReadyToUse then
-                call this.useInstant()
-                return true
-            else
-                return false
-            endif
+            call this.useInstant()
+            return true
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
-            if this.bIsReadyToUse then
-                call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
-                return true
-            else
-                return false
-            endif
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return false
         elseif this.castType == CAST_UNIT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then

@@ -139,6 +139,8 @@ struct RunState extends AIState
         endif
             
         call owner.combatData.tryPrepareTargetForItems()
+        call owner.combatData.tryPrepareTargetForAbilities()
+
         // Check if we should enter combat state
         if owner.shouldEnterCombat() then
             call this.botLog("Entering combat - abilities ready")

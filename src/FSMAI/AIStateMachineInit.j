@@ -45,10 +45,9 @@ library AIStateMachine requires KeyUtils, AIUtils
     endfunction
 
     // Initialize hero-specific abilities (extend this function for different heroes)
-    function InitializeHeroCombatData takes unit hero, integer difficulty returns HeroCombatData
-        local HeroCombatData data = HeroCombatData.create()
-        local integer heroTypeId = GetUnitTypeId(hero)
-
+    function InitializeHeroCombatData takes AIHero owner, integer difficulty returns HeroCombatData
+        local HeroCombatData data = HeroCombatData.create(owner)
+        local integer heroTypeId = GetUnitTypeId(owner.hero)
         
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
@@ -64,6 +63,7 @@ library AIStateMachine requires KeyUtils, AIUtils
         
         return data
     endfunction
+
     // This function will run once at map initialization to set up the waypoints.
     private function InitializeWaypoints takes nothing returns nothing
         set WaypointAreas[0] = gg_rct_AIWayPointArea01 // Not used

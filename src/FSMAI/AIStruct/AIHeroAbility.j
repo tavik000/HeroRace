@@ -10,8 +10,15 @@ struct AIHeroAbility
     integer findTargetType
     real effectiveRadius
     real expectedDamage  // For combo targeting logic
+    boolean bIsReadyToCast
+    real readyTargetPointX
+    real readyTargetPointY
+    unit readyTargetUnit
+    location readyTargetPoint
+    AIHero owner
+    unit ownerHero
 
-    static method create takes integer aid, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage returns thistype
+    static method create takes integer aid, AIHero inOwner, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage returns thistype
         local thistype this = thistype.allocate()
         set this.abilityId = aid
         set this.baseCooldown = cd
@@ -24,7 +31,13 @@ struct AIHeroAbility
         set this.findTargetType = inFindTargetType
         set this.effectiveRadius = inEffectiveRadius
         set this.expectedDamage = inExpectedDamage
-        
+        set this.bIsReadyToCast = false
+        set this.readyTargetPointX = 0.0
+        set this.readyTargetPointY = 0.0
+        set this.readyTargetUnit = null
+        set this.readyTargetPoint = null
+        set this.owner = inOwner
+        set this.ownerHero = inOwner.hero
         return this
     endmethod
 
@@ -55,15 +68,198 @@ struct AIHeroAbility
         // Custom filtering logic for specific abilities
         if this.abilityId == 'A00W' then  // Banish ability
             if UnitHasBuffBJ(u, 'BHbn') then
-                call BotLog("Skipping banish target, already banished, unit: " + GetUnitName(u))
+                call this.botLog("Skipping banish target, already banished, unit: " + GetUnitName(u))
                 return false
             endif
         endif
         return true
     endmethod
 
-        
+    method canCastAbility takes nothing returns boolean
+        // Check if hero is stunned or silenced
+        if IsUnitStunOrSilence(owner.hero) then
+            call this.botLog("Cannot cast ability, hero is stunned or silenced.")
+            call owner.setDebugTextTagContent("Combat: " + this.orderString + " - Stunned/Silenced")
+            call owner.setDebugTextTagColorPreset("YELLOW")
+            return false
+        endif
+
+        // Check if ability is available
+        if GetUnitAbilityLevel(owner.hero, this.abilityId) <= 0 then
+            call BotLogError("Ability not available: " + this.orderString)
+            return false
+        endif
+            
+        // Check if hero has enough mana
+        if not this.isManaReady(owner.hero) then
+            call this.botLog("Not enough mana for ability: " + this.orderString)
+            call owner.setDebugTextTagContent("Combat: " + this.orderString + " - Not Enough Mana")
+            call owner.setDebugTextTagColorPreset("RED")
+            return false
+        endif
+            
+        return true
+    endmethod
+
+    method shouldUpdateComboTarget takes unit targetUnit returns boolean
+        if targetUnit == null then
+            return false
+        endif
+
+        if not IsApplyingCombo(owner.difficulty) then
+            return false
+        endif
+            
+        if this.comboIndex <= 0 then
+            return false
+        endif
+            
+        if owner.comboTargetUnit == targetUnit then
+            return false
+        endif
+            
+        return true
+    endmethod
+
+    method tryPrepareTarget takes nothing returns nothing
+        local integer targetUnitCount
+
+        if this.castType == CAST_NONE then
+            return
+        elseif this.castType == CAST_POINT_ENEMY_FRONT then
+            if this.findTargetType == FIND_TARGET_TYPE_NONE then
+                call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
+                return
+            endif
+            // set point when casting, set target unit now
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            if this.readyTargetUnit == null then
+                return
+            endif
+            set this.bIsReadyToCast = true
+        elseif this.castType == CAST_INSTANT_HEAL then
+            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+        elseif this.castType == CAST_UNIT then
+            if this.findTargetType == FIND_TARGET_TYPE_NONE then
+                call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
+                return
+            endif
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            set this.bIsReadyToCast = this.readyTargetUnit != null
+        else
+            call this.botLogError("Ability cast type not implemented for prepare target: " + I2S(this.castType) + " for ability: " + GetObjectName(this.abilityId))
+            set this.readyTargetUnit = null
+            set this.bIsReadyToCast = false
+            return
+        endif
+
+        if this.readyTargetUnit != null then
+            if this.shouldUpdateComboTarget(this.readyTargetUnit) then
+                set owner.comboTargetUnit = this.readyTargetUnit
+            endif
+        endif
+
+    endmethod
+
+    method castInstant takes nothing returns nothing
+        call IssueImmediateOrder(owner.hero, this.orderString)
+        call this.botLog("Casting instant ability: " + this.orderString)
+        set this.bIsReadyToCast = false
+    endmethod
+
+    method castPoint takes real targetX, real targetY returns nothing
+        call IssuePointOrder(owner.hero, this.orderString, targetX, targetY)
+        call this.botLog("Casting point ability at: (" + R2S(targetX) + ", " + R2S(targetY) + ") for ability: " + this.orderString)
+        set this.bIsReadyToCast = false
+        set this.readyTargetPointX = 0.0
+        set this.readyTargetPointY = 0.0
+        set this.readyTargetPoint = null
+    endmethod
+
+    method castUnit takes unit targetUnit returns nothing
+        if targetUnit == null then
+            call this.botLogError("Cannot cast unit ability, target unit is null for ability: " + this.orderString)
+            return
+        endif
+        call IssueTargetOrder(owner.hero, this.orderString, targetUnit)
+        call this.botLog("Casting unit ability on target: " + GetUnitName(targetUnit) + " for ability: " + this.orderString)
+        set this.bIsReadyToCast = false
+        set this.readyTargetUnit = null
+    endmethod
+
+    method tryCast takes nothing returns boolean
+        local unit targetUnit = null
+        local integer targetUnitCount = 0
+        local real targetFacingAngle
+        local real offset
+            
+        call this.botLog("Attempting to cast ability: " + this.orderString)
+
+        if not this.canCastAbility() then
+            return false
+        endif
+
+        if not this.bIsReadyToCast then
+            return false
+        endif
+
+        if this.castType == CAST_NONE then
+            call this.botLogError("Cannot cast ability with CAST_NONE type: " + this.orderString)
+            return false
+        elseif this.castType == CAST_INSTANT then
+            call this.castInstant()
+            return true
+        elseif this.castType == CAST_POINT_ENEMY_FRONT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLog("No target found for point ability: " + this.orderString)
+                return false
+            else
+                // Calculate point in front of target unit
+                set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+                set offset = this.effectiveRadius
+                set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+                set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+                call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+                return true 
+            endif
+        elseif this.castType == CAST_UNIT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No target found for unit ability: " + this.orderString)
+                return false
+            endif
+            if not IsUnitValid(targetUnit) then
+                call this.botLog("Target unit is not valid for ability: " + this.orderString)
+                set this.bIsReadyToCast = false
+                set this.readyTargetUnit = null
+                return false
+            endif
+            if not IsUnitVisible(targetUnit, GetOwningPlayer(owner.hero)) then
+                set this.bIsReadyToCast = false
+                set this.readyTargetUnit = null
+                call this.botLog("Target unit is not visible for ability: " + this.orderString)
+                return false
+            endif
+
+            call this.castUnit(targetUnit)
+            return true
+        else
+            call this.botLogError("Ability cast type not implemented: " + I2S(this.castType) + " for ability: " + this.orderString)
+            return false
+        endif
+            
+    endmethod
+
     method destroy takes nothing returns nothing
         call this.deallocate()
+    endmethod
+
+    method botLog takes string msg returns nothing
+        call BotLogWithPlayer(GetOwningPlayer(this.ownerHero), msg)
+    endmethod
+
+    method botLogError takes string msg returns nothing
+        call BotLogErrorWithPlayer(GetOwningPlayer(this.ownerHero), msg)
     endmethod
 endstruct
