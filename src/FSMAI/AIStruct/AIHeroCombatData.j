@@ -28,12 +28,26 @@ struct HeroCombatData
         endif
     endmethod
 
+    method getCurrentItemCount takes nothing returns integer
+        local integer count = 0
+        local integer i = 0
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            if this.items[i] != null then
+                set count = count + 1
+            endif
+            set i = i + 1
+        endloop
+        return count
+    endmethod
+
     method addItem takes item newItemHandle, integer itemId, real baseCooldown, real castRange, real effectiveRadius, real requiredCastTime, unit ownerHero, boolean isPassive, integer castType, integer findTargetType returns nothing
         local integer i = 0
         loop
             exitwhen i >= MAX_ITEM_PER_HERO
             if this.items[i] == null then
                 set this.items[i] = AIItem.create(newItemHandle, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, ownerHero, isPassive, castType, findTargetType)
+                call this.botLog("Added item to hero combat data: " + GetItemName(newItemHandle) + " at slot " + I2S(i) + ", total item count: " + I2S(this.getCurrentItemCount()))
                 return
             endif
             set i = i + 1
@@ -356,7 +370,7 @@ struct HeroCombatData
             exitwhen i >= MAX_ITEM_PER_HERO
             set heroItem = this.items[i]
             if heroItem != 0 then
-                if not UnitHasItem(ownerHero, heroItem.itemHandle) then
+                if not UnitHasItem(ownerHero, heroItem.itemHandle) or heroItem.itemHandle == null then
                     call this.removeItem(heroItem.itemHandle)
                 else
                     if heroItem.isCooldownAndReadyToUse() then

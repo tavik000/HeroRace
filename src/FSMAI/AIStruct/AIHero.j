@@ -231,16 +231,19 @@ struct AIHero
         local real currentTime = TimerGetElapsed(gameTimer)
         local integer difficulty = this.difficulty
         set this.isCasting = false
-        set this.castingAbility.lastCastTime = currentTime
-        // Advance combo index if casting combo ability
-        if IsApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
-            set this.currentComboIndex = this.currentComboIndex + 1
-            call this.botLog("Advancing combo index to: " + I2S(this.currentComboIndex))
-            // If no further combo ability, reset combo index
-            if this.combatData.getAbilityByComboIndex(this.currentComboIndex) == 0 then
-                set this.currentComboIndex = 1
-                set this.comboTargetUnit = null
-                call this.botLog("Combo sequence complete, resetting combo index to 1")
+
+        if castingAbility != 0 then
+            set this.castingAbility.lastCastTime = currentTime
+            // Advance combo index if casting combo ability
+            if IsApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
+                set this.currentComboIndex = this.currentComboIndex + 1
+                call this.botLog("Advancing combo index to: " + I2S(this.currentComboIndex))
+                // If no further combo ability, reset combo index
+                if this.combatData.getAbilityByComboIndex(this.currentComboIndex) == 0 then
+                    set this.currentComboIndex = 1
+                    set this.comboTargetUnit = null
+                    call this.botLog("Combo sequence complete, resetting combo index to 1")
+                endif
             endif
         endif
 

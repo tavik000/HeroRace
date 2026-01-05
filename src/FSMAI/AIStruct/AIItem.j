@@ -67,6 +67,7 @@ struct AIItem
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set this.bIsReadyToUse = targetUnitCount >= 2
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            // the final target point will be find again when using the item
             set readyTargetPoint = FindPointAroundCrowdedHeroes(this.ownerAIHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set readyTargetPointX = GetLocationX(readyTargetPoint)
             set readyTargetPointY = GetLocationY(readyTargetPoint)
@@ -141,6 +142,11 @@ struct AIItem
         local unit targetUnit = null
         local integer targetUnitCount = 0
 
+        if this.itemHandle == null then
+            call this.botLogError("Item handle is null, cannot use item: " + I2S(this.itemId))
+            return false
+        endif
+
         if not this.bIsReadyToUse then
             return false
         endif
@@ -155,8 +161,16 @@ struct AIItem
             call this.useInstant()
             return true
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            set readyTargetPoint = FindPointAroundCrowdedHeroes(this.ownerAIHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set readyTargetPointX = GetLocationX(readyTargetPoint)
+            set readyTargetPointY = GetLocationY(readyTargetPoint)
+            call RemoveLocation(readyTargetPoint)
+            if (IsNearlyZero(this.readyTargetPointX) and IsNearlyZero(this.readyTargetPointY)) then
+                set this.bIsReadyToUse = false
+                return false
+            endif
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
-            return false
+            return true
         elseif this.castType == CAST_UNIT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then

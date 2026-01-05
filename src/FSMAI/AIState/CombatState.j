@@ -20,6 +20,9 @@ struct CombatState extends AIState
         local boolean isCastOvertime = currentTime > (owner.lastStartCastTime + owner.castPt + TURN_TIME + owner.currentRequiredCastTime)
         local boolean isCastFailed = owner.isCasting and isCastOvertime
 
+        call owner.setDebugTextTagContent("Combat: Updating")
+        call owner.setDebugTextTagColorPreset("RED")
+
         if isCastFailed then
             call this.botLog("Casting failed detected for ability: " + owner.castingAbility.orderString)
             call owner.setDebugTextTagContent("Combat: Cast Failed " + owner.castingAbility.orderString)
@@ -42,6 +45,8 @@ struct CombatState extends AIState
                 set owner.isCasting = false
                 set owner.castingAbility = 0
                 set owner.currentRequiredCastTime = 0
+                call owner.setDebugTextTagContent("Combat: Cast Finished")
+                call owner.setDebugTextTagColorPreset("RED")
             else
                 call this.botLog("Casting ability with required cast time: " + owner.castingAbility.orderString + ", skippingg update")
                 call owner.setDebugTextTagContent("Combat: Casting " + owner.castingAbility.orderString)
@@ -80,6 +85,7 @@ struct CombatState extends AIState
             call owner.setDebugTextTagContent("Combat: Try using item " + GetItemName(heroItem.itemHandle))
             call owner.setDebugTextTagColorPreset("RED")
             if heroItem.tryUse() then
+                set owner.isCasting = true
                 set owner.currentRequiredCastTime = heroItem.requiredCastTime
                 set owner.lastStartCastTime = currentTime
                 return true

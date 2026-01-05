@@ -9,6 +9,11 @@ struct RunState extends AIState
         call this.botLog("Entering Run State")
         call owner.setDebugTextTagContent("Run: Entering")
         call owner.setDebugTextTagColorPreset("GREEN")
+        if owner.isCasting then
+            call this.botLogError("Hero is casting when entering Run State, resetting casting state")
+            set owner.isCasting = false
+            return
+        endif
         call owner.moveToNextWaypoint()
     endmethod
 
@@ -116,7 +121,7 @@ struct RunState extends AIState
 
         if currentOrder == 0 then
             // Hero is idle (no current order) - reissue move command to current waypoint
-            call this.botLog("Hero is idle, reissuing move command")
+            call this.botLog("Hero is idle, issuing move command")
             call owner.setDebugTextTagContent("Run: Reissuing Move Command")
             call owner.setDebugTextTagColorPreset("GREEN")
             call owner.moveToNextWaypoint()
