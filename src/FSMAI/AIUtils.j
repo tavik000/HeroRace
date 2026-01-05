@@ -97,6 +97,9 @@ library AIUtils requires KeyUtils
         local real dist = DistanceBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
         local real itemAngle = AngleBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
         local boolean bIsInFrontArc = IsWithinForwardArc(itemAngle, tempFoundItemUnitFacingAngle)
+        if IsItemPowerup(itm) then
+            return
+        endif
         if not bIsInFrontArc then
             set tempFoundItemRange = tempFoundItemRange * 0.65
         endif

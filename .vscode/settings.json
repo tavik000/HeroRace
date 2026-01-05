@@ -19,6 +19,7 @@
 		"killable",
 		"Pathable",
 		"PATHING",
+		"Powerup",
 		"RADTODEG",
 		"texttag",
 		"thistype",

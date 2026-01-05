@@ -128,6 +128,10 @@ struct AIHero
     endmethod
 
     method shouldEnterPickupItemState takes nothing returns boolean
+        local boolean bIsInventoryFull = IsUnitInventoryFull(this.hero)
+        if bIsInventoryFull then
+            return false
+        endif
         // call this.botLog("shouldenter: Item found to pick up: " + GetItemName(this.pickingUpItem))
         return this.pickingUpItem != null
     endmethod

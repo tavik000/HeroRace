@@ -13,6 +13,7 @@ struct PickUpItemState extends AIState
         // Pick up the item
         if owner.pickingUpItem != null then
             call IssueTargetOrder(owner.hero, "smart", owner.pickingUpItem) 
+            call this.botLog("Picking up item: " + GetItemName(owner.pickingUpItem))
         else
             call this.botLog("No item to pick up")
             call owner.setDebugTextTagContent("Item: No Item Found")
