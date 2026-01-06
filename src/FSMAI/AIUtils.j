@@ -282,7 +282,7 @@ library AIUtils requires KeyUtils
         local real minHpPercent = 50.0 
         local unit bestTarget = null
         local real minSpeed = 200.0
-        local real maxSpeed = 350.0
+        local real maxSpeed = 300.0
         local player heroOwner = GetOwningPlayer(ownerHero)
     
         // Comparison variables
@@ -293,7 +293,7 @@ library AIUtils requires KeyUtils
         local real currentDist
         local real bestDist
 
-        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >350, Goaled Hero
+        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >300, Goaled Hero
         // Priority Order:
         // 1. HP >= 50%
         // 2. Behind
@@ -368,6 +368,7 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
     
         return bestTarget
     endfunction
@@ -729,7 +730,13 @@ library AIUtils requires KeyUtils
             set u[count] = FirstOfGroup(allTargets)
             exitwhen u[count] == null
             call GroupRemoveUnit(allTargets, u[count])
-            set count = count + 1
+            if tempAIItem != 0 then
+                if tempAIItem.customFilter(u[count]) then
+                    set count = count + 1
+                endif
+            else
+                set count = count + 1
+            endif
         endloop
 
         // Set temp variables for filter function

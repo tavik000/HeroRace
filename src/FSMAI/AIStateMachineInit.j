@@ -17,6 +17,7 @@ globals
     integer tempFindTeamType
     unit tempHeroUnit
     AIHeroAbility tempAIHeroAbility
+    AIItem tempAIItem
 
     // Temporary variables for item search
     item tempFoundItem = null

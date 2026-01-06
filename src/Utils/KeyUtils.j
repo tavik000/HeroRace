@@ -143,6 +143,28 @@ library KeyUtils
         return false
     endfunction
 
+    function IsUnitSilenced takes unit u returns boolean
+        if UnitHasBuffBJ(u, 'B02H') then 
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'B035') then 
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'B01J') then 
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'BNsi') then 
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'B02G') then 
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'BNdo') then 
+            return true 
+        endif
+        return false
+    endfunction
+
     function IsUnitStunOrSilence takes unit u returns boolean
         if not IsUnitAliveBJ(u) then
             return true  
@@ -166,23 +188,8 @@ library KeyUtils
             return true
         endif
         // Silence
-        if UnitHasBuffBJ(u, 'B02H') then 
+        if IsUnitSilenced(u) then 
             return true
-        endif
-        if UnitHasBuffBJ(u, 'B035') then 
-            return true
-        endif
-        if UnitHasBuffBJ(u, 'B01J') then 
-            return true
-        endif
-        if UnitHasBuffBJ(u, 'BNsi') then 
-            return true
-        endif
-        if UnitHasBuffBJ(u, 'B02G') then 
-            return true
-        endif
-        if UnitHasBuffBJ(u, 'BNdo') then 
-            return true 
         endif
         // Hex
         if UnitHasBuffBJ(u, 'BOhx') then 

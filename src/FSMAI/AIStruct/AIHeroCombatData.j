@@ -340,7 +340,10 @@ struct HeroCombatData
             exitwhen i >= MAX_ITEM_PER_HERO
             set heroItem = this.items[i]
             if heroItem != 0 then
-                call heroItem.tryPrepareTarget()
+                if heroItem.tryPrepareTarget() then
+                    call this.botLog("Prepared target for item: " + GetItemName(heroItem.itemHandle))
+                    return
+                endif
             endif
             set i = i + 1
         endloop

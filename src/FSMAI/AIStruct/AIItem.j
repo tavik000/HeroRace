@@ -38,21 +38,32 @@ struct AIItem
         return this
     endmethod
 
+    method customFilter takes unit u returns boolean
+        call this.botLog("Applying custom filter for item: " + GetItemName(this.itemHandle) + " on unit: " + GetUnitName(u))
+        if this.itemId == 'I016' then  // SilenceStaff
+            if IsUnitSilenced(u) then 
+                call this.botLog("Skipping unit " + GetUnitName(u) + " for SilenceStaff, already silenced")
+                return false
+            endif
+        endif
+        return true
+    endmethod
+
     method isForcedToUse takes nothing returns boolean
         return GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD
     endmethod
 
     // For items that need target preparation before use
-    method tryPrepareTarget takes nothing returns nothing
+    method tryPrepareTarget takes nothing returns boolean
         local integer targetUnitCount
 
         if this.bIsPassive then
-            return
+            return false
         endif
 
         if this.castType == CAST_NONE then
             // Cannot prepare target for CAST_NONE
-            return
+            return false
         elseif this.castType == CAST_INSTANT_HEAL then
             if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
@@ -62,13 +73,15 @@ struct AIItem
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
-                return
+                return true
             endif
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set this.bIsReadyToUse = targetUnitCount >= 2
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
             // the final target point will be find again when using the item
+            set tempAIItem = this 
             set readyTargetPoint = FindPointAroundCrowdedHeroes(this.ownerAIHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set tempAIItem = 0
             set readyTargetPointX = GetLocationX(readyTargetPoint)
             set readyTargetPointY = GetLocationY(readyTargetPoint)
             call RemoveLocation(readyTargetPoint)
@@ -80,7 +93,7 @@ struct AIItem
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
-                return
+                return false
             endif
             if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
@@ -90,11 +103,12 @@ struct AIItem
             set this.bIsReadyToUse = this.readyTargetUnit != null
         else
             call this.botLogError("Item cast type not implemented for prepare target: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
-            return
             set this.readyTargetUnit = null
             set this.bIsReadyToUse = false
+            return false
         endif
 
+        return this.bIsReadyToUse
     endmethod
 
     method isCooldownAndReadyToUse takes nothing returns boolean
@@ -161,7 +175,9 @@ struct AIItem
             call this.useInstant()
             return true
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            set tempAIItem = this 
             set readyTargetPoint = FindPointAroundCrowdedHeroes(this.ownerAIHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set tempAIItem = 0
             set readyTargetPointX = GetLocationX(readyTargetPoint)
             set readyTargetPointY = GetLocationY(readyTargetPoint)
             call RemoveLocation(readyTargetPoint)
