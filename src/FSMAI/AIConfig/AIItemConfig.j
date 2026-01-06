@@ -103,6 +103,14 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
         call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
+        set currentItemId = 'I001' // ForceTrap
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 30.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 100.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'I010' // BloodLust
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 2000.0)  

@@ -88,6 +88,7 @@ struct CombatState extends AIState
                 set owner.isCasting = true
                 set owner.currentRequiredCastTime = heroItem.requiredCastTime
                 set owner.lastStartCastTime = currentTime
+                call owner.combatData.syncItemCooldown(heroItem)
                 return true
             endif
         endif

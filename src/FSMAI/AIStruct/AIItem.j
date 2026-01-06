@@ -156,6 +156,21 @@ struct AIItem
         return false
     endmethod
 
+    method isCooldownReady takes nothing returns boolean
+        local real currentTime = TimerGetElapsed(gameTimer)
+
+        if this.baseCooldown <= 0.0 then
+            return true
+        endif
+        if this.lastUseTime == 0.0 then
+            return true
+        endif
+        if currentTime - this.lastUseTime > this.baseCooldown then
+            return true
+        endif
+        return false
+    endmethod
+
     method useInstant takes nothing returns nothing
         call UnitUseItem(this.ownerHero, this.itemHandle)
         call this.botLog("Using item: " + GetItemName(this.itemHandle))

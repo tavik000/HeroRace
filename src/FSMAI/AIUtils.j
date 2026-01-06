@@ -301,7 +301,6 @@ library AIUtils requires KeyUtils
             set currentUnit = FirstOfGroup(enemies)
             exitwhen currentUnit == null
             call GroupRemoveUnit(enemies, currentUnit)
-            call BotLog("Evaluating target: " + GetUnitName(currentUnit))
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
@@ -310,30 +309,24 @@ library AIUtils requires KeyUtils
             elseif IsUnitStunOrSlow(currentUnit) then
             elseif bestTarget == null then
                 set bestTarget = currentUnit
-                call BotLog("Initial best target: " + GetUnitName(currentUnit))
             else
                 // --- PRIORITY TOURNAMENT LAYER ---
                 // 1. In Hazard Zone Priority
                 if IsUnitInAnyHazardZone(currentUnit) and not IsUnitInAnyHazardZone(bestTarget) then
-                    call BotLog("Choosing hazard zone target: " + GetUnitName(currentUnit))
                     set bestTarget = currentUnit
                 elseif not IsUnitInAnyHazardZone(currentUnit) and IsUnitInAnyHazardZone(bestTarget) then
-                    call BotLog("Keeping hazard zone target: " + GetUnitName(bestTarget))
                     // Keep bestTarget
                 else
                     // TIE on Hazard Zone (Both in or both out)
                     // 2. Healthy Priority
                     if GetUnitLifePercent(currentUnit) > healthyHpPercent and GetUnitLifePercent(bestTarget) <= healthyHpPercent then
-                        call BotLog("Choosing healthy target: " + GetUnitName(currentUnit))
                         set bestTarget = currentUnit
                     elseif GetUnitLifePercent(currentUnit) <= healthyHpPercent and GetUnitLifePercent(bestTarget) > healthyHpPercent then
-                        call BotLog("Keeping healthy target: " + GetUnitName(bestTarget))
                         // Keep bestTarget
                     else
                         // TIE on Health Bracket (Both > 50% or Both <= 50%)
                         // 3. Fastest Move Speed Priority  
                         if GetUnitMoveSpeed(currentUnit) > GetUnitMoveSpeed(bestTarget) then
-                            call BotLog("Choosing faster target: " + GetUnitName(currentUnit))
                             set bestTarget = currentUnit
                         endif
                     endif

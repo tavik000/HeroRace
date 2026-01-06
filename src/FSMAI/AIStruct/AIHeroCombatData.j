@@ -340,9 +340,11 @@ struct HeroCombatData
             exitwhen i >= MAX_ITEM_PER_HERO
             set heroItem = this.items[i]
             if heroItem != 0 then
-                if heroItem.tryPrepareTarget() then
-                    call this.botLog("Prepared target for item: " + GetItemName(heroItem.itemHandle))
-                    return
+                if heroItem.isCooldownReady() then
+                    if heroItem.tryPrepareTarget() then
+                        call this.botLog("Prepared target for item: " + GetItemName(heroItem.itemHandle))
+                        return
+                    endif
                 endif
             endif
             set i = i + 1
@@ -406,6 +408,24 @@ struct HeroCombatData
 
         call this.botLog("No item found with find target type: " + I2S(findTargetType))
         return false
+    endmethod
+
+    method syncItemCooldown takes AIItem heroItem returns nothing
+        local integer i = 0
+        local AIItem otherItem
+
+        // Sync cooldown for all items with the same itemId
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            set otherItem = this.items[i]
+            if otherItem != 0 and otherItem != heroItem then
+                if otherItem.itemId == heroItem.itemId then
+                    set otherItem.lastUseTime = heroItem.lastUseTime
+                    call this.botLog("Synced cooldown for item: " + GetItemName(otherItem.itemHandle))
+                endif
+            endif
+            set i = i + 1
+        endloop
     endmethod
 
     method botLog takes string msg returns nothing
