@@ -276,6 +276,84 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group enemies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local real healthyHpPercent = 50.0
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune, customFilter, CCed
+        // Priority Order:
+        // 1. In Hazard Zone
+        // 2. Healthy (HP > 50%)
+        // 3. Fastest Move Speed
+            
+        loop
+            set currentUnit = FirstOfGroup(enemies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(enemies, currentUnit)
+            call BotLog("Evaluating target: " + GetUnitName(currentUnit))
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif IsUnitStunOrSlow(currentUnit) then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+                call BotLog("Initial best target: " + GetUnitName(currentUnit))
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. In Hazard Zone Priority
+                if IsUnitInAnyHazardZone(currentUnit) and not IsUnitInAnyHazardZone(bestTarget) then
+                    call BotLog("Choosing hazard zone target: " + GetUnitName(currentUnit))
+                    set bestTarget = currentUnit
+                elseif not IsUnitInAnyHazardZone(currentUnit) and IsUnitInAnyHazardZone(bestTarget) then
+                    call BotLog("Keeping hazard zone target: " + GetUnitName(bestTarget))
+                    // Keep bestTarget
+                else
+                    // TIE on Hazard Zone (Both in or both out)
+                    // 2. Healthy Priority
+                    if GetUnitLifePercent(currentUnit) > healthyHpPercent and GetUnitLifePercent(bestTarget) <= healthyHpPercent then
+                        call BotLog("Choosing healthy target: " + GetUnitName(currentUnit))
+                        set bestTarget = currentUnit
+                    elseif GetUnitLifePercent(currentUnit) <= healthyHpPercent and GetUnitLifePercent(bestTarget) > healthyHpPercent then
+                        call BotLog("Keeping healthy target: " + GetUnitName(bestTarget))
+                        // Keep bestTarget
+                    else
+                        // TIE on Health Bracket (Both > 50% or Both <= 50%)
+                        // 3. Fastest Move Speed Priority  
+                        if GetUnitMoveSpeed(currentUnit) > GetUnitMoveSpeed(bestTarget) then
+                            call BotLog("Choosing faster target: " + GetUnitName(currentUnit))
+                            set bestTarget = currentUnit
+                        endif
+                    endif
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(enemies)
+        set enemies = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
@@ -875,6 +953,11 @@ library AIUtils requires KeyUtils
             set targetUnit = FindTeleportAllyTargetInRange(owner, itm.castRange, 0)
             call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Teleport Target " + GetUnitName(targetUnit))
             call owner.setDebugTextTagColorPreset("RED")
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
+            set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
+            call owner.botLog("Finding healthy running enemy target for item, result: " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Healthy Running Enemy Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagColorPreset("RED")
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
@@ -918,6 +1001,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
             set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using teleport item on random ally: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
+            set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
+            call owner.botLog("Force using item on healthy running enemy: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             if targetUnit == null then

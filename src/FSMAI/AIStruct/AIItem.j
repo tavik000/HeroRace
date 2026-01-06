@@ -39,7 +39,6 @@ struct AIItem
     endmethod
 
     method customFilter takes unit u returns boolean
-        call this.botLog("Applying custom filter for item: " + GetItemName(this.itemHandle) + " on unit: " + GetUnitName(u))
         if this.itemId == 'I016' then  // SilenceStaff
             if IsUnitSilenced(u) then 
                 call this.botLog("Skipping unit " + GetUnitName(u) + " for SilenceStaff, already silenced")
@@ -51,6 +50,30 @@ struct AIItem
 
     method isForcedToUse takes nothing returns boolean
         return GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD
+    endmethod
+
+    method getUnitFrontOffsetDistance takes unit targetUnit returns real
+        local real targetMoveSpeed = GetUnitMoveSpeed(targetUnit)
+        local real projectileSpeed = 0.0
+        local real targetDistance = DistanceBetweenUnits(this.ownerHero, targetUnit)
+        local real timeToReachTarget = 0.0
+        local real baseOffset = 0.0
+        local real offsetDistance = 0.0
+
+        if this.castType != CAST_POINT_ENEMY_FRONT then
+            call this.botLogError("getFrontOffsetDistance called for non-front-cast item: " + GetItemName(this.itemHandle))
+            return 0.0
+        endif
+
+        if this.itemId == 'I002' then  // ForceMissile
+            set projectileSpeed = 1500.0
+            set timeToReachTarget = targetDistance / projectileSpeed
+            set baseOffset = 150.0
+            set offsetDistance = targetMoveSpeed * timeToReachTarget + baseOffset
+        else
+            set offsetDistance = this.effectiveRadius
+        endif
+        return offsetDistance
     endmethod
 
     // For items that need target preparation before use
@@ -77,6 +100,13 @@ struct AIItem
             endif
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set this.bIsReadyToUse = targetUnitCount >= 2
+        elseif this.castType == CAST_POINT_ENEMY_FRONT then
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
+            else
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
             // the final target point will be find again when using the item
             set tempAIItem = this 
@@ -155,6 +185,8 @@ struct AIItem
     method tryUse takes nothing returns boolean
         local unit targetUnit = null
         local integer targetUnitCount = 0
+        local real targetFacingAngle = 0.0 // for front point calculation
+        local real offset = 0.0 // for front point calculation
 
         if this.itemHandle == null then
             call this.botLogError("Item handle is null, cannot use item: " + I2S(this.itemId))
@@ -173,6 +205,20 @@ struct AIItem
             return true
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             call this.useInstant()
+            return true
+        elseif this.castType == CAST_POINT_ENEMY_FRONT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            
+            // Calculate point in front of target unit
+            set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+            set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
+            set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
             set tempAIItem = this 
