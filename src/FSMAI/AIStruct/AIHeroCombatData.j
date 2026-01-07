@@ -41,12 +41,12 @@ struct HeroCombatData
         return count
     endmethod
 
-    method addItem takes item newItemHandle, integer itemId, real baseCooldown, real castRange, real effectiveRadius, real requiredCastTime, unit ownerHero, boolean isPassive, integer castType, integer findTargetType returns nothing
+    method addItem takes item newItemHandle, integer itemId, real baseCooldown, real castRange, real effectiveRadius, real requiredCastTime, integer manaCost, unit ownerHero, boolean isPassive, integer castType, integer findTargetType returns nothing
         local integer i = 0
         loop
             exitwhen i >= MAX_ITEM_PER_HERO
             if this.items[i] == null then
-                set this.items[i] = AIItem.create(newItemHandle, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, ownerHero, isPassive, castType, findTargetType)
+                set this.items[i] = AIItem.create(newItemHandle, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, manaCost, ownerHero, isPassive, castType, findTargetType)
                 call this.botLog("Added item to hero combat data: " + GetItemName(newItemHandle) + " at slot " + I2S(i) + ", total item count: " + I2S(this.getCurrentItemCount()))
                 return
             endif
@@ -171,8 +171,8 @@ struct HeroCombatData
                         // Check if hero has enough mana
                         set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
                         if not heroAbil.isManaReady(hero) then
-                            call this.botLog("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
-                            call aiHero.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - No Mana" + "(" + I2S(heroAbil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
+                            // call this.botLog("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
+                            call aiHero.setDebugTextTagContent("Combat: " + heroAbil.orderString + ", No Mana" + "(" + I2S(heroAbil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
                             call aiHero.setDebugTextTagColorPreset("RED")
                         else
                             if heroAbil.bIsReadyToCast then
@@ -234,7 +234,7 @@ struct HeroCombatData
         endloop
 
         if not this.hasEnoughManaForCombo(hero, startingComboIndex) then
-            call this.botLog("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
+            // call this.botLog("Not enough mana for remaining combo abilities from index " + I2S(startingComboIndex))
             return 0
         endif
 
@@ -265,7 +265,7 @@ struct HeroCombatData
         if currentMana >= requiredMana then
             return true
         endif
-        call this.botLog("Not enough mana for remaining combo. (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
+        // call this.botLog("Not enough mana for remaining combo. (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
         call aiHero.setDebugTextTagContent("Combat: No Mana, (" + I2S(R2I(currentMana)) + "/" + I2S(R2I(requiredMana)) + ")")
         call aiHero.setDebugTextTagColorPreset("RED")
         return false
@@ -341,9 +341,11 @@ struct HeroCombatData
             set heroItem = this.items[i]
             if heroItem != 0 then
                 if heroItem.isCooldownReady() then
-                    if heroItem.tryPrepareTarget() then
-                        call this.botLog("Prepared target for item: " + GetItemName(heroItem.itemHandle))
-                        return
+                    if heroItem.isManaReady() then
+                        if heroItem.tryPrepareTarget() then
+                            call this.botLog("Prepared target for item: " + GetItemName(heroItem.itemHandle))
+                            return
+                        endif
                     endif
                 endif
             endif
@@ -379,7 +381,9 @@ struct HeroCombatData
                     call this.removeItem(heroItem.itemHandle)
                 else
                     if heroItem.isCooldownAndReadyToUse() then
-                        return heroItem
+                        if heroItem.isManaReady() then
+                            return heroItem
+                        endif
                     endif
                 endif
             endif

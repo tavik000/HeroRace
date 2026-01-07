@@ -6,6 +6,7 @@ struct AIItem
     real castRange
     real effectiveRadius
     real requiredCastTime
+    integer manaCost
     unit ownerHero
     AIHero ownerAIHero
     boolean bIsPassive
@@ -17,7 +18,7 @@ struct AIItem
     unit readyTargetUnit
     location readyTargetPoint
 
-    static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, real requiredCastTime, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
+    static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, real requiredCastTime, integer newManaCost, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
         local thistype this = thistype.allocate()
         set this.itemHandle = newItemHandle
         set this.itemId = newItemId
@@ -25,6 +26,7 @@ struct AIItem
         set this.castRange = newCastRange
         set this.effectiveRadius = newEffectiveRadius
         set this.requiredCastTime = requiredCastTime
+        set this.manaCost = newManaCost
         set this.ownerHero = newOwnerHero
         set this.ownerAIHero = GetAIHeroFromUnit(newOwnerHero)
         set this.bIsPassive = bNewIsPassive
@@ -50,6 +52,14 @@ struct AIItem
 
     method isForcedToUse takes nothing returns boolean
         return GetUnitLifePercent(this.ownerHero) <= FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD
+    endmethod
+
+    method isManaReady takes nothing returns boolean
+        local real currentMana = GetUnitState(ownerHero, UNIT_STATE_MANA)
+        if currentMana >= I2R(this.manaCost) then
+            return true
+        endif
+        return false
     endmethod
 
     method getUnitFrontOffsetDistance takes unit targetUnit returns real

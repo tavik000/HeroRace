@@ -13,11 +13,11 @@ globals
     hashtable heroCastPointMap
         
     // Temporary variables for filtering heroes
-    player tempHeroOwner
-    integer tempFindTeamType
-    unit tempHeroUnit
-    AIHeroAbility tempAIHeroAbility
-    AIItem tempAIItem
+    player tempHeroOwner = null
+    integer tempFindTeamType = 0
+    unit tempHeroUnit = null
+    AIHeroAbility tempAIHeroAbility = 0
+    AIItem tempAIItem = 0
 
     // Temporary variables for item search
     item tempFoundItem = null

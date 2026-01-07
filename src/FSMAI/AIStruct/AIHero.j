@@ -262,11 +262,12 @@ struct AIHero
         local integer findTargetType = GetItemFindTargetType(itemId)
         local boolean bIsPassive = GetItemIsPassive(itemId)
         local real requiredCastTime = GetItemRequiredCastTime(itemId)
+        local integer manaCost = GetItemManaCost(itemId)
 
         call this.botLog("Picked up item: " + GetItemName(itm))
         call this.setDebugTextTagContent("Item: Picked Up " + GetItemName(itm))
         call this.setDebugTextTagColorPreset("CYAN")
-        call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, this.hero, bIsPassive, castType, findTargetType)
+        call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, manaCost, this.hero, bIsPassive, castType, findTargetType)
     endmethod
 
     method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing

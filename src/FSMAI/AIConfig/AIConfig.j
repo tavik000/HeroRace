@@ -106,7 +106,7 @@ globals
     constant integer FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK = 7
     constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 8
     constant integer FIND_TARGET_TYPE_ENEMY_BACK = 9
-    constant integer FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 10
+    constant integer FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT = 10
 
     constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20
     constant integer FIND_TARGET_TYPE_ALLY_HEAL = 21
@@ -119,7 +119,7 @@ globals
     constant integer FIND_TARGET_TYPE_SELF_FORCE_STAFF = 40
 
     constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 50
-    constant integer FIND_TARGET_TYPE_ALL_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 51
+    constant integer FIND_TARGET_TYPE_ALL_ILLUSION = 51
 
 
     constant integer FIND_TEAM_TYPE_NONE = 0

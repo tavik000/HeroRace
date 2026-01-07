@@ -276,6 +276,105 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function FindControlUnitEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group enemies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+    
+        set enemies = GetUnitsOfTypeIdAll( 'n00P') // Tower
+        if CountUnitsInGroup(enemies) > 0 then
+            loop 
+                set currentUnit = FirstOfGroup(enemies)
+                exitwhen currentUnit == null
+                call GroupRemoveUnit(enemies, currentUnit)
+                if IsUnitAliveBJ(currentUnit) and IsUnitEnemy(currentUnit, heroOwner) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                endif
+            endloop
+            if bestTarget != null then
+                call DestroyGroup(enemies)
+                return bestTarget
+            endif
+        endif
+        set enemies = GetUnitsOfTypeIdAll( 'nzlc') // Lich King
+        if CountUnitsInGroup(enemies) > 0 then
+            loop 
+                set currentUnit = FirstOfGroup(enemies)
+                exitwhen currentUnit == null
+                call GroupRemoveUnit(enemies, currentUnit)
+                if IsUnitAliveBJ(currentUnit) and not IsUnitOwnedByPlayer(currentUnit, heroOwner) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                endif
+            endloop
+            if bestTarget != null then
+                call DestroyGroup(enemies)
+                return bestTarget
+            endif
+        endif
+        set enemies = GetUnitsOfTypeIdAll( 'n00U') // Purple Fish
+        if CountUnitsInGroup(enemies) > 0 then
+            loop 
+                set currentUnit = FirstOfGroup(enemies)
+                exitwhen currentUnit == null
+                call GroupRemoveUnit(enemies, currentUnit)
+                if IsUnitAliveBJ(currentUnit) and IsUnitEnemy(currentUnit, heroOwner) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                endif
+            endloop
+            if bestTarget != null then
+                call DestroyGroup(enemies)
+                return bestTarget
+            endif
+        endif
+
+        // Not Allowed Target: MagicImmune, customFilter, ally unit, hero unit, unit level > 10, Building, Flying Unit, Not Alive
+        // Priority Order:
+        // 1. Closest to Hero Priority
+
+        // get random non-hero enemy unit close to ownerHero
+        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function AntiLeak))
+        call BotLogWithPlayer(heroOwner, "Found " + I2S(CountUnitsInGroup(enemies)) + " potential control unit targets")    
+
+        loop
+            set currentUnit = FirstOfGroup(enemies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(enemies, currentUnit)
+            call BotLogWithPlayer(heroOwner, "Evaluating control unit target: " + GetUnitName(currentUnit))
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif not IsUnitEnemy(currentUnit, heroOwner) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_HERO) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif not IsUnitAliveBJ(currentUnit) then
+            elseif GetUnitLevel(currentUnit) > 10 then
+            elseif bestTarget == null then
+                call BotLogWithPlayer(heroOwner, "Selected control unit target: " + GetUnitName(currentUnit))
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Closest to Hero Priority
+                if DistanceBetweenUnits(ownerHero, currentUnit) < DistanceBetweenUnits(ownerHero, bestTarget) then
+                    call BotLogWithPlayer(heroOwner, "Switched control unit target to: " + GetUnitName(currentUnit))
+                    set bestTarget = currentUnit
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(enemies)
+        set enemies = null
+
+        return bestTarget
+    endfunction
+
     function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
@@ -1008,6 +1107,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
             set targetUnit = FindBackEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, itm)
             call owner.botLog("Finding back enemy target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
+            set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
+            call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
@@ -1050,6 +1152,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
             set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using item on healthy running enemy: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
+            set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
+            call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             if targetUnit == null then

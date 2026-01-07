@@ -92,7 +92,7 @@ struct AIHeroAbility
             
         // Check if hero has enough mana
         if not this.isManaReady(owner.hero) then
-            call this.botLog("Not enough mana for ability: " + this.orderString)
+            // call this.botLog("Not enough mana for ability: " + this.orderString)
             call owner.setDebugTextTagContent("Combat: " + this.orderString + " - Not Enough Mana")
             call owner.setDebugTextTagColorPreset("RED")
             return false
