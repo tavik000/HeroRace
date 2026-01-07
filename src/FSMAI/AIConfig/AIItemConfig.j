@@ -111,7 +111,7 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
         call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
-        set currentItemId = 'I01M' // X Mark
+        set currentItemId = 'I01M' // XMark
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 3000.0)
         call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 0.0)
@@ -125,6 +125,22 @@ library AIItemConfig
         call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 400.0)
         call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_INSTANT_BACK_ENEMY)
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
+        set currentItemId = 'I01Z' // VoltReturn
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 3000.0)
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
+        set currentItemId = 'I01K' // ThunderBolt
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
         call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME, 0.0)
         set currentItemId = 'I010' // BloodLust

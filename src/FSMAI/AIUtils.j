@@ -344,6 +344,7 @@ library AIUtils requires KeyUtils
 
         // Not Allowed Target: MagicImmune, customFilter, CCed
         // Priority Order:
+        // 1. Ungoaled
         // 1. In Hazard Zone
         // 2. Healthy (HP > 50%)
         // 3. Fastest Move Speed
@@ -362,23 +363,31 @@ library AIUtils requires KeyUtils
                 set bestTarget = currentUnit
             else
                 // --- PRIORITY TOURNAMENT LAYER ---
-                // 1. In Hazard Zone Priority
-                if IsUnitInAnyHazardZone(currentUnit) and not IsUnitInAnyHazardZone(bestTarget) then
+                // 1. Ungoaled Priority
+                if not IsHeroGoaled(currentUnit) and IsHeroGoaled(bestTarget) then
                     set bestTarget = currentUnit
-                elseif not IsUnitInAnyHazardZone(currentUnit) and IsUnitInAnyHazardZone(bestTarget) then
+                elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
                     // Keep bestTarget
                 else
-                    // TIE on Hazard Zone (Both in or both out)
-                    // 2. Healthy Priority
-                    if GetUnitLifePercent(currentUnit) > healthyHpPercent and GetUnitLifePercent(bestTarget) <= healthyHpPercent then
+                    // TIE on Goaled Status (Both Goaled or Both Ungoaled)
+                    // 2. In Hazard Zone Priority
+                    if IsUnitInAnyHazardZone(currentUnit) and not IsUnitInAnyHazardZone(bestTarget) then
                         set bestTarget = currentUnit
-                    elseif GetUnitLifePercent(currentUnit) <= healthyHpPercent and GetUnitLifePercent(bestTarget) > healthyHpPercent then
+                    elseif not IsUnitInAnyHazardZone(currentUnit) and IsUnitInAnyHazardZone(bestTarget) then
                         // Keep bestTarget
                     else
-                        // TIE on Health Bracket (Both > 50% or Both <= 50%)
-                        // 3. Fastest Move Speed Priority  
-                        if GetUnitMoveSpeed(currentUnit) > GetUnitMoveSpeed(bestTarget) then
+                        // TIE on Hazard Zone (Both in or both out)
+                        // 3. Healthy Priority
+                        if GetUnitLifePercent(currentUnit) > healthyHpPercent and GetUnitLifePercent(bestTarget) <= healthyHpPercent then
                             set bestTarget = currentUnit
+                        elseif GetUnitLifePercent(currentUnit) <= healthyHpPercent and GetUnitLifePercent(bestTarget) > healthyHpPercent then
+                            // Keep bestTarget
+                        else
+                            // TIE on Health Bracket (Both > 50% or Both <= 50%)
+                            // 4. Fastest Move Speed Priority  
+                            if GetUnitMoveSpeed(currentUnit) > GetUnitMoveSpeed(bestTarget) then
+                                set bestTarget = currentUnit
+                            endif
                         endif
                     endif
                 endif
