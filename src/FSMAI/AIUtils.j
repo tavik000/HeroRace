@@ -276,6 +276,57 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group enemies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune, customFilter, front of hero
+        // Priority Order:
+        // 1. closest to back of hero
+
+        loop
+            set currentUnit = FirstOfGroup(enemies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(enemies, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif IsUnitInFrontOfUnit(currentUnit, ownerHero) then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Closest to Back Priority
+                if DistanceBetweenUnits(ownerHero, currentUnit) < DistanceBetweenUnits(ownerHero, bestTarget) then
+                    set bestTarget = currentUnit
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(enemies)
+        set enemies = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
@@ -940,17 +991,14 @@ library AIUtils requires KeyUtils
 
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
-            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Hero Target " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagColorPreset("RED")
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
             set targetUnit = FindTeleportAllyTargetInRange(owner, itm.castRange, 0)
-            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Ally Teleport Target " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagColorPreset("RED")
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
             set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding healthy running enemy target for item, result: " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Healthy Running Enemy Target " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagColorPreset("RED")
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
+            set targetUnit = FindBackEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, itm)
+            call owner.botLog("Finding back enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
@@ -961,8 +1009,6 @@ library AIUtils requires KeyUtils
                 endif
                 call IssueImmediateOrder(owner.hero, "stop")
                 set targetUnit = owner.hero
-                call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Self Force Staff Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
             endif
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossTree, heroX, heroY) then
                 if not IsUnitFacingWestNarrow(owner.hero) then
@@ -974,8 +1020,6 @@ library AIUtils requires KeyUtils
                 // stop moving before using item
                 call IssueImmediateOrder(owner.hero, "stop")
                 set targetUnit = owner.hero
-                call owner.setDebugTextTagContent("Item: " + GetItemName(itm.itemHandle) + " - Self Force Staff Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
             endif
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))

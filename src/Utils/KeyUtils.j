@@ -277,6 +277,9 @@ library KeyUtils
 
     // Alive, not Flying, not Building.
     function IsUnitValid takes unit filterUnit returns boolean
+        if filterUnit == null then
+            return false
+        endif
         if not IsUnitAliveBJ(filterUnit) then
             return false
         endif

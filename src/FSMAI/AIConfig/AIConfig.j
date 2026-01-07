@@ -105,7 +105,8 @@ globals
     constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED = 6
     constant integer FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK = 7
     constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 8
-    constant integer FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 9
+    constant integer FIND_TARGET_TYPE_ENEMY_BACK = 9
+    constant integer FIND_TARGET_TYPE_ENEMY_SUMMON_OR_NEUTRAL_CLOSE_TO_ENEMY = 10
 
     constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20
     constant integer FIND_TARGET_TYPE_ALLY_HEAL = 21

@@ -87,12 +87,13 @@ struct AIItem
         if this.castType == CAST_NONE then
             // Cannot prepare target for CAST_NONE
             return false
-        elseif this.castType == CAST_INSTANT_HEAL then
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             if this.isForcedToUse() then
-                set this.bIsReadyToUse = true
+                set this.readyTargetUnit = this.ownerHero
             else
-                set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
@@ -100,6 +101,12 @@ struct AIItem
             endif
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set this.bIsReadyToUse = targetUnitCount >= 2
+        elseif this.castType == CAST_INSTANT_HEAL then
+            if this.isForcedToUse() then
+                set this.bIsReadyToUse = true
+            else
+                set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+            endif
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
@@ -218,6 +225,38 @@ struct AIItem
         elseif this.castType == CAST_INSTANT_HEAL then
             call this.useInstant()
             return true
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            if targetUnit == this.ownerHero then
+                // Force to use
+                call this.useInstant()
+                return true
+            else
+                if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                    return false
+                endif
+                // Follow target unit
+                if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
+                    call this.useInstant()
+                    return true
+                else
+                    call IssueTargetOrder(this.ownerHero, "move", targetUnit)
+                    return true
+                endif
+            endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             call this.useInstant()
             return true
