@@ -75,6 +75,42 @@ struct AIHeroAbility
         return true
     endmethod
 
+    method getUnitFrontOffsetDistance takes unit targetUnit returns real
+        local real targetMoveSpeed = GetUnitMoveSpeed(targetUnit)
+        local real projectileSpeed = 0.0
+        local real targetDistance = DistanceBetweenUnits(this.ownerHero, targetUnit)
+        local real timeToReachTarget = 0.0
+        local real baseOffset = 0.0
+        local real offsetDistance = 0.0
+        local integer ownerUnitTypeId = GetUnitTypeId(this.ownerHero)
+        local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
+        local integer currentOrder
+
+        if this.castType != CAST_POINT_ENEMY_FRONT then
+            call this.botLogError("getFrontOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
+            return 0.0
+        endif
+
+
+        set currentOrder = GetUnitCurrentOrder(targetUnit)
+        if currentOrder == 0 then
+            set targetMoveSpeed = 0.0
+        endif
+
+        if this.abilityId == 'A00S' then  // Flame Strike
+            set timeToReachTarget = 0.0
+            set baseOffset = 0.0
+            if targetMoveSpeed > 0.0 then
+                set offsetDistance = this.effectiveRadius
+            else
+                set offsetDistance = 0.0
+            endif
+        else
+            set offsetDistance = this.effectiveRadius
+        endif
+        return offsetDistance
+    endmethod
+
     method canCastAbility takes nothing returns boolean
         // Check if hero is stunned or silenced
         if IsUnitStunOrSilence(owner.hero) then
@@ -217,7 +253,7 @@ struct AIHeroAbility
             else
                 // Calculate point in front of target unit
                 set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
-                set offset = this.effectiveRadius
+                set offset = this.getUnitFrontOffsetDistance(targetUnit)
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                 set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)

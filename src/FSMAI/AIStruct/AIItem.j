@@ -69,17 +69,26 @@ struct AIItem
         local real timeToReachTarget = 0.0
         local real baseOffset = 0.0
         local real offsetDistance = 0.0
+        local integer ownerUnitTypeId = GetUnitTypeId(this.ownerHero)
+        local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
+        local integer currentOrder
 
         if this.castType != CAST_POINT_ENEMY_FRONT then
             call this.botLogError("getFrontOffsetDistance called for non-front-cast item: " + GetItemName(this.itemHandle))
             return 0.0
         endif
 
+
+        set currentOrder = GetUnitCurrentOrder(targetUnit)
+        if currentOrder == 0 then
+            set targetMoveSpeed = 0.0
+        endif
+
         if this.itemId == 'I002' then  // ForceMissile
             set projectileSpeed = 1500.0
             set timeToReachTarget = targetDistance / projectileSpeed
-            set baseOffset = 150.0
-            set offsetDistance = targetMoveSpeed * timeToReachTarget + baseOffset
+            set baseOffset = 50.0
+            set offsetDistance = targetMoveSpeed * (ownerCastPoint + timeToReachTarget) + baseOffset
         else
             set offsetDistance = this.effectiveRadius
         endif
