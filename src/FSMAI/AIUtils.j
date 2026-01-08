@@ -418,13 +418,17 @@ library AIUtils requires KeyUtils
 
         call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamHeroes))
 
+        // Exclude Flying and Structures
+
         loop
             set currentUnit = FirstOfGroup(unitsBetween)
             call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between: " + GetUnitName(currentUnit))
             exitwhen currentUnit == null
             call GroupRemoveUnit(unitsBetween, currentUnit)
 
-            if currentUnit != sourceUnit and currentUnit != targetUnit then
+            if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
+            elseif currentUnit != sourceUnit and currentUnit != targetUnit then
                 if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
                     // Found blocking unit
                     call DestroyGroup(unitsBetween)
