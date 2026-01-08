@@ -476,6 +476,72 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function FindLeadingEnemyTargetInRange takes unit ownerHero, real range, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group enemies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local boolean bShouldCheckOtherUnitBlockingTargetUnit = false
+        local real tolerance = 50.0
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        if itm != 0 then
+            set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
+            set tolerance = itm.effectiveRadius
+            call BotLogWithPlayer(heroOwner, "Using item " + GetItemName(itm.itemHandle) + " shouldCheckOtherUnitBlockingTargetUnit: " + B2S(bShouldCheckOtherUnitBlockingTargetUnit))
+        endif
+
+
+        // Not Allowed Target: customFilter, not leading, goaled hero, within min distance, blocked by other unit if applicable
+        // Priority Order:
+        // 1 furthest
+        loop
+            set currentUnit = FirstOfGroup(enemies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(enemies, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif IsHeroGoaled(currentUnit) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is goaled")
+            elseif not IsUnitLeadingUnit(currentUnit, ownerHero) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is not leading in race position")
+            elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance")
+            elseif bShouldCheckOtherUnitBlockingTargetUnit and IsThereOtherUnitBlockingBetweenUnits(ownerHero, currentUnit, tolerance) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Furthest from Front Priority
+                if DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
+                    set bestTarget = currentUnit
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(enemies)
+        set enemies = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
@@ -1272,6 +1338,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
             set targetUnit = FindBackEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, itm)
             call owner.botLog("Finding back enemy target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_LEADING then
+            set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
+            call owner.botLog("Finding leading enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
@@ -1323,6 +1392,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_LEADING then
+            set targetUnit = owner.hero
+            call owner.botLog("Force using item on leading enemy: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             if targetUnit == null then

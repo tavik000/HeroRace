@@ -66,11 +66,17 @@ struct AIItem
         if this.itemId == 'I01J' then  // HookShot
             return true 
         endif
+        if this.itemId == 'I003' then  // MeatHook
+            return true
+        endif
         return false
     endmethod
 
     method getMinTargetDistance takes nothing returns real
         if this.itemId == 'I01J' then  // HookShot
+            return this.castRange / 2.0
+        endif
+        if this.itemId == 'I003' then  // MeatHook
             return this.castRange / 2.0
         endif
         return 0.0
@@ -115,6 +121,11 @@ struct AIItem
             set offsetDistance = targetMoveSpeed * ownerCastPoint + baseOffset
         elseif this.itemId == 'I01J' then  // HookShot
             set projectileSpeed = 5000.0
+            set timeToReachTarget = targetDistance / projectileSpeed
+            set baseOffset = 0.0
+            set offsetDistance = targetMoveSpeed * (ownerCastPoint + timeToReachTarget) + baseOffset
+        elseif this.itemId == 'I003' then  // MeatHook
+            set projectileSpeed = 1333.33
             set timeToReachTarget = targetDistance / projectileSpeed
             set baseOffset = 0.0
             set offsetDistance = targetMoveSpeed * (ownerCastPoint + timeToReachTarget) + baseOffset

@@ -108,6 +108,7 @@ globals
     constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 8
     constant integer FIND_TARGET_TYPE_ENEMY_BACK = 9
     constant integer FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT = 10
+    constant integer FIND_TARGET_TYPE_ENEMY_LEADING = 11
 
     constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20
     constant integer FIND_TARGET_TYPE_ALLY_HEAL = 21
