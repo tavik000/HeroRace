@@ -33,6 +33,12 @@ globals
     // The actual number of waypoints initialized.
     integer GoalWaypointIndex = 14
 
+    // Fixed Location Point
+    real TopRightMegaBomberAreaCenterX = 0.0
+    real TopRightMegaBomberAreaCenterY = 0.0
+    real GoalX = 0.0
+    real GoalY = 0.0
+
 endglobals
 
 library AIStateMachine requires KeyUtils, AIUtils
@@ -85,6 +91,12 @@ library AIStateMachine requires KeyUtils, AIUtils
         set WaypointAreas[131] = gg_rct_AIWayPointAreaCrossTree // Before Spider Net Hazard
         set WaypointAreas[14] = gg_rct_Finish
         set GoalWaypointIndex = 14 // Update this to match the number of waypoints you added.
+
+        // Initialize fixed location points
+        set TopRightMegaBomberAreaCenterX = GetRectCenterX(gg_rct_danger)
+        set TopRightMegaBomberAreaCenterY = GetRectCenterY(gg_rct_danger)
+        set GoalX = GetRectCenterX(gg_rct_Finish)
+        set GoalY = GetRectCenterY(gg_rct_Finish)
     endfunction
 
     // This module ensures our initialization functions are called when the map loads.

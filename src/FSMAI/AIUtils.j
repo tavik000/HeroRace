@@ -202,6 +202,38 @@ library AIUtils requires KeyUtils
         return IsUnitInGroup(u, udg_GoaledHeroes) 
     endfunction
 
+    // Check Race Position
+    function IsUnitLeadingUnit takes unit leadingUnit, unit followingUnit returns boolean
+        local real leadingX = GetUnitX(leadingUnit)
+        local real leadingY = GetUnitY(leadingUnit)
+        local real followingX = GetUnitX(followingUnit)
+        local real followingY = GetUnitY(followingUnit)
+        local real midTrackX = TopRightMegaBomberAreaCenterX
+        local real midTrackY = TopRightMegaBomberAreaCenterY
+        local real goalX = GoalX
+        local real goalY = GoalY
+        local boolean bLeadingPassedMidTrack = false
+
+        // Crossing mid track line
+        set bLeadingPassedMidTrack = YDUserDataGet(unit, leadingUnit, "bPassedTrackMidpoint", boolean)
+        call BotLog("Leading Unit Passed Mid Track: " + B2S(bLeadingPassedMidTrack))
+        if not bLeadingPassedMidTrack then
+            if DistanceBetweenXY(leadingX, leadingY, midTrackX, midTrackY) < DistanceBetweenXY(followingX, followingY, midTrackX, midTrackY) then
+                return true
+            else
+                return false
+            endif
+        else
+            if DistanceBetweenXY(leadingX, leadingY, goalX, goalY) < DistanceBetweenXY(followingX, followingY, goalX, goalY) then
+                return true
+            else
+                return false
+            endif
+        endif
+
+        return false
+    endfunction
+
     function IsUnitCarryMoreThanTwoItem takes unit u returns boolean
         local integer itemCount = 0
         local integer i = 0
@@ -414,7 +446,7 @@ library AIUtils requires KeyUtils
         local real ty = GetUnitY(targetUnit)
         local real midX = (sx + tx) / 2.0
         local real midY = (sy + ty) / 2.0
-        local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 50.0 // extra buffer
+        local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 150.0 // extra buffer
 
         call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -461,7 +493,7 @@ library AIUtils requires KeyUtils
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
-        // Not Allowed Target: MagicImmune, customFilter, back of hero, within min distance, blocked by other unit if applicable
+        // Not Allowed Target: MagicImmune, customFilter, back of hero, within min distance, blocked by other unit if applicable, not leading (Race Position)
         // Priority Order:
         // 1. furthest
 
@@ -484,6 +516,8 @@ library AIUtils requires KeyUtils
             elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
             elseif bShouldCheckOtherUnitBlockingTargetUnit and IsThereOtherUnitBlockingBetweenUnits(ownerHero, currentUnit, tolerance) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
+            elseif not IsUnitLeadingUnit(currentUnit, ownerHero) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is not leading in race position")
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else
