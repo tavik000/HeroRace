@@ -89,7 +89,12 @@ struct AIItem
             set timeToReachTarget = targetDistance / projectileSpeed
             set baseOffset = 50.0
             set offsetDistance = targetMoveSpeed * (ownerCastPoint + timeToReachTarget) + baseOffset
+        elseif this.itemId == 'I02I' then  // Fissure
+            // Instant cast, no projectile
+            set baseOffset = 50.0
+            set offsetDistance = targetMoveSpeed * ownerCastPoint + baseOffset
         else
+            // Default offset distance
             set offsetDistance = this.effectiveRadius
         endif
         return offsetDistance
