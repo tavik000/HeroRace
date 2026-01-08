@@ -212,12 +212,11 @@ library AIUtils requires KeyUtils
         local real midTrackY = TopRightMegaBomberAreaCenterY
         local real goalX = GoalX
         local real goalY = GoalY
-        local boolean bLeadingPassedMidTrack = false
-
+        local boolean bPassedMidTrack = false
         // Crossing mid track line
-        set bLeadingPassedMidTrack = YDUserDataGet(unit, leadingUnit, "bPassedTrackMidpoint", boolean)
-        call BotLog("Leading Unit Passed Mid Track: " + B2S(bLeadingPassedMidTrack))
-        if not bLeadingPassedMidTrack then
+        set bPassedMidTrack = IsUnitInGroup(leadingUnit, udg_PassedMidpointHeroes) or IsUnitInGroup(followingUnit, udg_PassedMidpointHeroes)
+        call BotLog("Leading Unit Passed Mid Track: " + B2S(bPassedMidTrack))
+        if not bPassedMidTrack then
             if DistanceBetweenXY(leadingX, leadingY, midTrackX, midTrackY) < DistanceBetweenXY(followingX, followingY, midTrackX, midTrackY) then
                 return true
             else
