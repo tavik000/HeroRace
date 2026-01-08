@@ -62,6 +62,20 @@ struct AIItem
         return false
     endmethod
 
+    method shouldCheckOtherUnitBlockingTargetUnit takes nothing returns boolean
+        if this.itemId == 'I01J' then  // HookShot
+            return true 
+        endif
+        return false
+    endmethod
+
+    method getMinTargetDistance takes nothing returns real
+        if this.itemId == 'I01J' then  // HookShot
+            return this.castRange / 2.0
+        endif
+        return 0.0
+    endmethod
+
     method getUnitFrontOffsetDistance takes unit targetUnit returns real
         local real targetMoveSpeed = GetUnitMoveSpeed(targetUnit)
         local real projectileSpeed = 0.0
@@ -73,7 +87,7 @@ struct AIItem
         local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
         local integer currentOrder
 
-        if this.castType != CAST_POINT_ENEMY_FRONT then
+        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT then
             call this.botLogError("getFrontOffsetDistance called for non-front-cast item: " + GetItemName(this.itemHandle))
             return 0.0
         endif
@@ -81,6 +95,12 @@ struct AIItem
 
         set currentOrder = GetUnitCurrentOrder(targetUnit)
         if currentOrder == 0 then
+            // Not moving
+            set targetMoveSpeed = 0.0
+        endif
+
+        if IsUnitStun(targetUnit) then
+            // Cannot move
             set targetMoveSpeed = 0.0
         endif
 
@@ -93,6 +113,11 @@ struct AIItem
             // Instant cast, no projectile
             set baseOffset = 50.0
             set offsetDistance = targetMoveSpeed * ownerCastPoint + baseOffset
+        elseif this.itemId == 'I01J' then  // HookShot
+            set projectileSpeed = 5000.0
+            set timeToReachTarget = targetDistance / projectileSpeed
+            set baseOffset = 0.0
+            set offsetDistance = targetMoveSpeed * (ownerCastPoint + timeToReachTarget) + baseOffset
         else
             // Default offset distance
             set offsetDistance = this.effectiveRadius
@@ -151,6 +176,13 @@ struct AIItem
             else
                 set this.bIsReadyToUse = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
             endif
+        elseif this.castType == CAST_POINT_ALL_FRONT then
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
+            else
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
@@ -296,6 +328,20 @@ struct AIItem
             set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
             set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
             set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_ALL_FRONT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            
+            // Calculate point in front of target unit
+            set targetFacingAngle = GetUnitFacing(targetUnit)
+            set offset = this.getUnitFrontOffsetDistance(targetUnit)
+            set this.readyTargetPointX = GetUnitX(targetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(targetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then

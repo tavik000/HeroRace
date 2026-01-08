@@ -90,8 +90,9 @@ globals
     constant integer CAST_POINT_ALLY_DEFENSE_AND_CLEANSE = 24
     constant integer CAST_POINT_SELF_FRONT = 25
     constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 26
-    constant integer CAST_POINT_TREE = 27
-    constant integer CAST_POINT_BLINK = 28
+    constant integer CAST_POINT_ALL_FRONT = 27
+    constant integer CAST_POINT_TREE = 28
+    constant integer CAST_POINT_BLINK = 29
 
     constant integer CAST_UNIT = 40 
     constant integer CAST_TREE_FRONT = 50
@@ -120,6 +121,7 @@ globals
 
     constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 50
     constant integer FIND_TARGET_TYPE_ALL_ILLUSION = 51
+    constant integer FIND_TARGET_TYPE_ALL_FRONT = 52 // Furthest
 
 
     constant integer FIND_TEAM_TYPE_NONE = 0

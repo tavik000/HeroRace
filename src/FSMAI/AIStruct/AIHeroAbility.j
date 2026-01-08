@@ -86,7 +86,7 @@ struct AIHeroAbility
         local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
         local integer currentOrder
 
-        if this.castType != CAST_POINT_ENEMY_FRONT then
+        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT then
             call this.botLogError("getFrontOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
             return 0.0
         endif
@@ -94,6 +94,11 @@ struct AIHeroAbility
 
         set currentOrder = GetUnitCurrentOrder(targetUnit)
         if currentOrder == 0 then
+            set targetMoveSpeed = 0.0
+        endif
+
+        if IsUnitStun(targetUnit) then
+            // Cannot move
             set targetMoveSpeed = 0.0
         endif
 

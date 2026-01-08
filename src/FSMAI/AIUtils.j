@@ -375,6 +375,134 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function IsPointOnLineSegment takes real x1, real y1, real x2, real y2, real px, real py, real tolerance returns boolean
+        local real lineMag = DistanceBetweenXY(x1, y1, x2, y2)
+        local real u
+        local real ix
+        local real iy
+        local real dist
+
+        if IsNearlyZero(lineMag) then
+            return false // Line segment is too short
+        endif
+
+        set u = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / (lineMag * lineMag)
+        if u < 0.0 or u > 1.0 then
+            call BotLog("Point is outside the line segment")
+            return false // Point is outside the line segment
+        endif
+
+        set ix = x1 + u * (x2 - x1)
+        set iy = y1 + u * (y2 - y1)
+        set dist = DistanceBetweenXY(px, py, ix, iy)
+
+        if dist <= tolerance then
+            call BotLog("Point is within tolerance of the line segment")
+            return true
+        else
+            call BotLog("Point is NOT within tolerance of the line segment")
+            return false
+        endif
+    endfunction
+
+    function IsThereOtherUnitBlockingBetweenUnits takes unit sourceUnit, unit targetUnit, real tolerance returns boolean
+        local group unitsBetween = CreateGroup()
+        local unit currentUnit = null
+        local real sx = GetUnitX(sourceUnit)
+        local real sy = GetUnitY(sourceUnit)
+        local real tx = GetUnitX(targetUnit)
+        local real ty = GetUnitY(targetUnit)
+        local real midX = (sx + tx) / 2.0
+        local real midY = (sy + ty) / 2.0
+        local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 50.0 // extra buffer
+
+        call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamHeroes))
+
+        loop
+            set currentUnit = FirstOfGroup(unitsBetween)
+            call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between: " + GetUnitName(currentUnit))
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(unitsBetween, currentUnit)
+
+            if currentUnit != sourceUnit and currentUnit != targetUnit then
+                if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
+                    // Found blocking unit
+                    call DestroyGroup(unitsBetween)
+                    return true
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(unitsBetween)
+        set unitsBetween = null
+        set currentUnit = null
+
+        return false
+    endfunction
+
+    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group enemies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local boolean bShouldCheckOtherUnitBlockingTargetUnit = false
+        local real tolerance = 50.0
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune, customFilter, back of hero, within min distance, blocked by other unit if applicable
+        // Priority Order:
+        // 1. furthest
+
+        if itm != 0 then
+            set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
+            set tolerance = itm.effectiveRadius
+            call BotLogWithPlayer(heroOwner, "Using item " + GetItemName(itm.itemHandle) + " shouldCheckOtherUnitBlockingTargetUnit: " + B2S(bShouldCheckOtherUnitBlockingTargetUnit) + " tolerance: " + R2S(tolerance))    
+        endif
+
+        loop
+            set currentUnit = FirstOfGroup(enemies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(enemies, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif IsUnitBehindUnit(currentUnit, ownerHero) then
+            elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
+            elseif bShouldCheckOtherUnitBlockingTargetUnit and IsThereOtherUnitBlockingBetweenUnits(ownerHero, currentUnit, tolerance) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Furthest from Front Priority
+                if DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
+                    set bestTarget = currentUnit
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(enemies)
+        set enemies = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
@@ -1132,6 +1260,9 @@ library AIUtils requires KeyUtils
                 call IssueImmediateOrder(owner.hero, "stop")
                 set targetUnit = owner.hero
             endif
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), 0, itm)
+            call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
         endif
@@ -1161,6 +1292,8 @@ library AIUtils requires KeyUtils
                 set targetUnit = owner.hero
             endif
             call owner.botLog("Force using Force Staff item on self or ally: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
+            set targetUnit = owner.hero
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))
         endif

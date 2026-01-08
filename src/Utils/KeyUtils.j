@@ -108,8 +108,9 @@ library KeyUtils
         return true
     endfunction
 
-    // Pure stun check
+    // Stun or Paralysis (Cannot move)
     function IsUnitStun takes unit u returns boolean
+        // Stun buffs
         if UnitHasBuffBJ(u, 'BSTN') then 
             return true
         endif
@@ -140,6 +141,33 @@ library KeyUtils
         if UnitHasBuffBJ(u, 'B00B') then 
             return true
         endif 
+        // Magic Leash
+        if UnitHasBuffBJ(u, 'Bmlt') then 
+            return true
+        endif       
+        // Impale
+        if UnitHasBuffBJ(u, 'BUim') then 
+            return true
+        endif
+        // Frozen
+        if UnitHasBuffBJ(u, 'B016') then 
+            return true
+        endif
+        // Rooted (Entangling Roots)
+        if UnitHasBuffBJ(u, 'B018') then 
+            return true
+        endif
+        if UnitHasBuffBJ(u, 'BEer') then 
+            return true
+        endif
+        // Spider Web
+        if UnitHasBuffBJ(u, 'B01B') then 
+            return true
+        endif
+        // Ensnare
+        if UnitHasBuffBJ(u, 'Beng') then 
+            return true
+        endif
         return false
     endfunction
 
@@ -177,14 +205,6 @@ library KeyUtils
         endif
         // Stun
         if IsUnitStun(u) then 
-            return true
-        endif
-        // Magic Leash
-        if UnitHasBuffBJ(u, 'Bmlt') then 
-            return true
-        endif       
-        // Impale
-        if UnitHasBuffBJ(u, 'BUim') then 
             return true
         endif
         // Silence
@@ -258,14 +278,6 @@ library KeyUtils
         endif
         // Stun
         if IsUnitStun(u) then 
-            return true
-        endif
-        // Magic Leash
-        if UnitHasBuffBJ(u, 'Bmlt') then 
-            return true
-        endif       
-        // Impale
-        if UnitHasBuffBJ(u, 'BUim') then 
             return true
         endif
         // Slow: current speed less than base speed
