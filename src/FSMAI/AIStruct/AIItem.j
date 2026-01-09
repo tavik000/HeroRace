@@ -119,6 +119,10 @@ struct AIItem
             // Instant cast, no projectile
             set baseOffset = 50.0
             set offsetDistance = targetMoveSpeed * ownerCastPoint + baseOffset
+        elseif this.itemId == 'I021' then  // Torrent
+            // Instant cast, no projectile
+            set baseOffset = 0.0
+            set offsetDistance = targetMoveSpeed * ownerCastPoint + baseOffset
         elseif this.itemId == 'I01J' then  // HookShot
             set projectileSpeed = 5000.0
             set timeToReachTarget = targetDistance / projectileSpeed
