@@ -361,6 +361,84 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function FindIllusionTargetInRange takes unit ownerHero, real range returns unit
+        local group targets = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local real currentUnitAttackDamage = 0.0
+        local real bestAttackDamage = 0.0
+        local real currentDist = 0.0
+        local real bestDist = 0.0
+        local real closeRange = 3000.0
+
+        // Not Allowed Target: MagicImmune, Building, Flying Unit, Not Alive, Non-hero-no-Attack unit
+        // Priority Order:
+        // 1. within range 3000
+        // 2. Highest Attack Damage
+        // 3. Highest Health
+        // 4. Hero Unit
+
+        call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function AntiLeak))
+        call BotLogWithPlayer(heroOwner, "Found " + I2S(CountUnitsInGroup(targets)) + " potential illusion targets")    
+
+        loop
+            set currentUnit = FirstOfGroup(targets)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(targets, currentUnit)
+            call BotLogWithPlayer(heroOwner, "Evaluating illusion target: " + GetUnitName(currentUnit))
+            set currentUnitAttackDamage = GetUnitStateSwap(ConvertUnitState(0x15), currentUnit)
+            call BotLogWithPlayer(heroOwner, "Current unit attack damage: " + R2S(currentUnitAttackDamage))
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif not IsUnitAliveBJ(currentUnit) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_HERO) == false and currentUnitAttackDamage <= 0 then
+            elseif bestTarget == null then
+                call BotLogWithPlayer(heroOwner, "Selected illusion target: " + GetUnitName(currentUnit))
+                set bestTarget = currentUnit
+            else
+                set currentDist = DistanceBetweenUnits(ownerHero, currentUnit)
+                set bestDist = DistanceBetweenUnits(ownerHero, bestTarget)
+                set bestAttackDamage = GetUnitStateSwap(ConvertUnitState(0x15), bestTarget)
+                
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. within close range priority
+                if currentDist <= closeRange then
+                    if bestDist > closeRange then
+                        set bestTarget = currentUnit
+                    else
+                        // 2. Highest Attack Damage
+                        if currentUnitAttackDamage > bestAttackDamage then
+                            set bestTarget = currentUnit
+                        elseif currentUnitAttackDamage == bestAttackDamage then
+                            // 3. Highest Health
+                            if GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) > GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) then
+                                set bestTarget = currentUnit
+                            endif
+                        endif
+                    endif
+                elseif bestDist > closeRange then
+                    if currentUnitAttackDamage > bestAttackDamage then
+                        set bestTarget = currentUnit
+                    elseif currentUnitAttackDamage == bestAttackDamage then
+                        if GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) > GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) then
+                            set bestTarget = currentUnit
+                        endif
+                    endif
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(targets)
+        set targets = null
+        return bestTarget
+
+    endfunction
+
     function FindControlUnitEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
@@ -1537,6 +1615,11 @@ library AIUtils requires KeyUtils
                 return targetUnit
             endif
             call owner.botLog("No target MeatHook")
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_ILLUSION then
+            set targetUnit = FindIllusionTargetInRange(owner.hero, itm.castRange)
+            if targetUnit != null then
+                call owner.botLog("Finding illusion target for item, result: " + GetUnitName(targetUnit))
+            endif
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
         endif
@@ -1581,6 +1664,11 @@ library AIUtils requires KeyUtils
                 return targetUnit
             endif
             set targetUnit = owner.hero
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_ILLUSION then
+            set targetUnit = FindIllusionTargetInRange(owner.hero, itm.castRange)
+            if targetUnit != null then
+                call owner.botLog("Finding illusion target for item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING then
             set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
             if targetUnit != null then
