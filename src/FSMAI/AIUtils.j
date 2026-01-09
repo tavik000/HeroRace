@@ -457,6 +457,12 @@ library AIUtils requires KeyUtils
         local real midY = (sy + ty) / 2.0
         local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 300.0 // extra buffer
 
+        set tempHeroOwner = GetOwningPlayer(sourceUnit)
+        set tempHeroUnit = sourceUnit
+        set tempFindTeamType = FIND_TEAM_TYPE_ALL
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+
         call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamHeroes))
 
         // Exclude Flying and Structures
@@ -483,6 +489,11 @@ library AIUtils requires KeyUtils
         call DestroyGroup(unitsBetween)
         set unitsBetween = null
         set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
 
         return false
     endfunction
@@ -1446,7 +1457,9 @@ library AIUtils requires KeyUtils
             endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
             set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), 0, itm)
-            call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
+            if targetUnit != null then
+                call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING then
             set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
             if targetUnit != null then

@@ -122,7 +122,8 @@ struct AIItem
         elseif this.itemId == 'I021' then  // Torrent
             // Instant cast, no projectile
             set baseOffset = 0.0
-            set offsetDistance = targetMoveSpeed * ownerCastPoint + baseOffset
+            // delay 2 seconds before the torrent erupts
+            set offsetDistance = targetMoveSpeed * (2.0 + ownerCastPoint) + baseOffset
         elseif this.itemId == 'I01J' then  // HookShot
             set projectileSpeed = 5000.0
             set timeToReachTarget = targetDistance / projectileSpeed
@@ -197,7 +198,9 @@ struct AIItem
             else
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
-            call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
+            if this.readyTargetUnit != null then
+                call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
+            endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
