@@ -34,8 +34,10 @@ globals
     integer GoalWaypointIndex = 14
 
     // Fixed Location Point
-    real TopRightMegaBomberAreaCenterX = 0.0
-    real TopRightMegaBomberAreaCenterY = 0.0
+    real TopRightAreaCenterX = 0.0
+    real TopRightAreaCenterY = 0.0
+    real BotRightAreaCenterX = 0.0
+    real BotRightAreaCenterY = 0.0
     real GoalX = 0.0
     real GoalY = 0.0
 
@@ -93,8 +95,10 @@ library AIStateMachine requires KeyUtils, AIUtils
         set GoalWaypointIndex = 14 // Update this to match the number of waypoints you added.
 
         // Initialize fixed location points
-        set TopRightMegaBomberAreaCenterX = GetRectCenterX(gg_rct_danger)
-        set TopRightMegaBomberAreaCenterY = GetRectCenterY(gg_rct_danger)
+        set TopRightAreaCenterX = GetRectCenterX(gg_rct_TrackProgressTopRight)
+        set TopRightAreaCenterY = GetRectCenterY(gg_rct_TrackProgressTopRight)
+        set BotRightAreaCenterX = GetRectCenterX(gg_rct_TrackProgressBotRight)
+        set BotRightAreaCenterY = GetRectCenterY(gg_rct_TrackProgressBotRight)
         set GoalX = GetRectCenterX(gg_rct_Finish)
         set GoalY = GetRectCenterY(gg_rct_Finish)
     endfunction

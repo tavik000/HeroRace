@@ -208,26 +208,34 @@ library AIUtils requires KeyUtils
         local real leadingY = GetUnitY(leadingUnit)
         local real followingX = GetUnitX(followingUnit)
         local real followingY = GetUnitY(followingUnit)
-        local real midTrackX = TopRightMegaBomberAreaCenterX
-        local real midTrackY = TopRightMegaBomberAreaCenterY
         local real goalX = GoalX
         local real goalY = GoalY
-        local boolean bPassedMidTrack = false
+        local integer TrackProgress = 0
         // Crossing mid track line
-        set bPassedMidTrack = IsUnitInGroup(leadingUnit, udg_PassedMidpointHeroes) or IsUnitInGroup(followingUnit, udg_PassedMidpointHeroes)
-        call BotLog("Leading Unit Passed Mid Track: " + B2S(bPassedMidTrack))
-        if not bPassedMidTrack then
-            if DistanceBetweenXY(leadingX, leadingY, midTrackX, midTrackY) < DistanceBetweenXY(followingX, followingY, midTrackX, midTrackY) then
+        set TrackProgress = MaxI(LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(leadingUnit), S2I( "trackProgress")), LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(followingUnit), S2I( "trackProgress")))
+
+        call BotLog("Track Progress: " + I2S(TrackProgress))
+        if TrackProgress == 0 then
+            if DistanceBetweenXY(leadingX, leadingY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(followingX, followingY, TopRightAreaCenterX, TopRightAreaCenterY) then
                 return true
             else
                 return false
             endif
-        else
+        elseif TrackProgress == 1 then
+            if DistanceBetweenXY(leadingX, leadingY, BotRightAreaCenterX, BotRightAreaCenterY) < DistanceBetweenXY(followingX, followingY, BotRightAreaCenterX, BotRightAreaCenterY) then
+                return true
+            else
+                return false
+            endif
+        elseif TrackProgress == 2 then
             if DistanceBetweenXY(leadingX, leadingY, goalX, goalY) < DistanceBetweenXY(followingX, followingY, goalX, goalY) then
                 return true
             else
                 return false
             endif
+        else
+            call BotLogError("Unknown Track Progress value: " + I2S(TrackProgress))
+            return false
         endif
 
         return false
@@ -495,7 +503,6 @@ library AIUtils requires KeyUtils
         if itm != 0 then
             set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
             set tolerance = itm.effectiveRadius
-            call BotLogWithPlayer(heroOwner, "Using item " + GetItemName(itm.itemHandle) + " shouldCheckOtherUnitBlockingTargetUnit: " + B2S(bShouldCheckOtherUnitBlockingTargetUnit))
         endif
 
 

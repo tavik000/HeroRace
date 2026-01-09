@@ -30,6 +30,22 @@ library KeyUtils
         return a
     endfunction
 
+    function MaxR takes real a, real b returns real
+        if a >= b then
+            return a
+        else
+            return b
+        endif
+    endfunction
+
+    function MaxI takes integer a, integer b returns integer
+        if a >= b then
+            return a
+        else
+            return b
+        endif
+    endfunction
+
     function AngleBetweenXY takes real x1, real y1, real x2, real y2 returns real
         local real dx = x2 - x1
         local real dy = y2 - y1
