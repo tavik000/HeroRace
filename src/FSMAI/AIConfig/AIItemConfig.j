@@ -173,8 +173,8 @@ library AIItemConfig
         call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
         call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 2000.0)
         call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 120.0)
-        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
-        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LEADING)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_POINT_ALL_FRONT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
         call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME_KEY, 0.0)
         set currentItemId = 'I010' // BloodLust

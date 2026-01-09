@@ -193,6 +193,7 @@ struct AIItem
             else
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
+            call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
             set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
@@ -334,6 +335,12 @@ struct AIItem
                 return false
             endif
             
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
             // Calculate point in front of target unit
             set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
             set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
@@ -346,6 +353,28 @@ struct AIItem
             if targetUnit == null then
                 call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
                 return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            if this.itemId == 'I003' then  // MeatHook
+                if targetUnit == this.ownerHero then
+                    // Force to use on side left / right, randomly
+                    if GetRandomReal(0.0, 1.0) < 0.5 then
+                        set targetFacingAngle = GetUnitFacing(this.ownerHero) + - 90.0
+                    else
+                        set targetFacingAngle = GetUnitFacing(this.ownerHero) + 90.0
+                    endif
+                    set offset = this.effectiveRadius
+                    set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+                    set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+                    call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+                    return true
+                endif
             endif
             
             // Calculate point in front of target unit

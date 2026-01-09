@@ -123,6 +123,7 @@ globals
     constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 50
     constant integer FIND_TARGET_TYPE_ALL_ILLUSION = 51
     constant integer FIND_TARGET_TYPE_ALL_FRONT = 52 // Furthest
+    constant integer FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING = 53 
 
 
     constant integer FIND_TEAM_TYPE_NONE = 0

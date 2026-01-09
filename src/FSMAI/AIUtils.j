@@ -214,7 +214,6 @@ library AIUtils requires KeyUtils
         // Crossing mid track line
         set TrackProgress = MaxI(LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(leadingUnit), S2I( "trackProgress")), LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(followingUnit), S2I( "trackProgress")))
 
-        call BotLog("Track Progress: " + I2S(TrackProgress))
         if TrackProgress == 0 then
             if DistanceBetweenXY(leadingX, leadingY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(followingX, followingY, TopRightAreaCenterX, TopRightAreaCenterY) then
                 return true
@@ -420,26 +419,29 @@ library AIUtils requires KeyUtils
         local real ix
         local real iy
         local real dist
-
+        local real buffer = 0.0
         if IsNearlyZero(lineMag) then
             return false // Line segment is too short
         endif
 
-        set u = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / (lineMag * lineMag)
-        if u < 0.0 or u > 1.0 then
-            call BotLog("Point is outside the line segment")
+        set buffer = 300.0 / lineMag
+
+        // Calculate the projection of point P onto the line defined by points (x1, y1) and (x2, y2)
+        // u is the normalized distance from (x1, y1) to the projection point
+        set u = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / (lineMag * lineMag) 
+        if u < (0.0 - buffer) or u > (1.0 + buffer) then
+            call BotLog("Point is outside the line segment with buffer: u=" + R2S(u))
             return false // Point is outside the line segment
         endif
 
+        // Find the closest point on the line segment
         set ix = x1 + u * (x2 - x1)
         set iy = y1 + u * (y2 - y1)
         set dist = DistanceBetweenXY(px, py, ix, iy)
 
         if dist <= tolerance then
-            call BotLog("Point is within tolerance of the line segment")
             return true
         else
-            call BotLog("Point is NOT within tolerance of the line segment")
             return false
         endif
     endfunction
@@ -453,7 +455,7 @@ library AIUtils requires KeyUtils
         local real ty = GetUnitY(targetUnit)
         local real midX = (sx + tx) / 2.0
         local real midY = (sy + ty) / 2.0
-        local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 150.0 // extra buffer
+        local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 300.0 // extra buffer
 
         call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -461,9 +463,10 @@ library AIUtils requires KeyUtils
 
         loop
             set currentUnit = FirstOfGroup(unitsBetween)
-            call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between: " + GetUnitName(currentUnit))
             exitwhen currentUnit == null
             call GroupRemoveUnit(unitsBetween, currentUnit)
+
+            call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
@@ -482,6 +485,72 @@ library AIUtils requires KeyUtils
         set currentUnit = null
 
         return false
+    endfunction
+    
+    function FindTrailingAllyTargetInRange takes unit ownerHero, real range, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group allies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local boolean bShouldCheckOtherUnitBlockingTargetUnit = false
+        local real tolerance = 50.0
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(allies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        if itm != 0 then
+            set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
+            set tolerance = itm.effectiveRadius
+        endif
+        // Not Allowed Target: customFilter, not trailing, goaled hero, within min distance, blocked by other unit if applicable
+        // Priority Order:
+        // 1 furthest
+
+        loop
+            set currentUnit = FirstOfGroup(allies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(allies, currentUnit)
+
+            call BotLogWithPlayer(heroOwner, "Evaluating Trailing Ally target: " + GetUnitName(currentUnit))
+
+            // --- VALIDATION LAYER ---
+            if tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif IsHeroGoaled(currentUnit) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is goaled")
+            elseif IsUnitLeadingUnit(currentUnit, ownerHero) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is not trailing in race position")
+            elseif bShouldCheckOtherUnitBlockingTargetUnit and IsThereOtherUnitBlockingBetweenUnits(ownerHero, currentUnit, tolerance) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
+            elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance") 
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+                call BotLogWithPlayer(heroOwner, "Selected trailing ally target: " + GetUnitName(currentUnit))
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Furthest from Front Priority
+                if DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
+                    set bestTarget = currentUnit
+                    call BotLogWithPlayer(heroOwner, "Switched trailing ally target to: " + GetUnitName(currentUnit))
+                endif
+            endif
+        endloop
+        // Clean up
+        call DestroyGroup(allies)
+        set allies = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        return bestTarget
     endfunction
 
     function FindLeadingEnemyTargetInRange takes unit ownerHero, real range, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
@@ -513,6 +582,7 @@ library AIUtils requires KeyUtils
             set currentUnit = FirstOfGroup(enemies)
             exitwhen currentUnit == null
             call GroupRemoveUnit(enemies, currentUnit)
+            call BotLogWithPlayer(heroOwner, "Evaluating Leading enemy target: " + GetUnitName(currentUnit))
 
             // --- VALIDATION LAYER ---
             if tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
@@ -527,11 +597,13 @@ library AIUtils requires KeyUtils
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
             elseif bestTarget == null then
                 set bestTarget = currentUnit
+                call BotLogWithPlayer(heroOwner, "Selected enemy target: " + GetUnitName(currentUnit))
             else
                 // --- PRIORITY TOURNAMENT LAYER ---
                 // 1. Furthest from Front Priority
                 if DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
                     set bestTarget = currentUnit
+                    call BotLogWithPlayer(heroOwner, "Switched enemy target to: " + GetUnitName(currentUnit))
                 endif
             endif
         endloop
@@ -572,7 +644,6 @@ library AIUtils requires KeyUtils
         if itm != 0 then
             set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
             set tolerance = itm.effectiveRadius
-            call BotLogWithPlayer(heroOwner, "Using item " + GetItemName(itm.itemHandle) + " shouldCheckOtherUnitBlockingTargetUnit: " + B2S(bShouldCheckOtherUnitBlockingTargetUnit) + " tolerance: " + R2S(tolerance))    
         endif
 
         loop
@@ -1376,6 +1447,18 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
             set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), 0, itm)
             call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING then
+            set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Found leading enemy target for item, result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            set targetUnit = FindTrailingAllyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Found trailing ally target for item, result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            call owner.botLog("No target MeatHook")
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type: " + I2S(itm.findTargetType))
         endif
@@ -1409,6 +1492,22 @@ library AIUtils requires KeyUtils
             endif
             call owner.botLog("Force using Force Staff item on self or ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), 0, itm)
+            if targetUnit != null then
+                return targetUnit
+            endif
+            set targetUnit = owner.hero
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING then
+            set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Finding leading enemy target for item, result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            set targetUnit = FindTrailingAllyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Finding trailing ally target for item, result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
             set targetUnit = owner.hero
         else
             call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), "Unsupported item find target type for force use: " + I2S(itm.findTargetType))

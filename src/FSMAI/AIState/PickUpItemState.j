@@ -24,6 +24,8 @@ struct PickUpItemState extends AIState
     endmethod
 
     method onUpdate takes nothing returns nothing
+        local integer currentOrder
+
         // check if item has been picked up
         if owner.pickingUpItem == null or IsItemOwned(owner.pickingUpItem) or IsUnitInventoryFull(owner.hero) then
             call this.botLog("Item picked up or no item to pick up, transitioning to Run State")
@@ -31,6 +33,13 @@ struct PickUpItemState extends AIState
             call owner.setDebugTextTagColorPreset("CYAN")
             call owner.changeState(RunState.create())
         endif
+
+        set currentOrder = GetUnitCurrentOrder(owner.hero)
+        if currentOrder == 0 then
+            call IssueTargetOrder(owner.hero, "smart", owner.pickingUpItem) 
+            call this.botLog("Re-issuing pick up order for item: " + GetItemName(owner.pickingUpItem))
+        endif
+
     endmethod
 
     method onExit takes nothing returns nothing
