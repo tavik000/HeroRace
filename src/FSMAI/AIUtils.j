@@ -152,6 +152,53 @@ library AIUtils requires KeyUtils
         return true
     endfunction
 
+    function IsValidGroundUnitTarget takes unit filterUnit returns boolean
+        if not IsUnitAliveBJ(filterUnit) then
+            return false
+        endif
+        if not IsUnitVisible(filterUnit, tempHeroOwner) then
+            return false
+        endif
+        if IsUnitType(filterUnit, UNIT_TYPE_STRUCTURE) then
+            return false
+        endif
+        if IsUnitType(filterUnit, UNIT_TYPE_FLYING) then
+            return false
+        endif
+        return true
+    endfunction
+
+    function FilterValidVisibleTeamUnits takes nothing returns boolean
+        local unit filterUnit = GetFilterUnit()
+        
+        if not IsValidGroundUnitTarget(filterUnit) then
+            set filterUnit = null
+            return false
+        endif
+
+        // Check if we want allies or enemies
+        if tempFindTeamType == FIND_TEAM_TYPE_ALLIES then
+            // Filter for allies (same team, but not the same unit)
+            if IsUnitEnemy(filterUnit, tempHeroOwner) then
+                set filterUnit = null
+                return false
+            endif
+        elseif tempFindTeamType == FIND_TEAM_TYPE_ENEMIES then
+            // Filter for enemies
+            if not IsUnitEnemy(filterUnit, tempHeroOwner) then
+                set filterUnit = null
+                return false
+            endif
+        elseif tempFindTeamType == FIND_TEAM_TYPE_NONE then
+            // No team filtering
+        elseif tempFindTeamType == FIND_TEAM_TYPE_ALL then
+            // FIND_TEAM_TYPE_ALL - no filtering needed
+        endif
+        
+        set filterUnit = null
+        return true
+    endfunction
+
     // Generic filter function for heroes (enemies or allies)
     function FilterValidVisibleTeamHeroes takes nothing returns boolean
         local unit filterUnit = GetFilterUnit()
@@ -632,13 +679,14 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, boolean bHeroOnly, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
         local player heroOwner = GetOwningPlayer(ownerHero)
         local boolean bShouldCheckOtherUnitBlockingTargetUnit = false
         local real tolerance = 50.0
+        local boolean bIgnoreMagicImmune = false
     
         // Set temp variables for filter function
         set tempHeroOwner = heroOwner
@@ -646,7 +694,13 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = ownerHero
         set tempAIHeroAbility = heroAbil
         set tempAIItem = itm
-        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+        call BotLogWithPlayer(heroOwner, "bHeroOnly: " + B2S(bHeroOnly))
+        if bHeroOnly then
+            call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+        else
+            call BotLogWithPlayer(heroOwner, "Finding front target in range " + R2S(range) + " (All Units)")
+            call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamUnits))
+        endif
 
         // Not Allowed Target: MagicImmune, customFilter, back of hero, within min distance, blocked by other unit if applicable, not leading (Race Position)
         // Priority Order:
@@ -655,30 +709,36 @@ library AIUtils requires KeyUtils
         if itm != 0 then
             set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
             set tolerance = itm.effectiveRadius
+            set bIgnoreMagicImmune = itm.isIgnoreMagicImmune()
         endif
 
         loop
             set currentUnit = FirstOfGroup(enemies)
             exitwhen currentUnit == null
             call GroupRemoveUnit(enemies, currentUnit)
-
+            call BotLogWithPlayer(heroOwner, "Evaluating Front target: " + GetUnitName(currentUnit))
             // --- VALIDATION LAYER ---
-            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) and not bIgnoreMagicImmune then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is invulnerable or magic immune")
             elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif IsUnitBehindUnit(currentUnit, ownerHero) then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is behind the owner hero")
             elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
+                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance")
             elseif bShouldCheckOtherUnitBlockingTargetUnit and IsThereOtherUnitBlockingBetweenUnits(ownerHero, currentUnit, tolerance) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
             elseif not IsUnitLeadingUnit(currentUnit, ownerHero) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is not leading in race position")
             elseif bestTarget == null then
                 set bestTarget = currentUnit
+                call BotLogWithPlayer(heroOwner, "Selected front target: " + GetUnitName(currentUnit))
             else
                 // --- PRIORITY TOURNAMENT LAYER ---
                 // 1. Furthest from Front Priority
                 if DistanceBetweenUnits(ownerHero, currentUnit) > DistanceBetweenUnits(ownerHero, bestTarget) then
                     set bestTarget = currentUnit
+                    call BotLogWithPlayer(heroOwner, "Switched front target to: " + GetUnitName(currentUnit))
                 endif
             endif
         endloop
@@ -1456,7 +1516,12 @@ library AIUtils requires KeyUtils
                 set targetUnit = owner.hero
             endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
-            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), 0, itm)
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), true, 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
+            endif
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_UNIT_FRONT then
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), false, 0, itm)
             if targetUnit != null then
                 call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
             endif
@@ -1505,7 +1570,13 @@ library AIUtils requires KeyUtils
             endif
             call owner.botLog("Force using Force Staff item on self or ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_FRONT then
-            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), 0, itm)
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), true, 0, itm)
+            if targetUnit != null then
+                return targetUnit
+            endif
+            set targetUnit = owner.hero
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALL_UNIT_FRONT then
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALL, itm.getMinTargetDistance(), false, 0, itm)
             if targetUnit != null then
                 return targetUnit
             endif

@@ -62,6 +62,16 @@ struct AIItem
         return false
     endmethod
 
+    method isIgnoreMagicImmune takes nothing returns boolean
+        if this.itemId == 'I01J' then  // HookShot
+            return true 
+        endif
+        if this.itemId == 'I003' then  // MeatHook
+            return true
+        endif
+        return false
+    endmethod
+
     method shouldCheckOtherUnitBlockingTargetUnit takes nothing returns boolean
         if this.itemId == 'I01J' then  // HookShot
             return true 
