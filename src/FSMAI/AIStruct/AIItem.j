@@ -47,6 +47,12 @@ struct AIItem
                 return false
             endif
         endif
+        if this.itemId == 'I01U' then // Banish
+            if UnitHasBuffBJ(u, 'BHbn') then
+                call this.botLog("Skipping banish target, already banished, unit: " + GetUnitName(u))
+                return false
+            endif
+        endif
         return true
     endmethod
 
@@ -70,6 +76,13 @@ struct AIItem
             return true
         endif
         return false
+    endmethod
+
+    method mustHaveBuffCodeWhenFollowing takes nothing returns integer
+        if this.itemId == 'I008' then  // LightingShield
+            return 'Blsh'  // Lighting Shield Buff
+        endif
+        return 0
     endmethod
 
     method shouldCheckOtherUnitBlockingTargetUnit takes nothing returns boolean
@@ -320,6 +333,11 @@ struct AIItem
         elseif this.castType == CAST_UNIT_SELF_THEN_FOLLOW_TARGET then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            if IsUnitInvulnerableOrMagicImmune(this.ownerHero) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
                 return false
             endif
             if this.isForcedToUse() then
@@ -627,7 +645,7 @@ struct AIItem
                 // Follow target unit
                 if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
                     call this.useToTargetUnit(this.ownerHero)
-                    call this.ownerAIHero.changeState(FollowState.create(targetUnit, this.getFollowTargetDuration()))
+                    call this.ownerAIHero.changeState(FollowState.create(targetUnit, this.getFollowTargetDuration(), this.mustHaveBuffCodeWhenFollowing()))
                     return true
                 else
                     call IssueTargetOrder(this.ownerHero, "move", targetUnit)

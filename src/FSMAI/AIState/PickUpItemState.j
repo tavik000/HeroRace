@@ -40,6 +40,18 @@ struct PickUpItemState extends AIState
             call this.botLog("Re-issuing pick up order for item: " + GetItemName(owner.pickingUpItem))
         endif
 
+        call owner.combatData.tryPrepareTargetForItems()
+        call owner.combatData.tryPrepareTargetForAbilities()
+
+        // Check if we should enter combat state
+        if owner.shouldEnterCombat() then
+            call this.botLog("Entering combat - abilities ready")
+            call owner.setDebugTextTagContent("Run: Entering Combat")
+            call owner.setDebugTextTagColorPreset("GREEN")
+            call owner.changeState(CombatState.create())
+            return
+        endif
+
     endmethod
 
     method onExit takes nothing returns nothing

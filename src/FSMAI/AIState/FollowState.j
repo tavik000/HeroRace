@@ -3,13 +3,15 @@ struct FollowState extends AIState
     unit targetUnit
     real followDuration
     real startTime = 0.0
+    integer mustHaveBuffCode = 0
 
-    static method create takes unit target, real duration returns thistype
+    static method create takes unit target, real duration, integer inMustHaveBuffCode returns thistype
         local thistype this = thistype.allocate()
         set this.stateID = STATE_FOLLOW
         set this.targetUnit = target
         set this.followDuration = duration
         set this.startTime = TimerGetElapsed(gameTimer)
+        set this.mustHaveBuffCode = inMustHaveBuffCode
         return this
     endmethod
 
@@ -25,6 +27,16 @@ struct FollowState extends AIState
 
         call owner.setDebugTextTagContent("Follow: Following Target")
         call owner.setDebugTextTagColorPreset("BLUE")
+
+        if this.mustHaveBuffCode != 0 then
+            if not UnitHasBuffBJ(this.targetUnit, this.mustHaveBuffCode) then
+                call this.botLog("Follow target lost required buff - Returning to Run State")
+                call owner.setDebugTextTagContent("Follow: Target Lost Buff")
+                call owner.setDebugTextTagColorPreset("BLUE")
+                call owner.changeState(RunState.create())
+                return
+            endif
+        endif
 
         if this.isExpired() then
             call this.botLog("Follow duration expired - Returning to Run State")

@@ -1438,7 +1438,7 @@ library AIUtils requires KeyUtils
             call GroupRemoveUnit(heroes, currentUnit)
                 
 
-            // Not allow: Invulnerable/Magic Immune
+            // Not allow: Invulnerable/Magic Immune, customFilter
                 
             //  Current Priority Order:                                                                                     
             // 1. Ungoaled Hero

@@ -61,8 +61,8 @@ library AIStateMachine requires KeyUtils, AIUtils
         // Example: Add abilities based on hero type
         if heroTypeId == 'H009' then  // BloodMage example
             call BotLog("Adding abilities for BloodMage")
-            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, FIND_TARGET_TYPE_ENEMY_COMBO, 200, 2, 866.0)   // Flame Strike
             call data.addAbility('A00W', 22.0, CAST_UNIT, "banish", 40, MAX_RANGE, FIND_TARGET_TYPE_ENEMY_COMBO, 0, 1, 0.0)   // Banish
+            call data.addAbility('A00S', 22.0, CAST_POINT_ENEMY_FRONT, "flamestrike", 70, MAX_RANGE, FIND_TARGET_TYPE_ENEMY_COMBO, 200, 2, 866.0)   // Flame Strike
             call data.addAbility('A01N', 47.0, CAST_UNIT, "bloodlust", 50, 2500, FIND_TARGET_TYPE_ALLY_SPEED_UP, 0, 0, 0.0) // Blood Lust
             
         elseif heroTypeId == 'Hmkg' then  // Mountain King example
