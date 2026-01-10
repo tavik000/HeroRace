@@ -17,6 +17,8 @@ struct AIItem
     real readyTargetPointY
     unit readyTargetUnit
     location readyTargetPoint
+    destructable readyTargetTree
+
 
     static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, real requiredCastTime, integer newManaCost, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
         local thistype this = thistype.allocate()
@@ -357,6 +359,19 @@ struct AIItem
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
+        elseif this.castType == CAST_TREE_FRONT then
+            if this.isForcedToUse() then
+                set this.readyTargetTree = FindNearestTreeInRange(this.ownerHero, 1000.0)
+                set this.bIsReadyToUse = this.readyTargetTree != null
+                return this.bIsReadyToUse
+            endif
+            if GetUnitLifePercent(this.ownerHero) <= 50.0 then
+                set this.readyTargetTree = FindNearestTreeInFrontOfUnit(this.ownerHero, 1000.0)
+                set this.bIsReadyToUse = this.readyTargetTree != null
+            else
+                set this.readyTargetTree = null
+                set this.bIsReadyToUse = false
+            endif
         else
             call this.botLogError("Item cast type not implemented for prepare target: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
             set this.readyTargetUnit = null
@@ -422,6 +437,15 @@ struct AIItem
         set this.readyTargetPointY = 0.0
         set this.readyTargetPoint = null
         set this.readyTargetUnit = null
+    endmethod
+
+    method useToTargetTree takes destructable targetTree returns nothing
+        call UnitUseItemTarget( this.ownerHero, this.itemHandle, targetTree)
+        call this.botLog("Using item: " + GetItemName(this.itemHandle) + " on target tree at point: (" + R2S(GetDestructableX(targetTree)) + ", " + R2S(GetDestructableY(targetTree)) + ")")
+        set this.lastUseTime = TimerGetElapsed(gameTimer)
+        set this.bIsReadyToUse = false
+        set this.readyTargetTree = null
+        set this.ownerAIHero.eatingTree = targetTree
     endmethod
 
     method tryUse takes nothing returns boolean
@@ -683,6 +707,15 @@ struct AIItem
                     return true
                 endif
             endif
+        elseif this.castType == CAST_TREE_FRONT then
+            if this.readyTargetTree == null then
+                call this.botLogError("No valid target tree found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            call this.useToTargetTree(this.readyTargetTree)
+            return true
         else
             call this.botLogError("Item cast type not implemented: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
             return false

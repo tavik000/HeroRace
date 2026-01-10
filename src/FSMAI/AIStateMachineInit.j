@@ -18,6 +18,8 @@ globals
     unit tempHeroUnit = null
     AIHeroAbility tempAIHeroAbility = 0
     AIItem tempAIItem = 0
+    destructable tempTree = null
+    real tempNearestTreeDist = MAX_RANGE
 
     // Temporary variables for item search
     item tempFoundItem = null

@@ -1701,6 +1701,98 @@ library AIUtils requires KeyUtils
         return Location(bestX, bestY)
     endfunction
 
+    function IsDestructableInFrontOfUnit takes destructable tree, unit heroUnit returns boolean
+        local real heroX = GetUnitX(heroUnit)
+        local real heroY = GetUnitY(heroUnit)
+        local real treeX = GetDestructableX(tree)
+        local real treeY = GetDestructableY(tree)
+        local real angleToTree = Atan2(treeY - heroY, treeX - heroX)
+        local real heroFacingAngle = GetUnitFacing(heroUnit) * bj_DEGTORAD
+        local real angleDiff = AngleDiff(heroFacingAngle, angleToTree)
+        local real frontAngleThreshold = 90.0
+
+        if Abs(angleDiff) <= frontAngleThreshold * bj_DEGTORAD then
+            return true
+        else
+            return false
+        endif
+
+    endfunction
+
+    function EnumNearDestructableTrees takes nothing returns nothing
+        local destructable tree = GetEnumDestructable()
+        local integer destructableTypeId = GetDestructableTypeId(tree)
+        local real treeDist = DistanceBetweenDestructableAndUnit(tree, tempHeroUnit)
+
+        // some blockers are destructables but not trees
+        if destructableTypeId == 'YTfb' then 
+            return
+        endif
+        if destructableTypeId == 'B001' then 
+            return
+        endif
+        if destructableTypeId == 'YTlb' then 
+            return
+        endif
+        if destructableTypeId == 'Ytlc' then 
+            return
+        endif
+        if GetDestructableLife(tree) <= 0.0 then
+            return
+        endif
+        if IsDestructableInFrontOfUnit(tree, tempHeroUnit) then
+            if treeDist < tempNearestTreeDist then
+                set tempNearestTreeDist = treeDist
+                set tempTree = tree
+            endif
+        endif
+
+    endfunction
+
+    function FindNearestTreeInFrontOfUnit takes unit sourceUnit, real range returns destructable
+        local location sourceLoc = Location(GetUnitX(sourceUnit), GetUnitY(sourceUnit))
+        local destructable nearestTree = null
+
+        if not IsUnitFacingAlongTrack(sourceUnit) then
+            return null
+        endif
+      
+        set tempHeroUnit = sourceUnit
+        set tempTree = null
+        set tempNearestTreeDist = MAX_RANGE
+
+        call EnumDestructablesInCircle(range, sourceLoc, function EnumNearDestructableTrees)
+        set nearestTree = tempTree
+
+        // Clean up
+        set tempHeroUnit = null
+        set tempTree = null
+        set tempNearestTreeDist = MAX_RANGE
+        call RemoveLocation(sourceLoc)
+        set sourceLoc = null
+        return nearestTree
+    endfunction
+
+    function FindNearestTreeInRange takes unit sourceUnit, real range returns destructable
+        local location sourceLoc = Location(GetUnitX(sourceUnit), GetUnitY(sourceUnit))
+        local destructable nearestTree = null
+
+        set tempHeroUnit = sourceUnit
+        set tempTree = null
+        set tempNearestTreeDist = MAX_RANGE
+
+        call EnumDestructablesInCircle(range, sourceLoc, function EnumNearDestructableTrees)
+        set nearestTree = tempTree
+
+        // Clean up
+        set tempHeroUnit = null
+        set tempTree = null
+        set tempNearestTreeDist = MAX_RANGE
+        call RemoveLocation(sourceLoc)
+        set sourceLoc = null
+        return nearestTree
+    endfunction
+
     function FindTargetUnitForAbility takes AIHero owner, AIHeroAbility heroAbil returns unit
         local unit targetUnit = null
 

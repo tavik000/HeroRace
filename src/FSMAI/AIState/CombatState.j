@@ -23,6 +23,13 @@ struct CombatState extends AIState
         call owner.setDebugTextTagContent("Combat: Updating")
         call owner.setDebugTextTagColorPreset("RED")
 
+        if owner.eatingTree != null then
+            call this.botLog("Currently eating a tree, skipping update")
+            call owner.setDebugTextTagContent("Combat: Eating Tree")
+            call owner.setDebugTextTagColorPreset("RED")
+            return
+        endif
+
         if isCastFailed then
             call this.botLog("Casting failed detected for ability: " + owner.castingAbility.orderString)
             call owner.setDebugTextTagContent("Combat: Cast Failed " + owner.castingAbility.orderString)

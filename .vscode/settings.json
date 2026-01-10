@@ -5,6 +5,8 @@
 		"boolexpr",
 		"cooldown",
 		"DEGTORAD",
+		"destructable",
+		"Destructables",
 		"endfunction",
 		"endglobals",
 		"endlibrary",

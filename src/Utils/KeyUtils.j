@@ -97,6 +97,10 @@ library KeyUtils
         return DistanceBetweenXY(GetUnitX(u1), GetUnitY(u1), GetUnitX(u2), GetUnitY(u2))
     endfunction
 
+    function DistanceBetweenDestructableAndUnit takes destructable d, unit u returns real
+        return DistanceBetweenXY(GetDestructableX(d), GetDestructableY(d), GetUnitX(u), GetUnitY(u))
+    endfunction
+
     function AngleDiff takes real a, real b returns real
         local real d = a - b
 
@@ -383,6 +387,20 @@ library KeyUtils
             set playerId = ModI(playerId + 1, bj_MAX_PLAYERS)
         endloop
         return Player(playerId)
+    endfunction
+
+
+    // Destructable
+    function EnumDestructablesInCircle takes real radius, location loc, code actionFunc returns nothing
+        local rect r
+
+        if (radius >= 0) then
+            set bj_enumDestructableCenter = loc
+            set bj_enumDestructableRadius = radius
+            set r = GetRectFromCircleBJ(loc, radius)
+            call EnumDestructablesInRect(r, filterEnumDestructablesInCircleBJ, actionFunc)
+            call RemoveRect(r)
+        endif
     endfunction
 
 endlibrary

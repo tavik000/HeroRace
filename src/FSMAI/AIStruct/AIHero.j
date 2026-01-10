@@ -16,6 +16,7 @@ struct AIHero
     string debugTextTagContent
     timer debugTextTagTimer
     item pickingUpItem
+    destructable eatingTree
         
     // Constructor
     static method create takes unit u, integer inDifficulty returns thistype
@@ -36,6 +37,7 @@ struct AIHero
         set this.debugTextTagContent = ""
         set this.debugTextTagTimer = null
         set this.pickingUpItem = null
+        set this.eatingTree = null
 
 
         // Initialize combat data
@@ -238,6 +240,14 @@ struct AIHero
                 call this.currentState.onUpdate()
             endif
         endif
+
+        if this.eatingTree != null then
+            if GetDestructableLife(this.eatingTree) <= 0.0 then
+                set this.eatingTree = null
+                call this.botLog("Finished eating tree.")
+            endif
+        endif
+
     endmethod
 
     method resetIsCasting takes nothing returns nothing
