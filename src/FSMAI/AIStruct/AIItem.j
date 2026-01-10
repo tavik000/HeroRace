@@ -175,6 +175,8 @@ struct AIItem
         if this.castType == CAST_NONE then
             // Cannot prepare target for CAST_NONE
             return false
+        elseif this.castType == CAST_INSTANT then
+            set this.bIsReadyToUse = true
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             if this.isForcedToUse() then
                 set this.readyTargetUnit = this.ownerHero
@@ -346,6 +348,9 @@ struct AIItem
         if this.castType == CAST_NONE then
             call this.botLogError("Item cast type is CAST_NONE, cannot use item: " + GetItemName(this.itemHandle))
             return false
+        elseif this.castType == CAST_INSTANT then
+            call this.useInstant()
+            return true
         elseif this.castType == CAST_INSTANT_HEAL then
             call this.useInstant()
             return true

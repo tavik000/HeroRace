@@ -627,7 +627,7 @@ library AIUtils requires KeyUtils
         set tempAIHeroAbility = 0
         set tempAIItem = 0
 
-        call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamHeroes))
+        call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamUnits))
 
         // Exclude Flying and Structures
 
