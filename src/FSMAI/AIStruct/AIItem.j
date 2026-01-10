@@ -207,6 +207,7 @@ struct AIItem
                 return true
             endif
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
+            call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for item: " + GetItemName(this.itemHandle))
             set this.bIsReadyToUse = targetUnitCount >= 2
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.isForcedToUse() then
