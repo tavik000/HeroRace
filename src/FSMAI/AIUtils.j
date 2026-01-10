@@ -1067,6 +1067,7 @@ library AIUtils requires KeyUtils
         local unit bestTarget = null
         local unit ownerHero = owner.hero
         local player heroOwner = GetOwningPlayer(ownerHero)
+        local real minDistance = 700.0
         
         // Comparison variables
         local real currentHpPct
@@ -1076,7 +1077,7 @@ library AIUtils requires KeyUtils
         local real currentDist
         local real bestDist
 
-        // Not Allowed Target: customFilter, In Hazard Zone, Behind, Too close(400)
+        // Not Allowed Target: customFilter, In Hazard Zone, Behind, Too close(400), Trailing
         // Priority Order:
         // 1. HP >= 50%
         // 2. CCed
@@ -1102,8 +1103,10 @@ library AIUtils requires KeyUtils
                 // Skip units in danger
             elseif IsUnitBehindUnit(currentUnit, ownerHero) then
                 // Skip units behind the bot
-            elseif DistanceBetweenUnits(ownerHero, currentUnit) < 400.0 then
+            elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
                 // Skip units too close
+            elseif not IsUnitLeadingUnit(currentUnit, ownerHero) then
+                // Skip trailing units
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else
