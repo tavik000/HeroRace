@@ -923,6 +923,52 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindCCedTargetInRange takes unit ownerHero, real range, integer findTeamType, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group units = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune, customFilter, not CCed
+        // Priority Order: None
+
+        loop
+            set currentUnit = FirstOfGroup(units)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(units, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif not IsUnitStunOrSlow(currentUnit) then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+                exitwhen true
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(units)
+        set units = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
@@ -1617,6 +1663,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CC then
+            set targetUnit = FindCCedTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, 0, itm)
+            call owner.botLog("Finding CC'ed enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
@@ -1692,6 +1741,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_LEADING then
             set targetUnit = owner.hero
             call owner.botLog("Force using item on leading enemy: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CC then
+            set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
+            call owner.botLog("Force using item on CC'ed enemy: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             if targetUnit == null then

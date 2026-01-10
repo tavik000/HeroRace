@@ -98,6 +98,7 @@ struct AIItem
         local real targetDistance = DistanceBetweenUnits(this.ownerHero, targetUnit)
         local real timeToReachTarget = 0.0
         local real baseOffset = 0.0
+        local real baseDelay = 0.0
         local real offsetDistance = 0.0
         local integer ownerUnitTypeId = GetUnitTypeId(this.ownerHero)
         local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
@@ -132,8 +133,9 @@ struct AIItem
         elseif this.itemId == 'I021' then  // Torrent
             // Instant cast, no projectile
             set baseOffset = 0.0
+            set baseDelay = 2.0
             // delay 2 seconds before the torrent erupts
-            set offsetDistance = targetMoveSpeed * (2.0 + ownerCastPoint) + baseOffset
+            set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
         elseif this.itemId == 'I01J' then  // HookShot
             set projectileSpeed = 5000.0
             set timeToReachTarget = targetDistance / projectileSpeed
@@ -144,6 +146,12 @@ struct AIItem
             set timeToReachTarget = targetDistance / projectileSpeed
             set baseOffset = 0.0
             set offsetDistance = targetMoveSpeed * (ownerCastPoint + timeToReachTarget) + baseOffset
+        elseif this.itemId == 'I006' then  // StasisTrap
+            // Instant cast, no projectile
+            set baseOffset = 50.0
+            set baseDelay = 0.5
+            // delay 2 seconds before the stasis trap activates
+            set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
         else
             // Default offset distance
             set offsetDistance = this.effectiveRadius
