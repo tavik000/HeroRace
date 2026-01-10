@@ -351,6 +351,11 @@ library KeyUtils
         return facing >= 315.0 or facing < 45.0
     endfunction
 
+    function IsUnitFacingEastNarrow takes unit u returns boolean
+        local real facing = GetUnitFacing(u)
+        return facing >= 330.0 or facing < 30.0
+    endfunction
+
     function IsUnitFacingNorth takes unit u returns boolean
         local real facing = GetUnitFacing(u)
         return facing >= 45.0 and facing < 135.0

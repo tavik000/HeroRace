@@ -80,8 +80,13 @@ struct AIHero
             if this.combatData.hasItemOfFindTargetType(FIND_TARGET_TYPE_SELF_FORCE_STAFF) then
                 return true
             endif
-            // Have blink-liked ability
-            // TODO:
+            // Have blink-liked item or ability
+            if this.combatData.hasItemOfCastType(CAST_POINT_BLINK) then
+                return true
+            endif
+            if this.combatData.hasAbilityOfCastType(CAST_POINT_BLINK) then
+                return true
+            endif
         endif
         return false
     endmethod

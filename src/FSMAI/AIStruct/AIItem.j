@@ -174,6 +174,8 @@ struct AIItem
     // For items that need target preparation before use
     method tryPrepareTarget takes nothing returns boolean
         local integer targetUnitCount
+        local real heroX = GetUnitX(this.ownerHero)
+        local real heroY = GetUnitY(this.ownerHero)
 
         if this.bIsPassive then
             return false
@@ -264,6 +266,37 @@ struct AIItem
             endif
             if this.readyTargetUnit != null then
                 call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
+        elseif this.castType == CAST_POINT_BLINK then
+            if this.isForcedToUse() then
+                if IsUnitFacingAlongTrack(this.ownerHero) then
+                    set this.readyTargetUnit = this.ownerHero
+                else
+                    set this.readyTargetUnit = null
+                endif
+            else
+                if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
+                    if not IsUnitFacingEastNarrow(this.ownerHero) then
+                        // issue move right to face east
+                        call IssuePointOrder(this.ownerHero, "move", heroX + 10.0, heroY)
+                        call this.ownerAIHero.botLog("Adjusting facing direction to east for Force Staff self-use.")
+                        return false
+                    endif
+                    call IssueImmediateOrder(this.ownerHero, "stop")
+                    set this.readyTargetUnit = this.ownerHero
+                endif
+                if RectContainsCoords(gg_rct_AIWayPointAreaCrossTree, heroX, heroY) then
+                    if not IsUnitFacingWestNarrow(this.ownerHero) then
+                        // issue move up to face west
+                        call IssuePointOrder(this.ownerHero, "move", heroX - 10.0, heroY)
+                        call this.ownerAIHero.botLog("Adjusting facing direction to west for Force Staff self-use.")
+                        return false
+                    endif
+                    // stop moving before using item
+                    call IssueImmediateOrder(this.ownerHero, "stop")
+                    set this.readyTargetUnit = this.ownerHero
+                endif
             endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
@@ -507,6 +540,20 @@ struct AIItem
                 set this.bIsReadyToUse = false
                 return false
             endif
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_BLINK then
+            set targetUnit = this.readyTargetUnit
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            // Calculate blink target point
+            set targetFacingAngle = GetUnitFacing(this.ownerHero)
+            set this.readyTargetPointX = GetUnitX(this.ownerHero) + this.castRange * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.ownerHero) + this.castRange * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_UNIT then
