@@ -18,6 +18,10 @@ library KeyUtils
         endif
     endfunction
 
+    function ModI takes integer a, integer b returns integer
+        return ModuloInteger(a, b)
+    endfunction
+
     function NormalizeAngle takes real a returns real
         loop
             exitwhen a >= 0.0 and a < 360.0
@@ -365,6 +369,15 @@ library KeyUtils
     function IsUnitFacingSouth takes unit u returns boolean
         local real facing = GetUnitFacing(u)
         return facing >= 225.0 and facing < 315.0
+    endfunction
+
+    function GetRandomEnemyPlayer takes unit u returns player
+        local integer playerId = GetRandomInt(0, bj_MAX_PLAYERS - 1)
+        loop
+            exitwhen IsPlayerEnemy(GetOwningPlayer(u), Player(playerId))
+            set playerId = ModI(playerId + 1, bj_MAX_PLAYERS)
+        endloop
+        return Player(playerId)
     endfunction
 
 endlibrary

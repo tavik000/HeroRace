@@ -151,6 +151,11 @@ struct AIItem
         return offsetDistance
     endmethod
 
+    // called by AIHero to mark the item as ready to use on being targeted or damaged
+    method markAsReadyToUse takes nothing returns nothing
+        set this.bIsReadyToUse = true
+    endmethod
+
     // For items that need target preparation before use
     method tryPrepareTarget takes nothing returns boolean
         local integer targetUnitCount
@@ -181,6 +186,12 @@ struct AIItem
                 set this.bIsReadyToUse = true
             else
                 set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+            endif
+        elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
+            if this.isForcedToUse() then
+                set this.bIsReadyToUse = true
+            else
+                // when being targeted by other ability, or taken damage
             endif
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.isForcedToUse() then
@@ -343,6 +354,9 @@ struct AIItem
                 endif
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
+            call this.useInstant()
+            return true
+        elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             call this.useInstant()
             return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then

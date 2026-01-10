@@ -90,6 +90,14 @@ struct AIHero
         local integer i = 0
         local boolean hasReadyAbility = false
         local boolean hasReadyItem = false
+        local player randomEnemyPlayer = GetRandomEnemyPlayer(this.hero)
+
+        if IsUnitInvisible(this.hero, randomEnemyPlayer) then
+            call this.botLog("Cannot enter combat, hero is invisible.")
+            call this.setDebugTextTagContent("Run: Invisible")
+            call this.setDebugTextTagColorPreset("YELLOW")
+            return false
+        endif
             
         if IsUnitStunOrSilence(this.hero) then
             call this.botLog("Cannot enter combat, hero is stunned or silenced.")
@@ -268,6 +276,40 @@ struct AIHero
         call this.setDebugTextTagContent("Item: Picked Up " + GetItemName(itm))
         call this.setDebugTextTagColorPreset("CYAN")
         call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, manaCost, this.hero, bIsPassive, castType, findTargetType)
+    endmethod
+
+    method onBeTargetedByEnemyAbility takes integer abilityId returns nothing
+        local AIItem selfDefenseItem
+        local AIHeroAbility selfDefenseAbility
+        call this.botLog("Hero is being targeted by enemy ability: " + I2S(abilityId))
+        set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
+        if selfDefenseItem != 0 then
+            call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
+            call selfDefenseItem.markAsReadyToUse()
+            return
+        endif
+        set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
+        if selfDefenseAbility != 0 then
+            // TODO
+            // call selfDefenseAbility.markAsReadyToUse()
+        endif
+    endmethod
+
+    method onBeTargetedByEnemyAttack takes unit attacker returns nothing
+        local AIItem selfDefenseItem
+        local AIHeroAbility selfDefenseAbility
+        call this.botLog("Hero is being targeted by enemy attack from unit: " + GetUnitName(attacker))
+        set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
+        if selfDefenseItem != 0 then
+            call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
+            call selfDefenseItem.markAsReadyToUse()
+            return
+        endif
+        set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
+        if selfDefenseAbility != 0 then
+            // TODO
+            // call selfDefenseAbility.markAsReadyToUse()
+        endif
     endmethod
 
     method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing

@@ -414,6 +414,72 @@ struct HeroCombatData
         return false
     endmethod
 
+    method hasItemOfCastType takes integer castType returns boolean
+        local AIItem heroItem = this.getItemOfCastType(castType)
+        if heroItem != 0 then
+            return true
+        endif
+        return false
+    endmethod
+
+    method getItemOfCastType takes integer castType returns AIItem
+        local integer i = 0
+        local AIItem heroItem
+
+        // Find and return the first item that matches the cast type
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            set heroItem = this.items[i]
+            if heroItem != 0 then
+                if heroItem.castType == castType then
+                    call this.botLog("Found item with cast type: " + I2S(castType))
+                    return heroItem
+                endif
+            endif
+            set i = i + 1
+        endloop
+
+        call this.botLog("No item found with cast type: " + I2S(castType))
+        return 0
+    endmethod
+
+    method hasAbilityOfCastType takes integer castType returns boolean
+        local AIHeroAbility heroAbil = this.getAbilityOfCastType(castType)
+        if heroAbil != 0 then
+            return true
+        endif
+        return false
+    endmethod
+
+    method getAbilityOfCastType takes integer castType returns AIHeroAbility
+        local integer i = 0
+        local AIHeroAbility heroAbil
+
+        // Find and return the first ability that matches the cast type
+        loop
+            exitwhen i >= this.abilityCount
+            set heroAbil = this.abilities[i]
+            if heroAbil != 0 then
+                if heroAbil.castType == castType then
+                    call this.botLog("Found ability with cast type: " + I2S(castType))
+                    return heroAbil
+                endif
+            endif
+            set i = i + 1
+        endloop
+
+        call this.botLog("No ability found with cast type: " + I2S(castType))
+        return 0
+    endmethod
+
+    method getAnySelfDefenseAbility takes nothing returns AIHeroAbility
+        return this.getAbilityOfCastType(CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+    endmethod
+
+    method getAnySelfDefenseItem takes nothing returns AIItem
+        return this.getItemOfCastType(CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+    endmethod
+
     method syncItemCooldown takes AIItem heroItem returns nothing
         local integer i = 0
         local AIItem otherItem
