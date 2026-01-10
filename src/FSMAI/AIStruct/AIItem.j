@@ -193,6 +193,13 @@ struct AIItem
             else
                 // when being targeted by other ability, or taken damage
             endif
+        elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
+            if this.isForcedToUse() then
+                set this.bIsReadyToUse = true
+                return true
+            endif
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
+            set this.bIsReadyToUse = targetUnitCount >= 2
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
@@ -276,6 +283,7 @@ struct AIItem
 
     method useInstant takes nothing returns nothing
         call UnitUseItem(this.ownerHero, this.itemHandle)
+        call this.ownerAIHero.moveToNextWaypoint()
         call this.botLog("Using item: " + GetItemName(this.itemHandle))
         set this.lastUseTime = TimerGetElapsed(gameTimer)
         set this.bIsReadyToUse = false
@@ -354,6 +362,9 @@ struct AIItem
                 endif
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
+            call this.useInstant()
+            return true
+        elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             call this.useInstant()
             return true
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then

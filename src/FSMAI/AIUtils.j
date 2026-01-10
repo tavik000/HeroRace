@@ -1174,6 +1174,8 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = centerPlayer
         set tempFindTeamType = findTeamType
         set tempHeroUnit = centerUnit
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
 
         call GroupEnumUnitsInRange(heroGroup, GetUnitX(centerUnit), GetUnitY(centerUnit), radius, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1181,6 +1183,8 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
         set centerPlayer = null
 
         return heroGroup
