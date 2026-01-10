@@ -886,7 +886,7 @@ library AIUtils requires KeyUtils
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
-        // Not Allowed Target: MagicImmune, customFilter, front of hero
+        // Not Allowed Target: MagicImmune, customFilter, front of hero, leading hero
         // Priority Order:
         // 1. closest to back of hero
 
@@ -900,6 +900,7 @@ library AIUtils requires KeyUtils
             elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif IsUnitInFrontOfUnit(currentUnit, ownerHero) then
+            elseif IsUnitLeadingUnit(currentUnit, ownerHero) then
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else
