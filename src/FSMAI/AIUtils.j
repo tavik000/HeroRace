@@ -97,7 +97,20 @@ library AIUtils requires KeyUtils
         local real dist = DistanceBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
         local real itemAngle = AngleBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
         local boolean bIsInFrontArc = IsWithinForwardArc(itemAngle, tempFoundItemUnitFacingAngle)
-        if IsItemPowerup(itm) then
+        // if IsItemPowerup(itm) then
+        //     return
+        // endif
+        if itm == null then
+            call BotLog("FilterSuitablePickUpItem: null item encountered")
+            return
+        endif
+        if GetItemLifeBJ(itm) <= 0.0 then
+            return
+        endif
+        if GetItemTypeId(itm) == 'I01D' then // CompetitionBoots Powerup majia
+            return
+        endif
+        if GetItemTypeId(itm) == 'I02G' then // RingOfSelfDeprecation
             return
         endif
         if not bIsInFrontArc then

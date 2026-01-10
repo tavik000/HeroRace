@@ -27,7 +27,7 @@ struct PickUpItemState extends AIState
         local integer currentOrder
 
         // check if item has been picked up
-        if owner.pickingUpItem == null or IsItemOwned(owner.pickingUpItem) or IsUnitInventoryFull(owner.hero) then
+        if owner.pickingUpItem == null or IsItemOwned(owner.pickingUpItem) or IsUnitInventoryFull(owner.hero) or GetItemLifeBJ(owner.pickingUpItem) <= 0.0 then
             call this.botLog("Item picked up or no item to pick up, transitioning to Run State")
             call owner.setDebugTextTagContent("Item: Picked Up")
             call owner.setDebugTextTagColorPreset("CYAN")
