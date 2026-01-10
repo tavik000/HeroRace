@@ -305,6 +305,22 @@ library AIItemConfig
         call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_SPEED_UP)
         call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
         call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME_KEY, 0.0)
+        set currentItemId = 'I017' // ScrollOfProtection
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, 0.0)  
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 1500.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_INSTANT_ALLY_CROWDED)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME_KEY, 0.0)
+        set currentItemId = 'I009' // NovaBlast
+        call SaveReal(ItemDataTable, currentItemId, BASE_COOLDOWN_KEY, 0.0)
+        call SaveReal(ItemDataTable, currentItemId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(ItemDataTable, currentItemId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(ItemDataTable, currentItemId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(ItemDataTable, currentItemId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
+        call SaveBoolean(ItemDataTable, currentItemId, IS_PASSIVE_KEY, false)
+        call SaveReal(ItemDataTable, currentItemId, REQUIRED_CAST_TIME_KEY, 0.0)
     
         // Add more items...
     endfunction
