@@ -148,7 +148,7 @@ struct RunState extends AIState
 
         // Check if we should enter combat state
         if owner.shouldEnterCombat() then
-            call this.botLog("Entering combat - abilities ready")
+            call this.botLog("Entering combat - abilities or item ready")
             call owner.setDebugTextTagContent("Run: Entering Combat")
             call owner.setDebugTextTagColorPreset("GREEN")
             call owner.changeState(CombatState.create())

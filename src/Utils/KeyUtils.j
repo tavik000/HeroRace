@@ -322,9 +322,9 @@ library KeyUtils
         if IsUnitType(filterUnit, UNIT_TYPE_FLYING) then
             return false
         endif
-        if IsUnitType(filterUnit, UNIT_TYPE_STRUCTURE) then
-            return false
-        endif
+        // if IsUnitType(filterUnit, UNIT_TYPE_STRUCTURE) then
+        //     return false
+        // endif
         if IsUnitHiddenBJ(filterUnit) then
             return false
         endif

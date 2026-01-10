@@ -89,9 +89,11 @@ struct CombatState extends AIState
 
         set heroItem = owner.combatData.getReadyItem()            
         if heroItem != 0 then
+            call this.botLog("Try using item: " + GetItemName(heroItem.itemHandle))
             call owner.setDebugTextTagContent("Combat: Try using item " + GetItemName(heroItem.itemHandle))
             call owner.setDebugTextTagColorPreset("RED")
             if heroItem.tryUse() then
+                call this.botLog("Item used successfully: " + GetItemName(heroItem.itemHandle))
                 set owner.isCasting = true
                 set owner.currentRequiredCastTime = heroItem.requiredCastTime
                 set owner.lastStartCastTime = currentTime
