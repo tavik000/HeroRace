@@ -924,6 +924,59 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindLowHealthTargetInRange takes unit ownerHero, real range, integer findTeamType, AIHeroAbility heroAbil, AIItem itm returns unit
+        local group units = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local real lowestHealthPercent = 30.0
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = ownerHero
+        set tempAIHeroAbility = heroAbil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune if findTeamType == FIND_TEAM_TYPE_ENEMIES, customFilter, Hp above certain threshold
+        // Priority Order:
+        // 1. Lowest Health
+
+        loop
+            set currentUnit = FirstOfGroup(units)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(units, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) and tempFindTeamType == FIND_TEAM_TYPE_ENEMIES then
+            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif GetUnitLifePercent(currentUnit) > lowestHealthPercent then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Lowest Health Priority
+                if GetUnitLifePercent(currentUnit) < GetUnitLifePercent(bestTarget) then
+                    set bestTarget = currentUnit
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(units)
+        set units = null
+        set currentUnit = null
+        set tempAIHeroAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindCCedTargetInRange takes unit ownerHero, real range, integer findTeamType, AIHeroAbility heroAbil, AIItem itm returns unit
         local group units = CreateGroup()
         local unit currentUnit = null
@@ -1670,6 +1723,16 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
             set targetUnit = FindCCedTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALLIES, 0, itm)
             call owner.botLog("Finding CC'ed ally target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC_OR_LOW_HEALTH then
+            set targetUnit = FindCCedTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALLIES, 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Finding CC'ed ally target for item, result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            set targetUnit = FindLowHealthTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALLIES, 0, itm)
+            if targetUnit != null then
+                call owner.botLog("Finding low health ally target for item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
@@ -1751,6 +1814,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
             set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using item on CC'ed ally: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC_OR_LOW_HEALTH then
+            set targetUnit = owner.hero
+            call owner.botLog("Force using item on self")
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             if targetUnit == null then

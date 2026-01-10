@@ -111,7 +111,7 @@ struct AIItem
         local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
         local integer currentOrder
 
-        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT then
+        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT then
             call this.botLogError("getFrontOffsetDistance called for non-front-cast item: " + GetItemName(this.itemHandle))
             return 0.0
         endif
@@ -247,6 +247,13 @@ struct AIItem
             else
                 set this.bIsReadyToUse = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
             endif
+        elseif this.castType == CAST_POINT_ALLY_FRONT then
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
+            else
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_SELF_FRONT then
             if this.isForcedToUse() then
                 set this.readyTargetUnit = this.ownerHero
@@ -471,6 +478,26 @@ struct AIItem
             set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
             set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
             set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_ALLY_FRONT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            // Calculate point in front of target unit
+            set targetFacingAngle = GetUnitFacing(targetUnit)
+            set offset = this.getUnitFrontOffsetDistance(targetUnit)
+            set this.readyTargetPointX = GetUnitX(targetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(targetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_SELF_FRONT then
