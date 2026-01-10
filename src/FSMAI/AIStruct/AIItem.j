@@ -102,6 +102,9 @@ struct AIItem
         if this.itemId == 'I003' then  // MeatHook
             return this.castRange / 2.0
         endif
+        if this.itemId == 'I00E' then  // NetherSwap
+            return this.castRange / 2.0
+        endif
         return 0.0
     endmethod
 

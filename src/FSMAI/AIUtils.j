@@ -992,7 +992,8 @@ library AIUtils requires KeyUtils
         call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
         // Not Allowed Target: MagicImmune, customFilter, not CCed
-        // Priority Order: None
+        // Priority Order: 
+        // 1. Ungoaled
 
         loop
             set currentUnit = FirstOfGroup(units)
@@ -1007,6 +1008,14 @@ library AIUtils requires KeyUtils
             elseif bestTarget == null then
                 set bestTarget = currentUnit
                 exitwhen true
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Ungoaled Priority
+                if not IsHeroGoaled(currentUnit) and IsHeroGoaled(bestTarget) then
+                    set bestTarget = currentUnit
+                elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
+                    // Keep bestTarget
+                endif
             endif
         endloop
 
@@ -1040,7 +1049,8 @@ library AIUtils requires KeyUtils
 
         // Not Allowed Target: magic immune, customFilter, HP above certain threshold, CCed
         // Priority Order:
-        // 1. Lowest Health
+        // 1. Ungoaled
+        // 2. Lowest Health
 
         loop
             set currentUnit = FirstOfGroup(allies)
@@ -1057,9 +1067,17 @@ library AIUtils requires KeyUtils
                 set bestTarget = currentUnit
             else
                 // --- PRIORITY TOURNAMENT LAYER ---
-                // 1. Lowest Health Priority
-                if GetUnitLifePercent(currentUnit) < GetUnitLifePercent(bestTarget) then
+                // 1. Ungoaled Priority
+                if not IsHeroGoaled(currentUnit) and IsHeroGoaled(bestTarget) then
                     set bestTarget = currentUnit
+                elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
+                    // Keep bestTarget
+                else
+                    // TIE on Goaled Status (Both Goaled or Both Ungoaled)
+                    // 2. Lowest Health Priority
+                    if GetUnitLifePercent(currentUnit) < GetUnitLifePercent(bestTarget) then
+                        set bestTarget = currentUnit
+                    endif
                 endif
             endif
         endloop
@@ -1527,7 +1545,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, AIHeroAbility heroAbil returns unit
+    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, boolean bExcludeSelf, AIHeroAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
         local unit currentUnit
@@ -1560,6 +1578,10 @@ library AIUtils requires KeyUtils
                     call GroupRemoveUnit(heroes, currentUnit)
                 endif
 
+                if bExcludeSelf and currentUnit == owner.hero then
+                    call GroupRemoveUnit(heroes, currentUnit)
+                endif
+
                 set i = i + 1
             endloop
         endif
@@ -1578,11 +1600,11 @@ library AIUtils requires KeyUtils
     endfunction
 
     function FindRandomEnemyHeroInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
-        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ENEMIES, heroAbil)
+        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ENEMIES, false, heroAbil)
     endfunction
         
-    function FindRandomAllyHeroInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
-        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, heroAbil)
+    function FindRandomAllyHeroInRange takes AIHero owner, real range, boolean bExcludeSelf, AIHeroAbility heroAbil returns unit
+        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, bExcludeSelf, heroAbil)
     endfunction
 
     function FindPointAroundCrowdedHeroes takes AIHero owner, real rangeRadius, integer findTeamType returns location
@@ -1695,7 +1717,7 @@ library AIUtils requires KeyUtils
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             elseif heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-                set targetUnit = FindRandomAllyHeroInRange(owner, heroAbil.castRange, heroAbil)
+                set targetUnit = FindRandomAllyHeroInRange(owner, heroAbil.castRange, false, heroAbil)
                 if targetUnit == null then
                     call owner.botLog("No valid ally found for speed-up ability.")
                     return null
@@ -1765,9 +1787,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
             set targetUnit = FindBackEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, itm)
             call owner.botLog("Finding back enemy target for item, result: " + GetUnitName(targetUnit))
-        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_LEADING then
-            set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, itm.castRange, itm.getMinTargetDistance(), 0, itm)
-            call owner.botLog("Finding leading enemy target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_FRONT then
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, itm.getMinTargetDistance(), false, 0, itm)
+            call owner.botLog("Finding front enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
@@ -1854,7 +1876,7 @@ library AIUtils requires KeyUtils
             endif
             call owner.botLog("Force using speed-up item on ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
-            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
+            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, true, 0)
             call owner.botLog("Force using teleport item on random ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
             set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
@@ -1862,14 +1884,23 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
-        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_LEADING then
-            set targetUnit = owner.hero
-            call owner.botLog("Force using item on leading enemy: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_FRONT then
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, 0.0, false, 0, itm)
+            if itm != 0 then
+                if itm.itemId == 'I00E' then // Nether Swap
+                    if targetUnit == null then
+                        set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, true, 0)
+                    endif
+                endif
+            endif
+            if targetUnit != null then
+                call owner.botLog("Finding front target for item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CC then
             set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using item on CC'ed enemy: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
-            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
+            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, false, 0)
             call owner.botLog("Force using item on CC'ed ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_HEAL then
             set targetUnit = owner.hero
