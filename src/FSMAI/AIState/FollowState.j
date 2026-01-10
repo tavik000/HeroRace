@@ -29,7 +29,7 @@ struct FollowState extends AIState
         call owner.setDebugTextTagColorPreset("BLUE")
 
         if this.mustHaveBuffCode != 0 then
-            if not UnitHasBuffBJ(this.targetUnit, this.mustHaveBuffCode) then
+            if not UnitHasBuffBJ(owner.hero, this.mustHaveBuffCode) then
                 call this.botLog("Follow target lost required buff - Returning to Run State")
                 call owner.setDebugTextTagContent("Follow: Target Lost Buff")
                 call owner.setDebugTextTagColorPreset("BLUE")
