@@ -90,10 +90,11 @@ globals
     constant integer CAST_POINT_ALLY_DEFENSE_AND_CLEANSE = 24
     constant integer CAST_POINT_ALLY_FRONT = 25
     constant integer CAST_POINT_SELF_FRONT = 26
-    constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 27
-    constant integer CAST_POINT_ALL_FRONT = 28
-    constant integer CAST_POINT_TREE = 29
-    constant integer CAST_POINT_BLINK = 30
+    constant integer CAST_POINT_SELF_FRONT_DEFENSE_AND_CLEANSE = 27
+    constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 28
+    constant integer CAST_POINT_ALL_FRONT = 29
+    constant integer CAST_POINT_TREE = 30
+    constant integer CAST_POINT_BLINK = 31
 
     constant integer CAST_UNIT = 40 
     constant integer CAST_UNIT_SELF_THEN_FOLLOW_TARGET = 41

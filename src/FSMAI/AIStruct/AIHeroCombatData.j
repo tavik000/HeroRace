@@ -477,7 +477,12 @@ struct HeroCombatData
     endmethod
 
     method getAnySelfDefenseItem takes nothing returns AIItem
-        return this.getItemOfCastType(CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+        local AIItem resultItem
+        set resultItem = this.getItemOfCastType(CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+        if resultItem == 0 then
+            set resultItem = this.getItemOfCastType(CAST_POINT_SELF_FRONT_DEFENSE_AND_CLEANSE)
+        endif
+        return resultItem
     endmethod
 
     method syncItemCooldown takes AIItem heroItem returns nothing
