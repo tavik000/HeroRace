@@ -284,6 +284,17 @@ struct AIItem
                 endif
             endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
+        elseif this.castType == CAST_POINT_SELF_FRONT_HEAL then
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = this.ownerHero
+            else
+                if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
+                    set this.readyTargetUnit = this.ownerHero
+                else
+                    set this.readyTargetUnit = null
+                endif
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_SELF_FRONT_DEFENSE_AND_CLEANSE then
             if this.isForcedToUse() then
                 set this.readyTargetUnit = this.ownerHero
@@ -365,7 +376,7 @@ struct AIItem
                 set this.bIsReadyToUse = this.readyTargetTree != null
                 return this.bIsReadyToUse
             endif
-            if GetUnitLifePercent(this.ownerHero) <= 50.0 then
+            if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
                 set this.readyTargetTree = FindNearestTreeInFrontOfUnit(this.ownerHero, 1000.0)
                 set this.bIsReadyToUse = this.readyTargetTree != null
             else
@@ -554,6 +565,26 @@ struct AIItem
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_SELF_FRONT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            // Calculate point in front of self
+            set targetFacingAngle = GetUnitFacing(this.ownerHero)
+            set offset = this.castRange
+            set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_SELF_FRONT_HEAL then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
                 call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
