@@ -92,6 +92,13 @@ struct AIItem
         return 0.0
     endmethod
 
+    method getFollowTargetDuration takes nothing returns real
+        if this.itemId == 'I008' then  // LightingShield
+            return 12.0
+        endif
+        return 0.0
+    endmethod
+
     method getUnitFrontOffsetDistance takes unit targetUnit returns real
         local real targetMoveSpeed = GetUnitMoveSpeed(targetUnit)
         local real projectileSpeed = 0.0
@@ -184,6 +191,13 @@ struct AIItem
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY_FOLLOW then
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = this.ownerHero
+            else
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
@@ -259,6 +273,17 @@ struct AIItem
             endif
             if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
+            else
+                set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
+        elseif this.castType == CAST_UNIT_SELF_THEN_FOLLOW_TARGET then
+            if this.findTargetType == FIND_TARGET_TYPE_NONE then
+                call this.botLogError("Item find target type is FIND_TARGET_TYPE_NONE, cannot prepare item: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = this.ownerHero
             else
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
@@ -486,13 +511,55 @@ struct AIItem
             return true
         elseif this.castType == CAST_UNIT then
             set targetUnit = this.readyTargetUnit
+
             if targetUnit == null then
                 call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
                 return false
             endif
 
             call this.useToTargetUnit(targetUnit)
             return true
+        elseif this.castType == CAST_UNIT_SELF_THEN_FOLLOW_TARGET then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            if targetUnit == this.ownerHero then
+                // Force to use
+                call this.useToTargetUnit(targetUnit)
+                return true
+            else
+                if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                    return false
+                endif
+                // Follow target unit
+                if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
+                    call this.useToTargetUnit(this.ownerHero)
+                    call this.ownerAIHero.changeState(FollowState.create(targetUnit, this.getFollowTargetDuration()))
+                    return true
+                else
+                    call IssueTargetOrder(this.ownerHero, "move", targetUnit)
+                    return true
+                endif
+            endif
         else
             call this.botLogError("Item cast type not implemented: " + I2S(this.castType) + " for item: " + GetItemName(this.itemHandle))
             return false

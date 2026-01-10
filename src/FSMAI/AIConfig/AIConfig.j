@@ -5,7 +5,7 @@ globals
     constant integer STATE_RUN = 1
     constant integer STATE_COMBAT = 2
     constant integer STATE_HAZARD = 3
-    constant integer STATE_HEALING = 4
+    constant integer STATE_FOLLOW = 4
     constant integer STATE_DEAD = 5
     constant integer STATE_PICKUP_ITEM = 6
         
@@ -95,6 +95,7 @@ globals
     constant integer CAST_POINT_BLINK = 29
 
     constant integer CAST_UNIT = 40 
+    constant integer CAST_UNIT_SELF_THEN_FOLLOW_TARGET = 41
     constant integer CAST_TREE_FRONT = 50
 
     constant integer FIND_TARGET_TYPE_NONE = 0

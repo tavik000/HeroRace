@@ -235,6 +235,11 @@ struct AIHero
         endif
     endmethod
 
+    method resetIsCasting takes nothing returns nothing
+        set this.isCasting = false
+        set this.castingAbility = 0
+    endmethod
+
     method onCastComplete takes nothing returns nothing
         local real currentTime = TimerGetElapsed(gameTimer)
         local integer difficulty = this.difficulty
