@@ -220,6 +220,17 @@ struct AIItem
             else
                 set this.bIsReadyToUse = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
             endif
+        elseif this.castType == CAST_POINT_SELF_FRONT then
+            if this.isForcedToUse() then
+                set this.readyTargetUnit = this.ownerHero
+            else
+                if IsUnitFacingAlongTrack(this.ownerHero) then
+                    set this.readyTargetUnit = this.ownerHero
+                else
+                    set this.readyTargetUnit = null
+                endif
+            endif
+            set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_ALL_FRONT then
             if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
@@ -388,6 +399,26 @@ struct AIItem
             set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
             set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
             set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_SELF_FRONT then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for item, should be blocked by prepare target: " + GetItemName(this.itemHandle))
+                return false
+            endif
+            
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToUse = false
+                return false
+            endif
+
+            // Calculate point in front of self
+            set targetFacingAngle = GetUnitFacing(this.ownerHero)
+            set offset = this.castRange
+            set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_ALL_FRONT then

@@ -249,6 +249,45 @@ library AIUtils requires KeyUtils
         return IsUnitInGroup(u, udg_GoaledHeroes) 
     endfunction
 
+    function IsUnitFacingAlongTrack takes unit u returns boolean
+        local real ux = GetUnitX(u)
+        local real uy = GetUnitY(u)
+        local real nextTrackProgressPointX = 0.0
+        local real nextTrackProgressPointY = 0.0
+        local real unitFacingAngle = GetUnitFacing(u)
+        local real angleToGoal
+        local real angleDiff
+        local integer TrackProgress = 0
+
+        set TrackProgress = LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(u), S2I( "trackProgress"))
+
+        if TrackProgress == 0 then
+            set nextTrackProgressPointX = TopRightAreaCenterX
+            set nextTrackProgressPointY = TopRightAreaCenterY
+        elseif TrackProgress == 1 then
+            set nextTrackProgressPointX = BotRightAreaCenterX
+            set nextTrackProgressPointY = BotRightAreaCenterY
+        elseif TrackProgress == 2 then
+            set nextTrackProgressPointX = GoalX
+            set nextTrackProgressPointY = GoalY
+        else
+            call BotLogError("Unknown Track Progress value: " + I2S(TrackProgress))
+            return false
+        endif
+
+        set angleToGoal = AngleBetweenXY(ux, uy, nextTrackProgressPointX, nextTrackProgressPointY)
+        set angleDiff = Abs(NormalizeAngle(unitFacingAngle) - angleToGoal)
+        if angleDiff > 180.0 then
+            set angleDiff = 360.0 - angleDiff
+        endif
+        if angleDiff <= 60.0 then
+            return true
+        else
+            return false
+        endif
+
+    endfunction
+
     // Check Race Position
     function IsUnitLeadingUnit takes unit leadingUnit, unit followingUnit returns boolean
         local real leadingX = GetUnitX(leadingUnit)
