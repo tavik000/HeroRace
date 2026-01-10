@@ -115,7 +115,7 @@ globals
     constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20
     constant integer FIND_TARGET_TYPE_ALLY_HEAL = 21
     constant integer FIND_TARGET_TYPE_ALLY_CHAIN_HEAL = 22
-    constant integer FIND_TARGET_TYPE_ALLY_DEFENSE_AND_CLEANSE = 23
+    constant integer FIND_TARGET_TYPE_ALLY_CC = 23
     constant integer FIND_TARGET_TYPE_ALLY_FOLLOW_ENEMY = 24
     constant integer FIND_TARGET_TYPE_ALLY_TELEPORT = 25
     constant integer FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP = 26

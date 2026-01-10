@@ -47,6 +47,19 @@ struct FollowState extends AIState
             call owner.changeState(RunState.create())
             return
         endif
+        if owner.shouldEnterHazardState() then
+            call this.botLog("Spike hazard detected - entering spike dodge state")
+            call owner.changeState(HazardState.create())
+            return
+        endif
+        call owner.searchPickupItemAround()
+        if owner.shouldEnterPickupItemState() then
+            call this.botLog("Pickup item detected - entering pickup item state")
+            call owner.setDebugTextTagContent("Run: Entering Pickup Item")
+            call owner.setDebugTextTagColorPreset("CYAN")
+            call owner.changeState(PickUpItemState.create())
+            return
+        endif
 
         if currentOrder == 0 then
             call IssueTargetOrder(owner.hero, "move", this.targetUnit)

@@ -1667,6 +1667,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CC then
             set targetUnit = FindCCedTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, 0, itm)
             call owner.botLog("Finding CC'ed enemy target for item, result: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
+            set targetUnit = FindCCedTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALLIES, 0, itm)
+            call owner.botLog("Finding CC'ed ally target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
@@ -1745,6 +1748,9 @@ library AIUtils requires KeyUtils
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CC then
             set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using item on CC'ed enemy: " + GetUnitName(targetUnit))
+        elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
+            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, 0)
+            call owner.botLog("Force using item on CC'ed ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
             if targetUnit == null then
