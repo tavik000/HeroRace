@@ -75,11 +75,11 @@ globals
     constant integer CAST_INSTANT = 1
     constant integer CAST_INSTANT_BACK_ENEMY = 2
     constant integer CAST_INSTANT_BACK_ENEMY_FOLLOW = 3
-    constant integer CAST_INSTANT_ALL_CROWDED = 4
+    constant integer CAST_INSTANT_ENEMY_CROWDED = 4
     constant integer CAST_INSTANT_ALLY_CROWDED = 5
-    constant integer CAST_INSTANT_ENEMY_CROWDED = 6
+    constant integer CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE = 6
     constant integer CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE = 7
-    constant integer CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE = 8
+    constant integer CAST_INSTANT_ALL_CROWDED = 8
     constant integer CAST_INSTANT_HEAL = 9
     constant integer CAST_INSTANT_HEAL_ALLY_CROWDED = 10
     constant integer CAST_INSTANT_HAVE_CORPSE = 11

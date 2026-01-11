@@ -207,10 +207,14 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
-        elseif this.castType == CAST_INSTANT_HEAL then
-            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+        elseif this.castType == CAST_INSTANT_ALL_CROWDED then
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALL)
+            call this.botLog("Found " + I2S(targetUnitCount) + " heroes around for ability: " + GetObjectName(this.abilityId))
+            set this.bIsReadyToCast = targetUnitCount >= 2
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             // will be set when being targeted by other ability, or taken damage
+        elseif this.castType == CAST_INSTANT_HEAL then
+            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -227,6 +231,13 @@ struct AIAbility
             // set point when casting, set target unit now
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            // the final target point will be find again when casting
+            set this.readyTargetPoint = FindPointAroundCrowdedHeroes(this.owner, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set this.readyTargetPointX = GetLocationX(this.readyTargetPoint)
+            set this.readyTargetPointY = GetLocationY(this.readyTargetPoint)
+            call RemoveLocation(this.readyTargetPoint)
+            set this.bIsReadyToCast = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -329,6 +340,9 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             call this.castInstant()
             return true
+        elseif this.castType == CAST_INSTANT_ALL_CROWDED then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
@@ -367,6 +381,17 @@ struct AIAbility
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
                 return true 
             endif
+        elseif this.castType == CAST_POINT_ENEMY_CROWDED then
+            set this.readyTargetPoint = FindPointAroundCrowdedHeroes(this.owner, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set this.readyTargetPointX = GetLocationX(this.readyTargetPoint)
+            set this.readyTargetPointY = GetLocationY(this.readyTargetPoint)
+            call RemoveLocation(this.readyTargetPoint)
+            if (IsNearlyZero(this.readyTargetPointX) and IsNearlyZero(this.readyTargetPointY)) then
+                set this.bIsReadyToCast = false
+                return false
+            endif
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
         elseif this.castType == CAST_UNIT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then

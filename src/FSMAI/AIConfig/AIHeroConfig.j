@@ -54,6 +54,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A00Q')  // SolarIgnition
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.7)
 
+        // CrystalMaiden
+        set heroTypeId = 'H000'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A006')  // Frostbite
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A008')  // CrystalNova
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A005')  // CrystalScatter
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.3)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'
