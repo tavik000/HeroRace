@@ -103,6 +103,9 @@ library AIStateMachine requires KeyUtils, AIUtils
         set WaypointAreas[131] = gg_rct_AIWayPointAreaCrossTree // Before Spider Net Hazard
         set WaypointAreas[14] = gg_rct_Finish
         set GoalWaypointIndex = 14 // Update this to match the number of waypoints you added.
+        // Goaled safe area and danger area
+        set WaypointAreas[20] = gg_rct_AIGoaledSafeArea
+        set WaypointAreas[21] = gg_rct_AIGoaledDangerArea
 
         // Initialize fixed location points
         set TopRightAreaCenterX = GetRectCenterX(gg_rct_TrackProgressTopRight)

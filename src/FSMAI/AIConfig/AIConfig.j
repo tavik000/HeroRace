@@ -8,6 +8,7 @@ globals
     constant integer STATE_FOLLOW = 4
     constant integer STATE_DEAD = 5
     constant integer STATE_PICKUP_ITEM = 6
+    constant integer STATE_GOALED = 7
         
     // Difficulty Levels
     constant integer DIFF_EASY = 0
@@ -42,6 +43,7 @@ globals
     constant integer SPIDER_NET_UNIT_TYPE_ID = 'u022'
 
     // Pickup Item Range
+    constant real PICKUP_ITEM_RANGE_LARGE = 1000.0
     constant real PICKUP_ITEM_RANGE_NORMAL = 800.0
     constant real PICKUP_ITEM_RANGE_SMALL = 200.0
 

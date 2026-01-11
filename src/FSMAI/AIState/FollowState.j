@@ -64,12 +64,8 @@ struct FollowState extends AIState
             call owner.changeState(HazardState.create())
             return
         endif
-        call owner.searchPickupItemAround()
-        if owner.shouldEnterPickupItemState() then
-            call this.botLog("Pickup item detected - entering pickup item state")
-            call owner.setDebugTextTagContent("Run: Entering Pickup Item")
-            call owner.setDebugTextTagColorPreset("CYAN")
-            call owner.changeState(PickUpItemState.create())
+       
+        if owner.TryEnterPickupItemState() then
             return
         endif
 

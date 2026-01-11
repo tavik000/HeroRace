@@ -30,6 +30,11 @@ struct RunState extends AIState
         if not IsUnitAliveBJ(owner.hero) then
             return
         endif
+
+        if IsHeroGoaled(owner.hero) then
+            call owner.changeState(GoaledState.create())
+            return
+        endif
             
         // call this.botLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
         call owner.setDebugTextTagContent("Run: Updating, WPI " + I2S(owner.currentWaypointIndex))
@@ -73,9 +78,8 @@ struct RunState extends AIState
 
                 if owner.currentWaypointIndex == GoalWaypointIndex then
                     call this.botLog("Reached final waypoint")
-                    call owner.setDebugTextTagContent("Run: Reached Final Waypoint")
-                    call owner.setDebugTextTagColorPreset("GREEN")
-                    // TODO Goaled State
+                    call owner.changeState(GoaledState.create())
+                    return
                 else
                     // Move to next waypoint
                     call owner.setWaypointIndex(owner.currentWaypointIndex + 1)
@@ -130,12 +134,7 @@ struct RunState extends AIState
             return
         endif
 
-        call owner.searchPickupItemAround()
-        if owner.shouldEnterPickupItemState() then
-            call this.botLog("Pickup item detected - entering pickup item state")
-            call owner.setDebugTextTagContent("Run: Entering Pickup Item")
-            call owner.setDebugTextTagColorPreset("CYAN")
-            call owner.changeState(PickUpItemState.create())
+        if owner.TryEnterPickupItemState() then
             return
         endif
             

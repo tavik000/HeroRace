@@ -59,6 +59,16 @@ struct AIHero
         return this
     endmethod
 
+    method changeState takes AIState newState returns nothing
+        if this.currentState != null then
+            call this.currentState.onExit()
+            call this.currentState.destroy()
+        endif
+        set this.currentState = newState
+        set this.currentState.owner = this
+        call this.currentState.onEnter()
+    endmethod
+
     method setWaypointIndex takes integer newIndex returns nothing
         set this.currentWaypointIndex = newIndex
     endmethod
@@ -133,10 +143,14 @@ struct AIHero
             return
         endif
 
-        if this.currentState.stateID == STATE_HAZARD or IsCurrentGoalWaypoint(this) then
-            set searchRadius = PICKUP_ITEM_RANGE_SMALL
+        if not IsHeroGoaled(this.hero) then
+            if this.currentState.stateID == STATE_HAZARD or IsCurrentGoalWaypoint(this) then
+                set searchRadius = PICKUP_ITEM_RANGE_SMALL
+            else
+                set searchRadius = PICKUP_ITEM_RANGE_NORMAL
+            endif
         else
-            set searchRadius = PICKUP_ITEM_RANGE_NORMAL
+            set searchRadius = PICKUP_ITEM_RANGE_LARGE
         endif
 
         set this.pickingUpItem = GetSuitablePickupItemInRange(this.hero, searchRadius)
@@ -151,15 +165,18 @@ struct AIHero
         return this.pickingUpItem != null
     endmethod
 
-    method changeState takes AIState newState returns nothing
-        if this.currentState != null then
-            call this.currentState.onExit()
-            call this.currentState.destroy()
+    method TryEnterPickupItemState takes nothing returns boolean
+        call this.searchPickupItemAround()
+        if this.shouldEnterPickupItemState() then
+            call this.botLog("Entering Pickup Item State")
+            call this.setDebugTextTagContent(StateId2String(this.currentState) + ": Entering Pickup Item")
+            call this.setDebugTextTagColorPreset("CYAN")
+            call this.changeState(PickUpItemState.create())
+            return true
         endif
-        set this.currentState = newState
-        set this.currentState.owner = this
-        call this.currentState.onEnter()
+        return false
     endmethod
+
 
     method botLog takes string msg returns nothing
         call BotLogWithPlayer(GetOwningPlayer(this.hero), msg)
@@ -392,7 +409,7 @@ struct AIHero
         set hasBlockingUnitAhead = blockingUnit != null
         if hasBlockingUnitAhead then
             call this.botLog("Blocking unit detected ahead, dodging")
-            call this.setDebugTextTagContent(StateId2String(this.currentState) + ": Dodging Blocking Unit Ahead")
+            call this.setDebugTextTagContent(StateId2String(this.currentState.stateID) + ": Dodging Blocking Unit Ahead")
             call this.setDebugTextTagColorPreset("YELLOW")
             call this.avoidTargetUnitAhead(blockingUnit, GetUnitMoveSpeed(blockingUnit) * 0.1, 2.0, true)
             return true
@@ -402,7 +419,7 @@ struct AIHero
         set hasBlockingUnitBehind = blockingUnit != null
         if hasBlockingUnitBehind then
             call this.botLog("Blocking unit detected behind, dodging")
-            call this.setDebugTextTagContent(StateId2String(this.currentState) + ": Dodging Blocking Unit Behind")
+            call this.setDebugTextTagContent(StateId2String(this.currentState.stateID) + ": Dodging Blocking Unit Behind")
             call this.setDebugTextTagColorPreset("YELLOW")
             call this.avoidTargetUnitBehind(blockingUnit, false, 2.0, true)
             return true
@@ -487,7 +504,7 @@ struct AIHero
 
         // Check if we should enter combat state
         if this.shouldEnterCombat() then
-            call this.botLog(StateId2String(this.currentState) + " Entering combat - abilities or item ready")
+            call this.botLog(StateId2String(this.currentState.stateID) + " Entering combat - abilities or item ready")
             call this.changeState(CombatState.create())
             return true
         endif

@@ -2069,6 +2069,8 @@ library AIUtils requires KeyUtils
             return "Dead"
         elseif stateId == STATE_PICKUP_ITEM then
             return "Pickup Item"
+        elseif stateId == STATE_GOALED then
+            return "Goaled"
         else
             return "Unknown State Id: " + I2S(stateId)
         endif
