@@ -127,10 +127,7 @@ struct RunState extends AIState
             call owner.moveToNextWaypoint()
         endif
             
-        // Check for spike hazards first (highest priority, only between waypoints 7-8)
-        if owner.shouldEnterHazardState() then
-            call this.botLog("Spike hazard detected - entering spike dodge state")
-            call owner.changeState(HazardState.create())
+        if owner.tryEnterHazardState() then
             return
         endif
 

@@ -59,9 +59,8 @@ struct FollowState extends AIState
             call owner.changeState(RunState.create())
             return
         endif
-        if owner.shouldEnterHazardState() then
-            call this.botLog("Spike hazard detected - entering spike dodge state")
-            call owner.changeState(HazardState.create())
+
+        if owner.tryEnterHazardState() then
             return
         endif
        

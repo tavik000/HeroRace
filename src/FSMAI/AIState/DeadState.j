@@ -8,6 +8,7 @@ struct DeadState extends AIState
     method onEnter takes nothing returns nothing
         call this.botLog("Hero died - Entering Dead State")
         call owner.combatData.removeAllItems()
+        call owner.resetIsCasting()
         call owner.setDebugTextTagContent("Dead: Entering")
         call owner.setDebugTextTagColorPreset("GRAY")
         call IssueImmediateOrder(owner.hero, "stop")

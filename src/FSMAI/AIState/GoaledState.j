@@ -15,11 +15,15 @@ struct GoaledState extends AIState
 
     method onUpdate takes nothing returns nothing
         local integer currentWaypointIndex = owner.currentWaypointIndex
-        local integer safeAreaWaypointIndex = 20
-        local integer dangerAreaWaypointIndex = 21
         local integer currentOrder = GetUnitCurrentOrder(owner.hero)
+        local unit tower1 = udg_Monster[10]
 
         if not IsUnitAliveBJ(owner.hero) then
+            return
+        endif
+
+        if owner.difficulty < DIFF_HARD then
+            call owner.setDebugTextTagContent("Goaled: Idle")
             return
         endif
             
@@ -36,24 +40,18 @@ struct GoaledState extends AIState
             return
         endif
 
-        if isHealthy() then
-            if currentWaypointIndex != dangerAreaWaypointIndex then
-                call owner.setWaypointIndex(dangerAreaWaypointIndex) // Goaled Danger Area
-                call owner.moveToNextWaypoint()
+        // If tower 1 died, also move to danger area
+        if isHealthy() or IsUnitDeadBJ(tower1) or IsUnitAlly(tower1, GetOwningPlayer(owner.hero)) then
+            if tryMoveToDangerArea() then
                 return
             endif 
         else
-            if currentWaypointIndex != safeAreaWaypointIndex then
-                call owner.setWaypointIndex(safeAreaWaypointIndex) // Goaled Safe Area
-                call owner.moveToNextWaypoint()
+            if tryMoveToSafeArea() then
                 return
             endif
         endif
 
-
-        if owner.shouldEnterHazardState() then
-            call this.botLog("Spike hazard detected - entering spike dodge state")
-            call owner.changeState(HazardState.create())
+        if owner.tryEnterHazardState() then
             return
         endif
 
@@ -66,6 +64,26 @@ struct GoaledState extends AIState
             return
         endif
 
+    endmethod
+
+    method tryMoveToDangerArea takes nothing returns boolean
+        local integer dangerAreaWaypointIndex = 21
+        if owner.currentWaypointIndex != dangerAreaWaypointIndex then
+            call owner.setWaypointIndex(dangerAreaWaypointIndex) // Goaled Danger Area
+            call owner.moveToNextWaypoint()
+            return true
+        endif
+        return false
+    endmethod
+
+    method tryMoveToSafeArea takes nothing returns boolean
+        local integer safeAreaWaypointIndex = 20
+        if owner.currentWaypointIndex != safeAreaWaypointIndex then
+            call owner.setWaypointIndex(safeAreaWaypointIndex) // Goaled Safe Area
+            call owner.moveToNextWaypoint()
+            return true
+        endif
+        return false
     endmethod
 
     method isHealthy takes nothing returns boolean

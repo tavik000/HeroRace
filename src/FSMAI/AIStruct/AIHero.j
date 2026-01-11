@@ -176,15 +176,6 @@ struct AIHero
         endif
         return false
     endmethod
-
-
-    method botLog takes string msg returns nothing
-        call BotLogWithPlayer(GetOwningPlayer(this.hero), msg)
-    endmethod
-        
-    method botLogError takes string msg returns nothing
-        call BotLogErrorWithPlayer(GetOwningPlayer(this.hero), msg)
-    endmethod
         
     method shouldEnterHazardState takes nothing returns boolean
         if this.difficulty < DIFF_HARD then
@@ -207,6 +198,15 @@ struct AIHero
             return true
         endif
 
+        return false
+    endmethod
+
+    method tryEnterHazardState takes nothing returns boolean
+        if this.shouldEnterHazardState() then
+            call this.botLog("Spike hazard detected - entering spike dodge state")
+            call this.changeState(HazardState.create())
+            return true
+        endif
         return false
     endmethod
 
@@ -588,6 +588,14 @@ struct AIHero
             call SetTextTagVisibility(this.debugTextTag, false)
             set this.debugTextTag = null
         endif
+    endmethod
+
+    method botLog takes string msg returns nothing
+        call BotLogWithPlayer(GetOwningPlayer(this.hero), msg)
+    endmethod
+        
+    method botLogError takes string msg returns nothing
+        call BotLogErrorWithPlayer(GetOwningPlayer(this.hero), msg)
     endmethod
 
     // =====================================================

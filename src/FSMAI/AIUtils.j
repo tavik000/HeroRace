@@ -312,6 +312,9 @@ library AIUtils requires KeyUtils
         local integer TrackProgress = 0
         // Crossing mid track line
         set TrackProgress = MaxI(LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(leadingUnit), S2I( "trackProgress")), LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(followingUnit), S2I( "trackProgress")))
+        if IsHeroGoaled(leadingUnit) or IsHeroGoaled(followingUnit) then
+            set TrackProgress = 2
+        endif
 
         if TrackProgress == 0 then
             if DistanceBetweenXY(leadingX, leadingY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(followingX, followingY, TopRightAreaCenterX, TopRightAreaCenterY) then
@@ -400,6 +403,9 @@ library AIUtils requires KeyUtils
             endif
             // going to crossing tree area
             if wpi == 131 then
+                return true
+            endif
+            if IsHeroGoaled(aiHero.hero) then
                 return true
             endif
         endif
@@ -852,7 +858,7 @@ library AIUtils requires KeyUtils
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is invulnerable or magic immune")
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
-            elseif IsUnitBehindUnit(currentUnit, ownerHero) then
+            elseif not IsHeroGoaled(ownerHero) and IsUnitBehindUnit(currentUnit, ownerHero) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is behind the owner hero")
             elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance")
@@ -912,7 +918,7 @@ library AIUtils requires KeyUtils
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
-            elseif IsUnitInFrontOfUnit(currentUnit, ownerHero) then
+            elseif not IsHeroGoaled(ownerHero) and IsUnitInFrontOfUnit(currentUnit, ownerHero) then
             elseif IsUnitLeadingUnit(currentUnit, ownerHero) then
             elseif bestTarget == null then
                 set bestTarget = currentUnit
@@ -1893,7 +1899,7 @@ library AIUtils requires KeyUtils
             set targetUnit = FindBackEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, itm)
             call owner.botLog("Finding back enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_FRONT then
-            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, itm.getMinTargetDistance(), false, 0, itm)
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, itm.getMinTargetDistance(), IsHeroGoaled(owner.hero), 0, itm)
             call owner.botLog("Finding front enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT then
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
@@ -1990,7 +1996,10 @@ library AIUtils requires KeyUtils
             set targetUnit = FindControlUnitEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding control unit enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_FRONT then
-            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, 0.0, false, 0, itm)
+            set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, 0.0, true, 0, itm)
+            if targetUnit == null then
+                set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, 0.0, false, 0, itm)
+            endif
             if itm != 0 then
                 if itm.itemId == 'I00E' then // Nether Swap
                     if targetUnit == null then
