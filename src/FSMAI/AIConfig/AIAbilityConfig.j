@@ -82,7 +82,7 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0)
 
         // Mountain King Abilities
-        set currentAbilityId = 'A00C' // Storm Bolt
+        set currentAbilityId = 'A00C' // StormBolt
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 32.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 5000.0)
@@ -92,7 +92,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 60)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 175.0)
-        set currentAbilityId = 'A00R' // Thunder Clap
+        set currentAbilityId = 'A00R' // ThunderClap
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 20.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderclap")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
@@ -114,7 +114,7 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
         // Archmage Abilities
-        set currentAbilityId = 'A01K' // Thunder Fireball
+        set currentAbilityId = 'A01K' // ThunderFireball
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 29.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "firebolt")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
@@ -137,7 +137,7 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 285.0)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 120.0)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 1.0)
-        set currentAbilityId = 'A019' // Mass Teleport
+        set currentAbilityId = 'A019' // MassTeleport
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 50.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "massteleport")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
@@ -150,7 +150,7 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
         // Arthas Abilities
-        set currentAbilityId = 'A00P' // Hammer Bash
+        set currentAbilityId = 'A00P' // HammerBash
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 24.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 150.0)
@@ -160,7 +160,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 435.0)
-        set currentAbilityId = 'A00J' // Golden Convergence
+        set currentAbilityId = 'A00J' // GoldenConvergence
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 23.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
@@ -171,7 +171,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 130.0)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 850.0 / 1.25) // in order to hit more targets
-        set currentAbilityId = 'A01G' // Golden Defense
+        set currentAbilityId = 'A01G' // GoldenDefense
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 30.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "rejuvination")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
@@ -181,6 +181,40 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 95)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+
+        // Paladin Abilities
+        set currentAbilityId = 'A01O' // InnerFire
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 30.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "innerfire")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_HEAL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 45)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A01M' // HolyCleanse
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 25.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "antimagicshell")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 270.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_CC)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A00Q' // SolarIgnition
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 23.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 200.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_CC)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 55)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 255.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 0.5)
 
 
 

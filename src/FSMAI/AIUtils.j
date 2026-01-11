@@ -1978,6 +1978,8 @@ library AIUtils requires KeyUtils
                 endif
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_CC then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
+                set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
                 set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP then
@@ -2052,6 +2054,9 @@ library AIUtils requires KeyUtils
             if targetUnit != null then
                 call owner.botLog("Found CC'ed enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
+            set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, 0)
+            call owner.botLog("Force using ability on CC'ed ally: " + GetUnitName(targetUnit))
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, abil.castRange, abil)
             if targetUnit != null then
