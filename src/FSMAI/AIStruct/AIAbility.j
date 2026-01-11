@@ -342,6 +342,28 @@ struct AIAbility
                 return false
             endif
 
+            // Mass Teleport specific checks
+            if this.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP then
+                if IsHeroGoaled(owner.hero) then
+                    call this.botLog("Skipping teleport cast, hero already goaled.")
+                    set this.bIsReadyToCast = false
+                    set this.readyTargetUnit = null
+                    return false
+                endif
+                if GetUnitLifePercent(owner.hero) < 35.0 then
+                    call this.botLog("Skipping teleport cast due to low health.")
+                    set this.bIsReadyToCast = false
+                    set this.readyTargetUnit = null
+                    return false
+                endif
+                if DistanceBetweenUnits(owner.hero, targetUnit) < 3000.0 then
+                    call this.botLog("Skipping teleport cast, target too close.")
+                    set this.bIsReadyToCast = false
+                    set this.readyTargetUnit = null
+                    return false
+                endif
+            endif
+
             call this.castUnit(targetUnit)
             return true
         else

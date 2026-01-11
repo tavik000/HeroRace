@@ -49,6 +49,10 @@ struct CombatState extends AIState
         if owner.currentRequiredCastTime > 0 then
             if isCastOvertime then
                 call this.botLog("Casting Finished for ability: " + owner.castingAbility.orderString)
+                
+                // Handle teleport waypoint update on cast completion
+                call owner.updateWaypointAfterTeleport()
+                
                 set owner.isCasting = false
                 set owner.castingAbility = 0
                 set owner.currentRequiredCastTime = 0

@@ -302,7 +302,7 @@ library AIUtils requires KeyUtils
         local real goalY = GoalY
         local integer TrackProgress = 0
         // Crossing mid track line
-        set TrackProgress = MaxI(LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(leadingUnit), S2I( "trackProgress")), LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(followingUnit), S2I( "trackProgress")))
+        set TrackProgress = MaxI(LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(leadingUnit), S2I("trackProgress")), LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(followingUnit), S2I("trackProgress")))
         if IsHeroGoaled(leadingUnit) or IsHeroGoaled(followingUnit) then
             set TrackProgress = 2
         endif
@@ -1789,6 +1789,32 @@ library AIUtils requires KeyUtils
         return nearestTree
     endfunction
 
+    // Get nearest forward waypoint index after teleport
+    function GetNearestForwardWaypointIndex takes integer currentIndex, real x, real y returns integer
+        local integer i = currentIndex + 1
+        local integer bestIndex = currentIndex
+        local real bestDistance = 999999.0
+        local real distance
+        local real waypointX
+        local real waypointY
+        
+        loop
+            exitwhen i > GoalWaypointIndex
+            set waypointX = GetRectCenterX(WaypointAreas[i])
+            set waypointY = GetRectCenterY(WaypointAreas[i])
+            set distance = SquareRoot((x - waypointX) * (x - waypointX) + (y - waypointY) * (y - waypointY))
+            
+            if distance < bestDistance then
+                set bestDistance = distance
+                set bestIndex = i + 1
+            endif
+            
+            set i = i + 1
+        endloop
+        
+        return bestIndex
+    endfunction
+
     function FindNearestTreeInRange takes unit sourceUnit, real range returns destructable
         local location sourceLoc = Location(GetUnitX(sourceUnit), GetUnitY(sourceUnit))
         local destructable nearestTree = null
@@ -1833,6 +1859,15 @@ library AIUtils requires KeyUtils
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
                 set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP then
+                if IsHeroGoaled(owner.hero) then
+                    return null
+                endif
+                set targetUnit = FindTeleportAllyTargetInRange(owner, abil.castRange, 3000.0, abil)
+                if targetUnit != null then
+                    call owner.botLog("Found ally hero target for teleport ability, result: " + GetUnitName(targetUnit))
+                endif
+                return targetUnit
             else
                 call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(abil.findTargetType))
             endif
@@ -1898,6 +1933,13 @@ library AIUtils requires KeyUtils
             endif
             return targetUnit
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP then
+            if IsHeroGoaled(owner.hero) then
+                return null
+            endif
+            if GetUnitLifePercent(owner.hero) < 35.0 then
+                call owner.botLog("Skipping teleport target finding due to low health.")
+                return null
+            endif
             set targetUnit = FindTeleportAllyTargetInRange(owner, abil.castRange, 3000.0, abil)
             if targetUnit != null then
                 call owner.botLog("Found ally hero target for teleport ability, result: " + GetUnitName(targetUnit))

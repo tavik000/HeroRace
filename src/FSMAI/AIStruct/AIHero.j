@@ -77,6 +77,28 @@ struct AIHero
         set this.currentWaypointIndex = newIndex
     endmethod
 
+    method updateWaypointAfterTeleport takes nothing returns nothing
+        local real teleportX = GetUnitX(this.hero)
+        local real teleportY = GetUnitY(this.hero)
+        local integer newWaypointIndex = GetNearestForwardWaypointIndex(this.currentWaypointIndex, teleportX, teleportY)
+        call this.botLog("Updating waypoint after teleport. Current Index: " + I2S(this.currentWaypointIndex) + ", New Index: " + I2S(newWaypointIndex))
+        
+        if newWaypointIndex > this.currentWaypointIndex then
+            set this.currentWaypointIndex = newWaypointIndex
+            call this.botLog("Updated waypoint after teleport to index: " + I2S(newWaypointIndex))
+        endif
+
+        // update track progress, if close to TopRight rather than BotRight, set to 1, otherwise set to 2
+        if DistanceBetweenXY(teleportX, teleportY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(teleportX, teleportY, BotRightAreaCenterX, BotRightAreaCenterY) then
+            call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 1)
+            call this.botLog("Updated track progression to 1 (Top Right side)")
+        else
+            call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 2)
+            call this.botLog("Updated track progression to 2 (Bottom Right side)")
+        endif
+
+    endmethod
+
     method moveToNextWaypoint takes nothing returns nothing
         local rect currentWaypointArea
         local real x
