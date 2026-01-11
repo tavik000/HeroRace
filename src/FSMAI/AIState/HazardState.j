@@ -378,12 +378,10 @@ struct HazardState extends AIState
 
     endmethod
 
-
     method onExit takes nothing returns nothing
         call this.botLog("Exiting Slow Spike Hazard State")
         call owner.setDebugTextTagContent("Hazard: Slow Spike Exiting")
         call owner.setDebugTextTagColorPreset("ORANGE")
     endmethod
-
 
 endstruct

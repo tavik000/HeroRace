@@ -1,4 +1,4 @@
-struct AIHeroAbility
+struct AIAbility
     integer abilityId
     real baseCooldown
     integer castType

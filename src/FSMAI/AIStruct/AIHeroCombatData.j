@@ -1,5 +1,5 @@
 struct HeroCombatData
-    AIHeroAbility array abilities[MAX_ABILITIES_PER_HERO]
+    AIAbility array abilities[MAX_ABILITIES_PER_HERO]
     integer abilityCount
     real comboExpectedDamage
     real comboOverkillThresholdPercent
@@ -17,7 +17,7 @@ struct HeroCombatData
         
     method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer findTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
         if this.abilityCount < MAX_ABILITIES_PER_HERO then
-            set this.abilities[this.abilityCount] = AIHeroAbility.create(abilityId, this.owner, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
+            set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
             if comboIndex > 0 then
                 set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
             endif
@@ -102,7 +102,7 @@ struct HeroCombatData
         call this.deallocate()
     endmethod
 
-    method getAbilityByComboIndex takes integer comboIndex returns AIHeroAbility
+    method getAbilityByComboIndex takes integer comboIndex returns AIAbility
         local integer i = 0
         loop
             exitwhen i >= this.abilityCount
@@ -115,16 +115,16 @@ struct HeroCombatData
     endmethod
 
     method hasReadyAbility takes unit hero, integer difficulty returns boolean
-        local AIHeroAbility heroAbil = this.getReadyAbility(hero, difficulty)
+        local AIAbility heroAbil = this.getReadyAbility(hero, difficulty)
         if heroAbil != 0 then
             return true
         endif
         return false
     endmethod
 
-    method getReadyAbility takes unit hero, integer difficulty returns AIHeroAbility
+    method getReadyAbility takes unit hero, integer difficulty returns AIAbility
         local integer i = 0
-        local AIHeroAbility heroAbil
+        local AIAbility heroAbil
         local real currentMana
         local boolean bCheckCombo = IsApplyingCombo(difficulty)
         local AIHero aiHero = GetAIHeroFromUnit(hero)
@@ -188,10 +188,10 @@ struct HeroCombatData
         return 0
     endmethod
 
-    method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns AIHeroAbility
+    method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns AIAbility
         local integer i = startingComboIndex
-        local AIHeroAbility heroAbil
-        local AIHeroAbility resultComboAbility = 0
+        local AIAbility heroAbil
+        local AIAbility resultComboAbility = 0
         local AIHero aiHero = GetAIHeroFromUnit(hero)
         if aiHero == 0 then
             call this.botLogError("AIHero not found for unit in getReadyComboAbility.")
@@ -249,7 +249,7 @@ struct HeroCombatData
         local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
         local real requiredMana = 0.0
         local integer i = currentComboIndex
-        local AIHeroAbility heroAbil
+        local AIAbility heroAbil
         local AIHero aiHero = GetAIHeroFromUnit(hero)
             
         // Calculate mana cost for remaining combo abilities from currentComboIndex
@@ -273,7 +273,7 @@ struct HeroCombatData
 
     method areComboAbilityCooldownReady takes unit hero, integer difficulty, integer currentComboIndex returns boolean
         local integer i = currentComboIndex
-        local AIHeroAbility heroAbil
+        local AIAbility heroAbil
             
         // Check if combo abilities have their cooldowns ready (starting from currentComboIndex)
         loop
@@ -300,7 +300,7 @@ struct HeroCombatData
 
     method tryPrepareTargetForAbilities takes nothing returns nothing
         local integer i = 0
-        local AIHeroAbility heroAbil
+        local AIAbility heroAbil
 
         // Prepare target for each ability
         loop
@@ -444,16 +444,16 @@ struct HeroCombatData
     endmethod
 
     method hasAbilityOfCastType takes integer castType returns boolean
-        local AIHeroAbility heroAbil = this.getAbilityOfCastType(castType)
+        local AIAbility heroAbil = this.getAbilityOfCastType(castType)
         if heroAbil != 0 then
             return true
         endif
         return false
     endmethod
 
-    method getAbilityOfCastType takes integer castType returns AIHeroAbility
+    method getAbilityOfCastType takes integer castType returns AIAbility
         local integer i = 0
-        local AIHeroAbility heroAbil
+        local AIAbility heroAbil
 
         // Find and return the first ability that matches the cast type
         loop
@@ -472,7 +472,7 @@ struct HeroCombatData
         return 0
     endmethod
 
-    method getAnySelfDefenseAbility takes nothing returns AIHeroAbility
+    method getAnySelfDefenseAbility takes nothing returns AIAbility
         return this.getAbilityOfCastType(CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
     endmethod
 

@@ -491,7 +491,7 @@ library AIUtils requires KeyUtils
 
     endfunction
 
-    function FindControlUnitEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindControlUnitEnemyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -562,7 +562,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif not IsUnitEnemy(currentUnit, heroOwner) then
             elseif IsUnitType(currentUnit, UNIT_TYPE_HERO) then
@@ -637,7 +637,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = GetOwningPlayer(sourceUnit)
         set tempHeroUnit = sourceUnit
         set tempFindTeamType = FIND_TEAM_TYPE_ALL
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
 
         call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamUnits))
@@ -666,7 +666,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(unitsBetween)
         set unitsBetween = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -675,7 +675,7 @@ library AIUtils requires KeyUtils
         return false
     endfunction
     
-    function FindTrailingAllyTargetInRange takes unit ownerHero, real range, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindTrailingAllyTargetInRange takes unit ownerHero, real range, real minDistance, AIAbility heroAbil, AIItem itm returns unit
         local group allies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -687,7 +687,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(allies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -708,7 +708,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif IsHeroGoaled(currentUnit) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is goaled")
             elseif IsUnitLeadingUnit(currentUnit, ownerHero) then
@@ -733,7 +733,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(allies)
         set allies = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -741,7 +741,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLeadingEnemyTargetInRange takes unit ownerHero, real range, real minDistance, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindLeadingEnemyTargetInRange takes unit ownerHero, real range, real minDistance, AIAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -753,7 +753,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -774,7 +774,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif IsHeroGoaled(currentUnit) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is goaled")
             elseif not IsUnitLeadingUnit(currentUnit, ownerHero) then
@@ -800,7 +800,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(enemies)
         set enemies = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -809,7 +809,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, boolean bHeroOnly, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, boolean bHeroOnly, AIAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -822,7 +822,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call BotLogWithPlayer(heroOwner, "bHeroOnly: " + B2S(bHeroOnly))
         if bHeroOnly then
@@ -850,7 +850,7 @@ library AIUtils requires KeyUtils
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) and not bIgnoreMagicImmune then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is invulnerable or magic immune")
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif IsUnitBehindUnit(currentUnit, ownerHero) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is behind the owner hero")
@@ -877,7 +877,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(enemies)
         set enemies = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
@@ -885,7 +885,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -895,7 +895,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -910,7 +910,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif IsUnitInFrontOfUnit(currentUnit, ownerHero) then
             elseif IsUnitLeadingUnit(currentUnit, ownerHero) then
@@ -929,7 +929,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(enemies)
         set enemies = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
@@ -937,7 +937,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLowHealthTargetInRange takes unit ownerHero, real range, integer findTeamType, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindLowHealthTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility heroAbil, AIItem itm returns unit
         local group units = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -948,7 +948,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -963,7 +963,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) and tempFindTeamType == FIND_TEAM_TYPE_ENEMIES then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif GetUnitLifePercent(currentUnit) > lowestHealthPercent then
             elseif bestTarget == null then
@@ -981,7 +981,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(units)
         set units = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -990,7 +990,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindCCedTargetInRange takes unit ownerHero, real range, integer findTeamType, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindCCedTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility heroAbil, AIItem itm returns unit
         local group units = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1000,7 +1000,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1015,7 +1015,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif not IsUnitStunOrSlow(currentUnit) then
             elseif bestTarget == null then
@@ -1036,7 +1036,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(units)
         set units = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -1045,7 +1045,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindHealAllyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindHealAllyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
         local group allies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1056,7 +1056,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(allies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1072,7 +1072,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif GetUnitLifePercent(currentUnit) > lowHpPercent then
             elseif IsUnitStunOrSlow(currentUnit) then
@@ -1099,7 +1099,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(allies)
         set allies = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -1108,7 +1108,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil, AIItem itm returns unit
+    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1119,7 +1119,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1137,7 +1137,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif IsUnitStunOrSlow(currentUnit) then
             elseif bestTarget == null then
@@ -1179,7 +1179,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(enemies)
         set enemies = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
@@ -1188,7 +1188,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIHeroAbility heroAbil returns unit
+    function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
         local real minHpPercent = 50.0 
@@ -1215,7 +1215,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         call GroupEnumUnitsInRange(heroes, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
             
         loop
@@ -1225,7 +1225,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif IsUnitStunOrSlow(currentUnit) then
             elseif IsUnitInAnyHazardZone(currentUnit) then
             elseif GetUnitMoveSpeed(currentUnit) < minSpeed or GetUnitMoveSpeed(currentUnit) > maxSpeed then
@@ -1276,7 +1276,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(heroes)
         set heroes = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
@@ -1285,7 +1285,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindTeleportAllyTargetInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+    function FindTeleportAllyTargetInRange takes AIHero owner, real range, AIAbility heroAbil returns unit
         local group targets = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1312,7 +1312,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
     
         loop
@@ -1321,7 +1321,7 @@ library AIUtils requires KeyUtils
             call GroupRemoveUnit(targets, currentUnit)
     
             // --- VALIDATION LAYER ---
-            if tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            if tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
                 // Skip invalid target
             elseif IsUnitInAnyHazardZone(currentUnit) then
                 // Skip units in danger
@@ -1382,7 +1382,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(targets)
         set targets = null
         set currentUnit = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
@@ -1398,7 +1398,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = centerPlayer
         set tempFindTeamType = findTeamType
         set tempHeroUnit = centerUnit
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
 
         call GroupEnumUnitsInRange(heroGroup, GetUnitX(centerUnit), GetUnitY(centerUnit), radius, Filter(function FilterValidVisibleTeamHeroes))
@@ -1407,7 +1407,7 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempAIItem = 0
         set centerPlayer = null
 
@@ -1501,7 +1501,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindBestComboTarget takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+    function FindBestComboTarget takes AIHero owner, real range, AIAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1512,7 +1512,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = GetOwningPlayer(owner.hero)
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = owner.hero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
         call owner.botLog("Found " + I2S(CountUnitsInGroup(heroes)) + " potential combo targets in range.")
             
@@ -1538,7 +1538,7 @@ library AIUtils requires KeyUtils
             // Skip if unit is invulnerable
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
                 // Skip this unit
-            elseif tempAIHeroAbility != 0 and not tempAIHeroAbility.customFilter(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
                 // Skip - doesn't pass custom filter
             else
                 // Valid target - evaluate
@@ -1554,11 +1554,11 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         return bestTarget
     endfunction
 
-    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, boolean bExcludeSelf, AIHeroAbility heroAbil returns unit
+    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, boolean bExcludeSelf, AIAbility heroAbil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
         local unit currentUnit
@@ -1571,7 +1571,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = GetOwningPlayer(owner.hero)
         set tempFindTeamType = findTeamType
         set tempHeroUnit = owner.hero
-        set tempAIHeroAbility = heroAbil
+        set tempAIAbility = heroAbil
             
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
         set findCount = CountUnitsInGroup(heroes)
@@ -1581,8 +1581,8 @@ library AIUtils requires KeyUtils
                 set currentUnit = FirstOfGroup(heroes)
                 exitwhen i >= findCount
 
-                if tempAIHeroAbility != 0 then
-                    if not tempAIHeroAbility.customFilter(currentUnit) then
+                if tempAIAbility != 0 then
+                    if not tempAIAbility.customFilter(currentUnit) then
                         call GroupRemoveUnit(heroes, currentUnit)
                     endif
                 endif
@@ -1602,7 +1602,7 @@ library AIUtils requires KeyUtils
         set randomHero = GroupPickRandomUnit(heroes)
             
         // Clean up
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         call DestroyGroup(heroes)
         set heroes = null
         set tempHeroUnit = null
@@ -1612,11 +1612,11 @@ library AIUtils requires KeyUtils
         return randomHero
     endfunction
 
-    function FindRandomEnemyHeroInRange takes AIHero owner, real range, AIHeroAbility heroAbil returns unit
+    function FindRandomEnemyHeroInRange takes AIHero owner, real range, AIAbility heroAbil returns unit
         return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ENEMIES, false, heroAbil)
     endfunction
         
-    function FindRandomAllyHeroInRange takes AIHero owner, real range, boolean bExcludeSelf, AIHeroAbility heroAbil returns unit
+    function FindRandomAllyHeroInRange takes AIHero owner, real range, boolean bExcludeSelf, AIAbility heroAbil returns unit
         return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, bExcludeSelf, heroAbil)
     endfunction
 
@@ -1666,7 +1666,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = GetOwningPlayer(owner.hero)
         set tempFindTeamType = findTeamType
         set tempHeroUnit = owner.hero
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
     
         // 2. Pairwise Centroid Check
         set i = 0
@@ -1706,7 +1706,7 @@ library AIUtils requires KeyUtils
         call DestroyGroup(tempGroup)
         set allTargets = null
         set tempGroup = null
-        set tempAIHeroAbility = 0
+        set tempAIAbility = 0
         set tempHeroUnit = null
         set tempHeroOwner = null
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
@@ -1806,7 +1806,7 @@ library AIUtils requires KeyUtils
         return nearestTree
     endfunction
 
-    function FindTargetUnitForAbility takes AIHero owner, AIHeroAbility heroAbil returns unit
+    function FindTargetUnitForAbility takes AIHero owner, AIAbility heroAbil returns unit
         local unit targetUnit = null
 
         if not IsSmartFindingTargetUnit(owner.difficulty) then

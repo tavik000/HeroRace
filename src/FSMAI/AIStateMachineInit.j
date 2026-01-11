@@ -16,7 +16,7 @@ globals
     player tempHeroOwner = null
     integer tempFindTeamType = 0
     unit tempHeroUnit = null
-    AIHeroAbility tempAIHeroAbility = 0
+    AIAbility tempAIAbility = 0
     AIItem tempAIItem = 0
     destructable tempTree = null
     real tempNearestTreeDist = MAX_RANGE

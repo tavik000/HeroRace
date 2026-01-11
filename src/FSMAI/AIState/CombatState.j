@@ -107,7 +107,7 @@ struct CombatState extends AIState
 
     method tryCastAnyReadyAbility takes nothing returns boolean
         local integer i = 0
-        local AIHeroAbility heroAbil
+        local AIAbility heroAbil
         local real currentTime = TimerGetElapsed(gameTimer)
         local integer difficulty = owner.difficulty
             

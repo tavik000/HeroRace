@@ -398,11 +398,11 @@
 			"statementType": "VariableDeclaration"
 		},
 		{
-			"label": "tempAIHeroAbility",
+			"label": "tempAIAbility",
 			"kind": 5,
 			"detail": "Global Variable",
-			"documentation": "\n```jass\nAIHeroAbility tempAIHeroAbility\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
-			"sortText": "2_var_tempAIHeroAbility",
+			"documentation": "\n```jass\nAIAbility tempAIAbility\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+			"sortText": "2_var_tempAIAbility",
 			"filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
 			"statementType": "VariableDeclaration"
 		},
@@ -1388,11 +1388,11 @@
 			"statementType": "StructDeclaration"
 		},
 		{
-			"label": "AIHeroAbility",
+			"label": "AIAbility",
 			"kind": 21,
 			"detail": "Struct",
-			"documentation": "\n```jass\nstruct AIHeroAbility\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
-			"sortText": "1_struct_AIHeroAbility",
+			"documentation": "\n```jass\nstruct AIAbility\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+			"sortText": "1_struct_AIAbility",
 			"filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
 			"statementType": "StructDeclaration"
 		},

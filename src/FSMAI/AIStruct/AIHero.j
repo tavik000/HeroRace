@@ -8,7 +8,7 @@ struct AIHero
     real lastStartCastTime
     boolean isCasting
     real currentRequiredCastTime
-    AIHeroAbility castingAbility
+    AIAbility castingAbility
     timer updateTimer
     integer currentComboIndex
     unit comboTargetUnit
@@ -300,7 +300,7 @@ struct AIHero
 
     method onBeTargetedByEnemyAbility takes integer abilityId returns nothing
         local AIItem selfDefenseItem
-        local AIHeroAbility selfDefenseAbility
+        local AIAbility selfDefenseAbility
         call this.botLog("Hero is being targeted by enemy ability: " + I2S(abilityId))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
@@ -317,7 +317,7 @@ struct AIHero
 
     method onBeTargetedByEnemyAttack takes unit attacker returns nothing
         local AIItem selfDefenseItem
-        local AIHeroAbility selfDefenseAbility
+        local AIAbility selfDefenseAbility
         call this.botLog("Hero is being targeted by enemy attack from unit: " + GetUnitName(attacker))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
