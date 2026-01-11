@@ -98,7 +98,7 @@ struct AIAbility
         return true
     endmethod
 
-    method getUnitFrontOffsetDistance takes unit targetUnit returns real
+    method getUnitOffsetDistance takes unit targetUnit returns real
         local real targetMoveSpeed = GetUnitMoveSpeed(targetUnit)
         local real projectileSpeed = this.projectileSpeed
         local real targetDistance = DistanceBetweenUnits(this.ownerHero, targetUnit)
@@ -109,10 +109,15 @@ struct AIAbility
         local integer currentOrder
         local real timeToReachTarget = 0.0
         local real offsetDistance = 0.0
+        local boolean isFront = true
 
-        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT then
+        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT and this.castType != CAST_POINT_ENEMY_BEHIND then
             call this.botLogError("getFrontOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
             return 0.0
+        endif
+
+        if this.castType == CAST_POINT_ENEMY_BEHIND then
+            set isFront = false
         endif
 
         set currentOrder = GetUnitCurrentOrder(targetUnit)
@@ -134,7 +139,11 @@ struct AIAbility
                 set offsetDistance = 0.0
             endif
         else
-            set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
+            if isFront then
+                set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
+            else
+                set offsetDistance = - targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
+            endif
         endif
         return offsetDistance
     endmethod
@@ -305,6 +314,8 @@ struct AIAbility
             endif
 
             if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
                 return false
             endif
             // Follow target unit
@@ -326,7 +337,7 @@ struct AIAbility
             else
                 // Calculate point in front of target unit
                 set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
-                set offset = this.getUnitFrontOffsetDistance(targetUnit)
+                set offset = this.getUnitOffsetDistance(targetUnit)
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                 set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
@@ -338,11 +349,11 @@ struct AIAbility
                 call this.botLog("No target found for point ability: " + GetObjectName(this.abilityId))
                 return false
             else
-                // if there is hazard around, cast to hazard center
-                set hazardUnitAround = FindHazardUnitAroundTargetUnit(this.owner, targetUnit, this.effectiveRadius)
+                // if there is hazard around, cast to hazard center + offset 150
+                set hazardUnitAround = GetHazardAroundUnit(targetUnit, this.effectiveRadius)
                 if hazardUnitAround != null then
-                    set this.readyTargetPointX = GetUnitX(hazardUnitAround)
-                    set this.readyTargetPointY = GetUnitY(hazardUnitAround)
+                    set this.readyTargetPointX = GetUnitX(hazardUnitAround) + 150.0 * Cos((GetUnitFacing(hazardUnitAround)) * bj_DEGTORAD)
+                    set this.readyTargetPointY = GetUnitY(hazardUnitAround) + 150.0 * Sin((GetUnitFacing(hazardUnitAround)) * bj_DEGTORAD)
                     call this.botLog("Casting behind enemy to hazard center for ability: " + GetObjectName(this.abilityId))
                     call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
                     return true
@@ -350,7 +361,7 @@ struct AIAbility
 
                 // fallback: Calculate point behind target unit
                 set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
-                set offset = this.getUnitFrontOffsetDistance(targetUnit)
+                set offset = this.getUnitOffsetDistance(targetUnit)
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) - offset * Cos(targetFacingAngle * bj_DEGTORAD)
                 set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
@@ -394,6 +405,22 @@ struct AIAbility
                     set this.bIsReadyToCast = false
                     set this.readyTargetUnit = null
                     return false
+                endif
+            endif
+
+            if this.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE or this.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
+                if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.castRange * 2.0 then
+                    set this.bIsReadyToCast = false
+                    set this.readyTargetUnit = null
+                    return false
+                endif
+                // Follow target unit
+                if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.castRange then
+                    call this.castUnit(targetUnit)
+                    return true
+                else
+                    call IssueTargetOrder(this.ownerHero, "move", targetUnit)
+                    return true
                 endif
             endif
 
