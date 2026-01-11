@@ -18,7 +18,6 @@ globals
     constant integer DIFF_NIGHTMARE = 4
         
     // Settings
-    constant real HEAL_THRESHOLD = 0.40 // 40% HP
     constant real UPDATE_PERIOD = 0.30
 
     // Hazard Types
@@ -47,8 +46,8 @@ globals
     constant real PICKUP_ITEM_RANGE_NORMAL = 800.0
     constant real PICKUP_ITEM_RANGE_SMALL = 200.0
 
-    // Self Heal Threshold
-    constant real SELF_HEAL_HP_PERCENTAGE_THRESHOLD = 40.0 // 40%
+    // Heal HP Percentage Threshold
+    constant real HEAL_HP_PERCENTAGE_THRESHOLD = 40.0 // 40% HP
     // Force Use Item Threshold
     constant real FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD = 30.0 // 30%
 
@@ -132,6 +131,8 @@ globals
     constant integer FIND_TARGET_TYPE_ALL_FRONT = 52 // Furthest
     constant integer FIND_TARGET_TYPE_ALL_UNIT_FRONT = 53 // Furthest, including non-hero units
     constant integer FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING = 54 
+    constant integer FIND_TARGET_TYPE_ALL_HOLY_LIGHT = 55 
+    constant integer FIND_TARGET_TYPE_ALL_DEAD_COIL = 56 
 
 
     constant integer FIND_TEAM_TYPE_NONE = 0

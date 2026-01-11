@@ -380,6 +380,10 @@ library KeyUtils
         return facing >= 225.0 and facing < 315.0
     endfunction
 
+    function IsUnitUndead takes unit u returns boolean
+        return IsUnitType(u, UNIT_TYPE_UNDEAD)
+    endfunction
+
     function GetRandomEnemyPlayer takes unit u returns player
         local integer playerId = GetRandomInt(0, bj_MAX_PLAYERS - 1)
         loop

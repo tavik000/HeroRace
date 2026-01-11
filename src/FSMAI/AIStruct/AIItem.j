@@ -229,7 +229,7 @@ struct AIItem
             if this.isForcedToUse() then
                 set this.bIsReadyToUse = true
             else
-                set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+                set this.bIsReadyToUse = GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD
             endif
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             if this.isForcedToUse() then
@@ -287,7 +287,7 @@ struct AIItem
             if this.isForcedToUse() then
                 set this.readyTargetUnit = this.ownerHero
             else
-                if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
+                if GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD then
                     set this.readyTargetUnit = this.ownerHero
                 else
                     set this.readyTargetUnit = null
@@ -375,7 +375,7 @@ struct AIItem
                 set this.bIsReadyToUse = this.readyTargetTree != null
                 return this.bIsReadyToUse
             endif
-            if GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD then
+            if GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD then
                 set this.readyTargetTree = FindNearestTreeInFrontOfUnit(this.ownerHero, 1000.0)
                 set this.bIsReadyToUse = this.readyTargetTree != null
             else

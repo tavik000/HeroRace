@@ -207,14 +207,18 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
+            call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
+            set this.bIsReadyToCast = targetUnitCount >= 2
+        elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
+            // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALL)
             call this.botLog("Found " + I2S(targetUnitCount) + " heroes around for ability: " + GetObjectName(this.abilityId))
             set this.bIsReadyToCast = targetUnitCount >= 2
-        elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
-            // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_INSTANT_HEAL then
-            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -262,6 +266,9 @@ struct AIAbility
 
     method castInstant takes nothing returns nothing
         call IssueImmediateOrder(owner.hero, this.orderString)
+        if this.requiredCastTime <= 0.0 then
+            call this.owner.moveToNextWaypoint()
+        endif
         call this.botLog("Casting instant ability: " + this.orderString)
         set this.bIsReadyToCast = false
     endmethod
@@ -337,6 +344,9 @@ struct AIAbility
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)
                 return true
             endif
+        elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             call this.castInstant()
             return true

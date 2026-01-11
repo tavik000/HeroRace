@@ -62,6 +62,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A005')  // CrystalScatter
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.3)
 
+        // LightKnight
+        set heroTypeId = 'H003'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A012')  // HolyLight
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A011')  // DivineShield
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0DW')  // RadiantStrike
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

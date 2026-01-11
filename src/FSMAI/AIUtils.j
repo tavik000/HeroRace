@@ -1090,12 +1090,98 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindHolyLightAllyTargetInRange takes unit ownerHero, real range, real expectedDamage returns unit
+        local group targets = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+        local real lowHpPercent = HEAL_HP_PERCENTAGE_THRESHOLD
+
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ALL
+        set tempHeroUnit = ownerHero
+        set tempAIAbility = 0
+        set tempAIItem = 0
+        call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: magic immune, Ally HP above heal threshold, Undead Ally, Non-undead enemy
+        // Priority Order:
+        // 1. Allies
+        // 2. Lowest Health
+        // 2. Killable enemy
+        // 3. Highest Health enemy (avoid overkill)
+
+        loop
+            set currentUnit = FirstOfGroup(targets)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(targets, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif GetUnitLifePercent(currentUnit) > lowHpPercent then
+            elseif IsUnitUndead(currentUnit) and IsUnitAlly(currentUnit, heroOwner) then
+            elseif not IsUnitUndead(currentUnit) and IsUnitEnemy(currentUnit, heroOwner) then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Allies Priority
+                if IsUnitAlly(currentUnit, heroOwner) and not IsUnitAlly(bestTarget, heroOwner) then
+                    set bestTarget = currentUnit
+                elseif not IsUnitAlly(currentUnit, heroOwner) and IsUnitAlly(bestTarget, heroOwner) then
+                    // Keep bestTarget
+                else
+                    // TIE on Ally Status (Both Ally or Both Enemy)
+                    if IsUnitAlly(currentUnit, heroOwner) then
+                        // 2. Lowest Health Priority (Ally)
+                        if GetUnitLifePercent(currentUnit) < GetUnitLifePercent(bestTarget) then
+                            set bestTarget = currentUnit
+                        endif
+                    else
+                        // Enemy Target
+                        // 2. Killable Enemy Priority
+                        if GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) <= expectedDamage and GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) > expectedDamage then
+                            set bestTarget = currentUnit
+                        elseif GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) > expectedDamage and GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) <= expectedDamage then
+                            // Keep bestTarget
+                        else
+                            // TIE on Killable Status
+                            if GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) <= expectedDamage and GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) <= expectedDamage then
+                                // Both Killable - Choose Highest HP
+                                if GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) > GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) then
+                                    set bestTarget = currentUnit
+                                endif
+                            else
+                                // Both Not Killable - Choose Lowest HP
+                                if GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) < GetUnitStateSwap(UNIT_STATE_LIFE, bestTarget) then
+                                    set bestTarget = currentUnit
+                                endif
+                            endif
+                        endif
+                    endif
+                endif
+            endif   
+        endloop
+
+        // Clean up
+        call DestroyGroup(targets)
+        set targets = null
+        set currentUnit = null
+        set tempAIAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+        return bestTarget
+    endfunction
+
     function FindHealAllyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
         local group allies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
         local player heroOwner = GetOwningPlayer(ownerHero)
-        local real lowHpPercent = 50.0
+        local real lowHpPercent = HEAL_HP_PERCENTAGE_THRESHOLD
     
         // Set temp variables for filter function
         set tempHeroOwner = heroOwner
@@ -1991,6 +2077,11 @@ library AIUtils requires KeyUtils
                     call owner.botLog("Found ally hero target for teleport ability, result: " + GetUnitName(targetUnit))
                 endif
                 return targetUnit
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_HOLY_LIGHT then
+                set targetUnit = FindHolyLightAllyTargetInRange(owner.hero, abil.castRange, abil.expectedDamage)
+                if targetUnit != null then
+                    call owner.botLog("Found Holy Light ally target for ability, result: " + GetUnitName(targetUnit))
+                endif
             else
                 call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(abil.findTargetType))
             endif
@@ -2081,6 +2172,11 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found ally hero target for teleport ability, result: " + GetUnitName(targetUnit))
             endif
             return targetUnit
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_HOLY_LIGHT then
+            set targetUnit = FindHolyLightAllyTargetInRange(owner.hero, abil.castRange, abil.expectedDamage)
+            if targetUnit != null then
+                call owner.botLog("Found Holy Light ally target for ability, result: " + GetUnitName(targetUnit))
+            endif
         else
             call owner.botLogError("Unsupported ability find target type: " + I2S(abil.findTargetType))
         endif

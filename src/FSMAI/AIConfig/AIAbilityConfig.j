@@ -96,12 +96,13 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 20.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderclap")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
-        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 350.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 350.0 - 50.0) // prevent missing
         call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_BACK_ENEMY)
         call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 320.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.1)
         set currentAbilityId = 'A014' // Avatar 
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 26.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "metamorphosis")
@@ -248,7 +249,37 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 130.0)
 
-
+        // LightKnight Abilities
+        set currentAbilityId = 'A012' // HolyLight
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 26.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "holybolt")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALL_HOLY_LIGHT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 65)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 450.0)
+        set currentAbilityId = 'A011' // DivineShield
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 18.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "divineshield")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A0DW' // RapidMarch
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 42.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 4000.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_ALLY_CROWDED)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 90)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
 
 
