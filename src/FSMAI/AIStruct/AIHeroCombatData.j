@@ -115,8 +115,8 @@ struct HeroCombatData
     endmethod
 
     method hasReadyAbility takes unit hero, integer difficulty returns boolean
-        local AIAbility heroAbil = this.getReadyAbility(hero, difficulty)
-        if heroAbil != 0 then
+        local AIAbility abil = this.getReadyAbility(hero, difficulty)
+        if abil != 0 then
             return true
         endif
         return false
@@ -124,25 +124,25 @@ struct HeroCombatData
 
     method getReadyAbility takes unit hero, integer difficulty returns AIAbility
         local integer i = 0
-        local AIAbility heroAbil
+        local AIAbility abil
         local real currentMana
         local boolean bCheckCombo = IsApplyingCombo(difficulty)
         local AIHero aiHero = GetAIHeroFromUnit(hero)
 
         if bCheckCombo then
             // Check for combo abilities starting from index 1
-            set heroAbil = this.getAbilityByComboIndex(1)
-            if heroAbil != 0 then
+            set abil = this.getAbilityByComboIndex(1)
+            if abil != 0 then
                 // Exist any combo ability
                 // If combo ability cooldown are ready, prioritize them
                 if this.areComboAbilityCooldownReady(hero, difficulty, aiHero.currentComboIndex) then
                     // Check if we have enough mana for combo
                     if this.hasEnoughManaForCombo(hero, aiHero.currentComboIndex) then
                         // Cooldown ready and enough mana - proceed with combo
-                        set heroAbil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
-                        if heroAbil != 0 then
-                            if heroAbil.bIsReadyToCast then
-                                return heroAbil
+                        set abil = this.getReadyComboAbility(hero, difficulty, aiHero.currentComboIndex)
+                        if abil != 0 then
+                            if abil.bIsReadyToCast then
+                                return abil
                             endif
                         endif
                     else
@@ -157,26 +157,26 @@ struct HeroCombatData
         // Check if any ability is ready for combat based on difficulty
         loop
             exitwhen i >= this.abilityCount
-            set heroAbil = this.abilities[i]
+            set abil = this.abilities[i]
                 
-            if bCheckCombo and heroAbil.comboIndex > 0 then
+            if bCheckCombo and abil.comboIndex > 0 then
                 // Skip combo abilities if not checking for combos
             else
                 // Check cooldown (skip for first-time cast)
-                if heroAbil.isCooldownReady(difficulty) then
+                if abil.isCooldownReady(difficulty) then
                     // Check if ability is available
-                    if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                        call this.botLogError("Ability not available: " + heroAbil.orderString)
+                    if GetUnitAbilityLevel(hero, abil.abilityId) <= 0 then
+                        call this.botLogError("Ability not available: " + abil.orderString)
                     else
                         // Check if hero has enough mana
                         set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
-                        if not heroAbil.isManaReady(hero) then
-                            // call this.botLog("Not enough mana for ability. Need: " + I2S(heroAbil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
-                            call aiHero.setDebugTextTagContent("Combat: " + heroAbil.orderString + ", No Mana" + "(" + I2S(heroAbil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
+                        if not abil.isManaReady(hero) then
+                            // call this.botLog("Not enough mana for ability. Need: " + I2S(abil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
+                            call aiHero.setDebugTextTagContent("Combat: " + abil.orderString + ", No Mana" + "(" + I2S(abil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
                             call aiHero.setDebugTextTagColorPreset("RED")
                         else
-                            if heroAbil.bIsReadyToCast then
-                                return heroAbil
+                            if abil.bIsReadyToCast then
+                                return abil
                             endif
                         endif
                     endif
@@ -190,7 +190,7 @@ struct HeroCombatData
 
     method getReadyComboAbility takes unit hero, integer difficulty, integer startingComboIndex returns AIAbility
         local integer i = startingComboIndex
-        local AIAbility heroAbil
+        local AIAbility abil
         local AIAbility resultComboAbility = 0
         local AIHero aiHero = GetAIHeroFromUnit(hero)
         if aiHero == 0 then
@@ -201,32 +201,32 @@ struct HeroCombatData
 
         // Check if a sequence of combo abilities are ready
         loop
-            set heroAbil = this.getAbilityByComboIndex(i)
+            set abil = this.getAbilityByComboIndex(i)
             // Reach end of combo sequence
-            exitwhen heroAbil == 0
+            exitwhen abil == 0
                 
             // Check cooldown
-            if not heroAbil.isCooldownReady(difficulty) then
-                call this.botLog("Ability cooldown not ready for combo: " + heroAbil.orderString)
-                call aiHero.setDebugTextTagContent("Combat: Combo CD Not Ready " + heroAbil.orderString)
+            if not abil.isCooldownReady(difficulty) then
+                call this.botLog("Ability cooldown not ready for combo: " + abil.orderString)
+                call aiHero.setDebugTextTagContent("Combat: Combo CD Not Ready " + abil.orderString)
                 call aiHero.setDebugTextTagColorPreset("RED")
                 return 0
             endif
                 
             // Check if ability is available
-            if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
-                call this.botLogError("Ability not available for combo: " + heroAbil.orderString)
+            if GetUnitAbilityLevel(hero, abil.abilityId) <= 0 then
+                call this.botLogError("Ability not available for combo: " + abil.orderString)
                 return 0
             endif
                 
             if i == aiHero.currentComboIndex then
-                if not heroAbil.bIsReadyToCast then
-                    call this.botLog("Ability not prepared for combo: " + heroAbil.orderString)
+                if not abil.bIsReadyToCast then
+                    call this.botLog("Ability not prepared for combo: " + abil.orderString)
                     return 0
                 else
-                    set resultComboAbility = heroAbil
-                    call this.botLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + heroAbil.orderString)
-                    call aiHero.setDebugTextTagContent("Combat: Found Combo Ability " + heroAbil.orderString)
+                    set resultComboAbility = abil
+                    call this.botLog("Found ready combo ability at comboIndex " + I2S(i) + ": " + abil.orderString)
+                    call aiHero.setDebugTextTagContent("Combat: Found Combo Ability " + abil.orderString)
                     call aiHero.setDebugTextTagColorPreset("RED")
                 endif
             endif
@@ -249,16 +249,16 @@ struct HeroCombatData
         local real currentMana = GetUnitState(hero, UNIT_STATE_MANA)
         local real requiredMana = 0.0
         local integer i = currentComboIndex
-        local AIAbility heroAbil
+        local AIAbility abil
         local AIHero aiHero = GetAIHeroFromUnit(hero)
             
         // Calculate mana cost for remaining combo abilities from currentComboIndex
         loop
-            set heroAbil = this.getAbilityByComboIndex(i)
+            set abil = this.getAbilityByComboIndex(i)
             // Reach end of combo sequence
-            exitwhen heroAbil == 0
+            exitwhen abil == 0
                 
-            set requiredMana = requiredMana + heroAbil.manaCost
+            set requiredMana = requiredMana + abil.manaCost
             set i = i + 1
         endloop
             
@@ -273,21 +273,21 @@ struct HeroCombatData
 
     method areComboAbilityCooldownReady takes unit hero, integer difficulty, integer currentComboIndex returns boolean
         local integer i = currentComboIndex
-        local AIAbility heroAbil
+        local AIAbility abil
             
         // Check if combo abilities have their cooldowns ready (starting from currentComboIndex)
         loop
-            set heroAbil = this.getAbilityByComboIndex(i)
+            set abil = this.getAbilityByComboIndex(i)
             // Reach end of combo sequence
-            exitwhen heroAbil == 0
+            exitwhen abil == 0
                 
             // Check cooldown
-            if not heroAbil.isCooldownReady(difficulty) then
+            if not abil.isCooldownReady(difficulty) then
                 return false
             endif
                 
             // Check if ability is available
-            if GetUnitAbilityLevel(hero, heroAbil.abilityId) <= 0 then
+            if GetUnitAbilityLevel(hero, abil.abilityId) <= 0 then
                 return false
             endif
                 
@@ -300,28 +300,28 @@ struct HeroCombatData
 
     method tryPrepareTargetForAbilities takes nothing returns nothing
         local integer i = 0
-        local AIAbility heroAbil
+        local AIAbility abil
 
         // Prepare target for each ability
         loop
             exitwhen i >= this.abilityCount
-            set heroAbil = this.abilities[i]
-            if heroAbil != 0 then
-                if not heroAbil.bIsReadyToCast then
-                    if heroAbil.comboIndex > 0 then
+            set abil = this.abilities[i]
+            if abil != 0 then
+                if not abil.bIsReadyToCast then
+                    if abil.comboIndex > 0 then
                         // Only prepare combo abilities if in combo mode
                         if IsApplyingCombo(owner.difficulty) then
                             if areComboAbilityCooldownReady(owner.hero, owner.difficulty, 1) then
                                 if this.hasEnoughManaForCombo(owner.hero, 1) then
-                                    call heroAbil.tryPrepareTarget()
+                                    call abil.tryPrepareTarget()
                                 endif
                             endif
                         endif
                     else
                         // Non-combo abilities always prepare
-                        if heroAbil.isCooldownReady(owner.difficulty) then
-                            if heroAbil.isManaReady(owner.hero) then
-                                call heroAbil.tryPrepareTarget()
+                        if abil.isCooldownReady(owner.difficulty) then
+                            if abil.isManaReady(owner.hero) then
+                                call abil.tryPrepareTarget()
                             endif
                         endif
                     endif
@@ -444,8 +444,8 @@ struct HeroCombatData
     endmethod
 
     method hasAbilityOfCastType takes integer castType returns boolean
-        local AIAbility heroAbil = this.getAbilityOfCastType(castType)
-        if heroAbil != 0 then
+        local AIAbility abil = this.getAbilityOfCastType(castType)
+        if abil != 0 then
             return true
         endif
         return false
@@ -453,16 +453,16 @@ struct HeroCombatData
 
     method getAbilityOfCastType takes integer castType returns AIAbility
         local integer i = 0
-        local AIAbility heroAbil
+        local AIAbility abil
 
         // Find and return the first ability that matches the cast type
         loop
             exitwhen i >= this.abilityCount
-            set heroAbil = this.abilities[i]
-            if heroAbil != 0 then
-                if heroAbil.castType == castType then
+            set abil = this.abilities[i]
+            if abil != 0 then
+                if abil.castType == castType then
                     call this.botLog("Found ability with cast type: " + I2S(castType))
-                    return heroAbil
+                    return abil
                 endif
             endif
             set i = i + 1

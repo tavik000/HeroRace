@@ -491,7 +491,7 @@ library AIUtils requires KeyUtils
 
     endfunction
 
-    function FindControlUnitEnemyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
+    function FindControlUnitEnemyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -675,7 +675,7 @@ library AIUtils requires KeyUtils
         return false
     endfunction
     
-    function FindTrailingAllyTargetInRange takes unit ownerHero, real range, real minDistance, AIAbility heroAbil, AIItem itm returns unit
+    function FindTrailingAllyTargetInRange takes unit ownerHero, real range, real minDistance, AIAbility abil, AIItem itm returns unit
         local group allies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -687,7 +687,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(allies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -741,7 +741,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLeadingEnemyTargetInRange takes unit ownerHero, real range, real minDistance, AIAbility heroAbil, AIItem itm returns unit
+    function FindLeadingEnemyTargetInRange takes unit ownerHero, real range, real minDistance, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -753,7 +753,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -809,7 +809,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, boolean bHeroOnly, AIAbility heroAbil, AIItem itm returns unit
+    function FindFrontTargetInRange takes unit ownerHero, real range, integer findTeamType, real minDistance, boolean bHeroOnly, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -822,7 +822,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call BotLogWithPlayer(heroOwner, "bHeroOnly: " + B2S(bHeroOnly))
         if bHeroOnly then
@@ -885,7 +885,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
+    function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -895,7 +895,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -937,7 +937,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLowHealthTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility heroAbil, AIItem itm returns unit
+    function FindLowHealthTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility abil, AIItem itm returns unit
         local group units = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -948,7 +948,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -990,7 +990,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindCCedTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility heroAbil, AIItem itm returns unit
+    function FindCCedTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility abil, AIItem itm returns unit
         local group units = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1000,7 +1000,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1045,7 +1045,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindHealAllyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
+    function FindHealAllyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
         local group allies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1056,7 +1056,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(allies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1108,7 +1108,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil, AIItem itm returns unit
+    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1119,7 +1119,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
@@ -1188,7 +1188,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIAbility heroAbil returns unit
+    function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIAbility abil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
         local real minHpPercent = 50.0 
@@ -1215,7 +1215,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         call GroupEnumUnitsInRange(heroes, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
             
         loop
@@ -1285,7 +1285,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindTeleportAllyTargetInRange takes AIHero owner, real range, AIAbility heroAbil returns unit
+    function FindTeleportAllyTargetInRange takes AIHero owner, real range, AIAbility abil returns unit
         local group targets = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1312,7 +1312,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = heroOwner
         set tempFindTeamType = FIND_TEAM_TYPE_ALLIES
         set tempHeroUnit = ownerHero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
     
         loop
@@ -1501,7 +1501,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindBestComboTarget takes AIHero owner, real range, AIAbility heroAbil returns unit
+    function FindBestComboTarget takes AIHero owner, real range, AIAbility abil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1512,7 +1512,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = GetOwningPlayer(owner.hero)
         set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
         set tempHeroUnit = owner.hero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
         call owner.botLog("Found " + I2S(CountUnitsInGroup(heroes)) + " potential combo targets in range.")
             
@@ -1558,7 +1558,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, boolean bExcludeSelf, AIAbility heroAbil returns unit
+    function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, boolean bExcludeSelf, AIAbility abil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
         local unit currentUnit
@@ -1571,7 +1571,7 @@ library AIUtils requires KeyUtils
         set tempHeroOwner = GetOwningPlayer(owner.hero)
         set tempFindTeamType = findTeamType
         set tempHeroUnit = owner.hero
-        set tempAIAbility = heroAbil
+        set tempAIAbility = abil
             
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
         set findCount = CountUnitsInGroup(heroes)
@@ -1612,12 +1612,12 @@ library AIUtils requires KeyUtils
         return randomHero
     endfunction
 
-    function FindRandomEnemyHeroInRange takes AIHero owner, real range, AIAbility heroAbil returns unit
-        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ENEMIES, false, heroAbil)
+    function FindRandomEnemyHeroInRange takes AIHero owner, real range, AIAbility abil returns unit
+        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ENEMIES, false, abil)
     endfunction
         
-    function FindRandomAllyHeroInRange takes AIHero owner, real range, boolean bExcludeSelf, AIAbility heroAbil returns unit
-        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, bExcludeSelf, heroAbil)
+    function FindRandomAllyHeroInRange takes AIHero owner, real range, boolean bExcludeSelf, AIAbility abil returns unit
+        return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, bExcludeSelf, abil)
     endfunction
 
     function FindPointAroundCrowdedHeroes takes AIHero owner, real rangeRadius, integer findTeamType returns location
@@ -1806,71 +1806,71 @@ library AIUtils requires KeyUtils
         return nearestTree
     endfunction
 
-    function FindTargetUnitForAbility takes AIHero owner, AIAbility heroAbil returns unit
+    function FindTargetUnitForAbility takes AIHero owner, AIAbility abil returns unit
         local unit targetUnit = null
 
         if not IsSmartFindingTargetUnit(owner.difficulty) then
             // Non-smart finding: use simple random selection based on findTargetType
-            if heroAbil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
-                set targetUnit = FindRandomEnemyHeroInRange(owner, heroAbil.castRange, heroAbil)
+            if abil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
                 if targetUnit == null then
                     call owner.botLog("No valid enemy found for combo ability.")
                     return null
                 endif
                 call owner.botLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
-            elseif heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-                set targetUnit = FindRandomAllyHeroInRange(owner, heroAbil.castRange, false, heroAbil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+                set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
                 if targetUnit == null then
                     call owner.botLog("No valid ally found for speed-up ability.")
                     return null
                 endif
                 call owner.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             else
-                call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(heroAbil.findTargetType))
+                call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(abil.findTargetType))
             endif
             return null
         endif
             
-        if heroAbil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
+        if abil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
             // Use smart combo targeting for combo abilities, random for others
-            if heroAbil.comboIndex > 0 then
+            if abil.comboIndex > 0 then
                 if owner.comboTargetUnit != null then
                     // Check if we should use existing combo target
                     set targetUnit = owner.comboTargetUnit
                     call owner.botLog("Using existing combo target for combo ability: " + GetUnitName(targetUnit))
-                    call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Using Combo Target " + GetUnitName(targetUnit))
+                    call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Using Combo Target " + GetUnitName(targetUnit))
                     call owner.setDebugTextTagColorPreset("RED")
                     return targetUnit
                 endif
-                set targetUnit = FindBestComboTarget(owner, heroAbil.castRange, heroAbil)
+                set targetUnit = FindBestComboTarget(owner, abil.castRange, abil)
                 if targetUnit == null then
                     call owner.botLog("No valid combo target found.")
                     return null
                 endif
                 call owner.botLog("Finding best combo target, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Combo Target " + GetUnitName(targetUnit))
+                call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Combo Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             else
             endif
-        elseif heroAbil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, heroAbil.castRange, heroAbil)
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, abil.castRange, abil)
             if targetUnit == null then
                 call owner.botLog("No valid ally found for speed-up ability.")
                 return null
             endif
             call owner.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
-            call owner.setDebugTextTagContent("Combat: " + heroAbil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
             call owner.setDebugTextTagColorPreset("RED")
             return targetUnit
         else
-            call owner.botLogError("Unsupported ability find target type: " + I2S(heroAbil.findTargetType))
+            call owner.botLogError("Unsupported ability find target type: " + I2S(abil.findTargetType))
         endif
 
             

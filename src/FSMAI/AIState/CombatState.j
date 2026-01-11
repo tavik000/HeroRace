@@ -107,16 +107,16 @@ struct CombatState extends AIState
 
     method tryCastAnyReadyAbility takes nothing returns boolean
         local integer i = 0
-        local AIAbility heroAbil
+        local AIAbility abil
         local real currentTime = TimerGetElapsed(gameTimer)
         local integer difficulty = owner.difficulty
             
         // Cast first available ability with 2x cooldown spacing
-        set heroAbil = owner.combatData.getReadyAbility(owner.hero, difficulty)
-        if heroAbil != 0 then
-            if heroAbil.tryCast() then
+        set abil = owner.combatData.getReadyAbility(owner.hero, difficulty)
+        if abil != 0 then
+            if abil.tryCast() then
                 set owner.isCasting = true
-                set owner.castingAbility = heroAbil
+                set owner.castingAbility = abil
                 set owner.lastStartCastTime = currentTime
                 return true
             endif
