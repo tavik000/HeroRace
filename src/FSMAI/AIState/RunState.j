@@ -139,9 +139,6 @@ struct RunState extends AIState
             return
         endif
             
-        call owner.combatData.tryPrepareTargetForItems()
-        call owner.combatData.tryPrepareTargetForAbilities()
-
         if owner.tryEnterCombat() then
             return
         endif
