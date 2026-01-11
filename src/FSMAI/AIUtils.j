@@ -92,6 +92,47 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    // Get the closest hazard unit around a reference unit
+    // Checks for slow spike, net, and spider net hazards
+    // Returns the unit if found, null otherwise
+    function GetHazardAroundUnit takes unit refUnit, real detectRadius returns unit
+        local group hazardGroup = CreateGroup()
+        local unit u
+        local integer unitTypeId
+        local real heroX = GetUnitX(refUnit)
+        local real heroY = GetUnitY(refUnit)
+        local unit resultUnit = null
+        local boolexpr filter = Filter(function AntiLeak)
+        local real closestDistance = 99999.0
+        local real currentTargetDistance
+            
+        // Detect locus unit must use GroupEnumUnitsOfPlayer for Player(11)
+        call GroupEnumUnitsOfPlayer(hazardGroup, Player(11), filter) 
+        loop
+            set u = FirstOfGroup(hazardGroup)
+            exitwhen u == null
+
+            call GroupRemoveUnit(hazardGroup, u)
+            if IsUnitInRangeXY(u, heroX, heroY, detectRadius) then
+                set unitTypeId = GetUnitTypeId(u)
+                // Check if it's a hazard unit (Aloc is Locus ability)
+                if GetUnitAbilityLevel(u, 'Aloc') > 0 then
+                    if unitTypeId == SLOW_SPIKE_UNIT_TYPE_ID or unitTypeId == NET_UNIT_TYPE_ID or unitTypeId == SPIDER_NET_UNIT_TYPE_ID then
+                        set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
+                        if currentTargetDistance < closestDistance then
+                            set closestDistance = currentTargetDistance
+                            set resultUnit = u
+                        endif
+                    endif
+                endif
+            endif
+        endloop
+        call DestroyGroup(hazardGroup)
+        set hazardGroup = null
+            
+        return resultUnit
+    endfunction
+
     function FilterSuitablePickUpItem takes nothing returns nothing
         local item itm = GetEnumItem()
         local real dist = DistanceBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))

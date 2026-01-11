@@ -271,6 +271,7 @@ struct AIAbility
         local integer targetUnitCount = 0
         local real targetFacingAngle
         local real offset
+        local unit hazardUnitAround = null
             
         call this.botLog("Attempting to cast ability: " + this.orderString)
 
@@ -338,8 +339,16 @@ struct AIAbility
                 return false
             else
                 // if there is hazard around, cast to hazard center
-                if IsUnitInAnyHazardZone(targetUnit) then
-                // Calculate point behind target unit
+                set hazardUnitAround = FindHazardUnitAroundTargetUnit(this.owner, targetUnit, this.effectiveRadius)
+                if hazardUnitAround != null then
+                    set this.readyTargetPointX = GetUnitX(hazardUnitAround)
+                    set this.readyTargetPointY = GetUnitY(hazardUnitAround)
+                    call this.botLog("Casting behind enemy to hazard center for ability: " + GetObjectName(this.abilityId))
+                    call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+                    return true
+                endif
+
+                // fallback: Calculate point behind target unit
                 set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
                 set offset = this.getUnitFrontOffsetDistance(targetUnit)
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) - offset * Cos(targetFacingAngle * bj_DEGTORAD)
