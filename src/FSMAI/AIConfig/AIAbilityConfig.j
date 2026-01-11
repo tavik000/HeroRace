@@ -149,6 +149,38 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
+        // Arthas Abilities
+        set currentAbilityId = 'A00P' // Hammer Bash
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 24.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 150.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 435.0)
+        set currentAbilityId = 'A00J' // Golden Convergence
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 23.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 850.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_BEHIND)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 130.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 850.0 / 1.25) // in order to hit more targets
+        set currentAbilityId = 'A01G' // Golden Defense
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 30.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "rejuvination")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_HEAL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 95)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
 
 

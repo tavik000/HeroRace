@@ -210,6 +210,14 @@ struct AIAbility
             // set point when casting, set target unit now
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_POINT_ENEMY_BEHIND then
+            if this.findTargetType == FIND_TARGET_TYPE_NONE then
+                call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
+                return
+            endif
+            // set point when casting, set target unit now
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -320,6 +328,22 @@ struct AIAbility
                 set offset = this.getUnitFrontOffsetDistance(targetUnit)
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                 set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+                call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+                return true 
+            endif
+        elseif this.castType == CAST_POINT_ENEMY_BEHIND then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLog("No target found for point ability: " + GetObjectName(this.abilityId))
+                return false
+            else
+                // if there is hazard around, cast to hazard center
+                if IsUnitInAnyHazardZone(targetUnit) then
+                // Calculate point behind target unit
+                set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+                set offset = this.getUnitFrontOffsetDistance(targetUnit)
+                set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) - offset * Cos(targetFacingAngle * bj_DEGTORAD)
+                set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
                 return true 
             endif

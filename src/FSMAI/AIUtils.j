@@ -1623,6 +1623,84 @@ library AIUtils requires KeyUtils
         return FindRandomHeroInRange(owner, range, FIND_TEAM_TYPE_ALLIES, bExcludeSelf, abil)
     endfunction
 
+    // Helper function to determine if current unit should replace the best unit
+    // Priority: 1. Heroes in hazard zones, 2. Higher hero count around unit, 3. Lower HP
+    function ShouldUpdateBestUnit takes unit currentUnit, unit bestUnit, integer currentCount, integer bestCount returns boolean
+        local boolean isCurrentInHazard = IsUnitInAnyHazardZone(currentUnit)
+        local boolean isBestInHazard = false
+        
+        // If no best unit yet, take the current one
+        if bestUnit == null then
+            return true
+        endif
+        
+        set isBestInHazard = IsUnitInAnyHazardZone(bestUnit)
+        
+        // Current is in hazard zone but best is not - take current
+        if isCurrentInHazard and not isBestInHazard then
+            return true
+        endif
+        
+        // Best is in hazard zone but current is not - keep best
+        if isBestInHazard and not isCurrentInHazard then
+            return false
+        endif
+        
+        // Both in same hazard status - compare counts
+        if currentCount > bestCount then
+            return true
+        elseif currentCount == bestCount then
+            // Same count - prioritize lower HP (more vulnerable target)
+            return GetUnitState(currentUnit, UNIT_STATE_LIFE) < GetUnitState(bestUnit, UNIT_STATE_LIFE)
+        endif
+        
+        return false
+    endfunction
+
+    function FindCrowdedHeroInRange takes AIHero owner, real range, real crowdRange, integer findTeamType returns unit
+        local group heroes = CreateGroup()
+        local unit currentUnit = null
+        local unit bestUnit = null
+        local integer bestCount = - 1
+        local integer currentCount = 0
+
+        // Set temp variables for filter function
+        set tempHeroOwner = GetOwningPlayer(owner.hero)
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = owner.hero
+        set tempAIAbility = 0
+        call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Priority:
+        // 1. In Hazard Zone
+        // 2. Most Heroes around within crowdRange
+        // 3. Lowest HP
+
+        loop
+            set currentUnit = FirstOfGroup(heroes)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(heroes, currentUnit)
+
+            // Count how many heroes are around this currentUnit within crowdRange
+            set currentCount = GetHeroCountAroundUnit(currentUnit, crowdRange, findTeamType)
+
+            // Determine if we should update the best unit
+            if ShouldUpdateBestUnit(currentUnit, bestUnit, currentCount, bestCount) then
+                set bestUnit = currentUnit
+                set bestCount = currentCount
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(heroes)
+        set heroes = null
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestUnit
+    endfunction
+
     function FindPointAroundCrowdedHeroes takes AIHero owner, real rangeRadius, integer findTeamType returns location
         local group allTargets = GetHeroGroupAroundUnit(owner.hero, MAX_RANGE, findTeamType)
         local unit array u
@@ -1845,6 +1923,8 @@ library AIUtils requires KeyUtils
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
                 set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 1.0, 0, true, abil, 0)
                 if targetUnit != null then
@@ -1911,6 +1991,11 @@ library AIUtils requires KeyUtils
             if targetUnit != null then
                 call owner.botLog("Found healthy running enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
+            set targetUnit = FindCrowdedHeroInRange(owner, abil.castRange, abil.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            if targetUnit != null then
+                call owner.botLog("Found crowded low health enemy target for ability, result: " + GetUnitName(targetUnit))
+            endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
             set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 2.0, 0, true, abil, 0)
             if targetUnit != null then
@@ -1932,6 +2017,11 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found ally hero target for speed-up ability, result: " + GetUnitName(targetUnit))
             endif
             return targetUnit
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_HEAL then
+            set targetUnit = FindHealAllyTargetInRange(owner.hero, abil.castRange, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found heal ally target for ability, result: " + GetUnitName(targetUnit))
+            endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP then
             if IsHeroGoaled(owner.hero) then
                 return null

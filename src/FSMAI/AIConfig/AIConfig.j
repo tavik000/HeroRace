@@ -88,17 +88,16 @@ globals
 
     constant integer CAST_POINT_ENEMY_FRONT = 20
     constant integer CAST_POINT_ENEMY_BEHIND = 21 // prioritize Hazard
-    constant integer CAST_POINT_ENEMY_BEHIND_CROWDED = 22 // prioritize Hazard
-    constant integer CAST_POINT_ENEMY_CROWDED = 23
-    constant integer CAST_POINT_ALLY_DEFENSE_AND_CLEANSE = 24
-    constant integer CAST_POINT_ALLY_FRONT = 25
-    constant integer CAST_POINT_SELF_FRONT = 26
-    constant integer CAST_POINT_SELF_FRONT_DEFENSE_AND_CLEANSE = 27
-    constant integer CAST_POINT_SELF_FRONT_HEAL = 28
-    constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 29
-    constant integer CAST_POINT_ALL_FRONT = 30
-    constant integer CAST_POINT_TREE = 31
-    constant integer CAST_POINT_BLINK = 32
+    constant integer CAST_POINT_ENEMY_CROWDED = 22
+    constant integer CAST_POINT_ALLY_DEFENSE_AND_CLEANSE = 23
+    constant integer CAST_POINT_ALLY_FRONT = 24
+    constant integer CAST_POINT_SELF_FRONT = 25
+    constant integer CAST_POINT_SELF_FRONT_DEFENSE_AND_CLEANSE = 26
+    constant integer CAST_POINT_SELF_FRONT_HEAL = 27
+    constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 28
+    constant integer CAST_POINT_ALL_FRONT = 29
+    constant integer CAST_POINT_TREE = 30
+    constant integer CAST_POINT_BLINK = 31
 
     constant integer CAST_UNIT = 40 
     constant integer CAST_UNIT_SELF_THEN_FOLLOW_TARGET = 41
