@@ -1,4 +1,5 @@
 struct AIAbility
+    // Ability configuration
     integer abilityId
     real baseCooldown
     integer castType
@@ -10,6 +11,18 @@ struct AIAbility
     integer findTargetType
     real effectiveRadius
     real expectedDamage  // For combo targeting logic
+    boolean isPassive
+    real requiredCastTime
+    boolean isIgnoreMagicImmune
+    integer mustHaveBuffCodeWhenFollowing
+    boolean shouldCheckOtherUnitBlockingTargetUnit
+    real minTargetDistance
+    real followTargetDuration
+    real basePredictOffset
+    real basePredictDelay
+    real projectileSpeed
+
+    // Runtime variables    
     boolean bIsReadyToCast
     real readyTargetPointX
     real readyTargetPointY
@@ -18,7 +31,7 @@ struct AIAbility
     AIHero owner
     unit ownerHero
 
-    static method create takes integer aid, AIHero inOwner, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage returns thistype
+    static method create takes integer aid, AIHero inOwner, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage, boolean inIsPassive, real inRequiredCastTime, boolean inIsIgnoreMagicImmune, integer inMustHaveBuffCodeWhenFollowing, boolean inShouldCheckOtherUnitBlockingTargetUnit, real inMinTargetDistance, real inFollowTargetDuration, real inBasePredictOffset, real inBasePredictDelay, real inProjectileSpeed returns thistype
         local thistype this = thistype.allocate()
         set this.abilityId = aid
         set this.baseCooldown = cd
@@ -38,6 +51,16 @@ struct AIAbility
         set this.readyTargetPoint = null
         set this.owner = inOwner
         set this.ownerHero = inOwner.hero
+        set this.isPassive = inIsPassive
+        set this.requiredCastTime = inRequiredCastTime
+        set this.isIgnoreMagicImmune = inIsIgnoreMagicImmune
+        set this.mustHaveBuffCodeWhenFollowing = inMustHaveBuffCodeWhenFollowing
+        set this.shouldCheckOtherUnitBlockingTargetUnit = inShouldCheckOtherUnitBlockingTargetUnit
+        set this.minTargetDistance = inMinTargetDistance
+        set this.followTargetDuration = inFollowTargetDuration
+        set this.basePredictOffset = inBasePredictOffset
+        set this.basePredictDelay = inBasePredictDelay
+        set this.projectileSpeed = inProjectileSpeed
         return this
     endmethod
 

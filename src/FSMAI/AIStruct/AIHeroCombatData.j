@@ -15,9 +15,41 @@ struct HeroCombatData
         return this
     endmethod
         
-    method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer findTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
+    // method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer findTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
+    //     if this.abilityCount < MAX_ABILITIES_PER_HERO then
+    //         set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
+    //         if comboIndex > 0 then
+    //             set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
+    //         endif
+    //         set this.abilityCount = this.abilityCount + 1
+    //     else
+    //         // Exceeded max abilities - handle error as needed
+    //         call this.botLogError("Exceeded max abilities for hero combat data.")
+    //     endif
+    // endmethod
+
+    method addAbilityById takes integer abilityId returns nothing
+        local real baseCooldown = GetAbilityBaseCooldown(abilityId)
+        local integer castType = GetAbilityCastType(abilityId)
+        local string orderString = GetAbilityOrderString(abilityId)
+        local integer manaCost = GetAbilityManaCost(abilityId)
+        local real castRange = GetAbilityCastRange(abilityId)
+        local integer findTargetType = GetAbilityFindTargetType(abilityId)
+        local real effectiveRadius = GetAbilityEffectiveRadius(abilityId)
+        local integer comboIndex = GetAbilityComboIndex(abilityId)
+        local real expectedDamage = GetAbilityExpectedDamage(abilityId)
+        local boolean isPassive = GetAbilityIsPassive(abilityId)
+        local real requiredCastTime = GetAbilityRequiredCastTime(abilityId)
+        local boolean isIgnoreMagicImmune = GetAbilityIsIgnoreMagicImmune(abilityId)
+        local integer mustHaveBuffCodeWhenFollowing = GetAbilityMustHaveBuffCodeWhenFollowing(abilityId)
+        local boolean shouldCheckOtherUnitBlockingTargetUnit = GetAbilityShouldCheckOtherUnitBlockingTargetUnit(abilityId)
+        local real minTargetDistance = GetAbilityMinTargetDistance(abilityId)
+        local real followTargetDuration = GetAbilityFollowTargetDuration(abilityId)
+        local real basePredictOffset = GetAbilityBasePredictOffset(abilityId)
+        local real basePredictDelay = GetAbilityBasePredictDelay(abilityId)
+        local real projectileSpeed = GetAbilityProjectileSpeed(abilityId)
         if this.abilityCount < MAX_ABILITIES_PER_HERO then
-            set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
+            set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, baseCooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage, isPassive, requiredCastTime, isIgnoreMagicImmune, mustHaveBuffCodeWhenFollowing, shouldCheckOtherUnitBlockingTargetUnit, minTargetDistance, followTargetDuration, basePredictOffset, basePredictDelay, projectileSpeed)
             if comboIndex > 0 then
                 set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
             endif
@@ -26,6 +58,11 @@ struct HeroCombatData
             // Exceeded max abilities - handle error as needed
             call this.botLogError("Exceeded max abilities for hero combat data.")
         endif
+        call this.botLog("Added ability to hero combat data: " + orderString)
+        call this.botLog("  - Cooldown: " + R2S(baseCooldown) + "s, Cast Type: " + I2S(castType) + ", Mana Cost: " + I2S(manaCost) + ", Cast Range: " + R2S(castRange) + ", Find Target Type: " + I2S(findTargetType) + ", Effective Radius: " + R2S(effectiveRadius) + ", Combo Index: " + I2S(comboIndex) + ", Expected Damage: " + R2S(expectedDamage))
+        call this.botLog("  - Is Passive: " + B2S(isPassive) + ", Required Cast Time: " + R2S(requiredCastTime) + "s, Is Ignore Magic Immune: " + B2S(isIgnoreMagicImmune))
+        call this.botLog("  - Must Have Buff Code When Following: " + I2S(mustHaveBuffCodeWhenFollowing) + ", Should Check Other Unit Blocking Target Unit: " + B2S(shouldCheckOtherUnitBlockingTargetUnit) + ", Min Target Distance: " + R2S(minTargetDistance) + ", Follow Target Duration: " + R2S(followTargetDuration) + "s")
+        call this.botLog("  - Base Predict Offset: " + R2S(basePredictOffset) + ", Base Predict Delay: " + R2S(basePredictDelay) + "s, Projectile Speed: " + R2S(projectileSpeed))
     endmethod
 
     method getCurrentItemCount takes nothing returns integer
