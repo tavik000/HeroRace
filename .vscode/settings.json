@@ -1,6 +1,7 @@
 {
 	"cSpell.words": [
 		"Abil",
+		"Archmage",
 		"bloodlust",
 		"boolexpr",
 		"cooldown",
@@ -16,9 +17,11 @@
 		"endstruct",
 		"exitwhen",
 		"Fadepoint",
+		"firebolt",
 		"flamestrike",
 		"hashtable",
 		"killable",
+		"massteleport",
 		"Newbee",
 		"Pathable",
 		"PATHING",

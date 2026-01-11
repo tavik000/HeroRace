@@ -117,7 +117,9 @@ struct CombatState extends AIState
             if abil.tryCast() then
                 set owner.isCasting = true
                 set owner.castingAbility = abil
+                set owner.currentRequiredCastTime = abil.requiredCastTime
                 set owner.lastStartCastTime = currentTime
+                call this.botLog("Ability cast successfully: " + abil.orderString)
                 return true
             endif
         endif

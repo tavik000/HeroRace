@@ -111,12 +111,11 @@ globals
     constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY = 4
     constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL = 5
     constant integer FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED = 6
-    constant integer FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK = 7
-    constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 8
-    constant integer FIND_TARGET_TYPE_ENEMY_BACK = 9
-    constant integer FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE = 10 
-    constant integer FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT = 11
-    constant integer FIND_TARGET_TYPE_ENEMY_CC = 12
+    constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 7
+    constant integer FIND_TARGET_TYPE_ENEMY_BACK = 8
+    constant integer FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE = 9 
+    constant integer FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT = 10
+    constant integer FIND_TARGET_TYPE_ENEMY_CC = 11
 
     constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20
     constant integer FIND_TARGET_TYPE_ALLY_HEAL = 21

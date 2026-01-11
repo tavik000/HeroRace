@@ -100,20 +100,20 @@ struct AIAbility
 
     method getUnitFrontOffsetDistance takes unit targetUnit returns real
         local real targetMoveSpeed = GetUnitMoveSpeed(targetUnit)
-        local real projectileSpeed = 0.0
+        local real projectileSpeed = this.projectileSpeed
         local real targetDistance = DistanceBetweenUnits(this.ownerHero, targetUnit)
-        local real timeToReachTarget = 0.0
-        local real baseOffset = 0.0
-        local real offsetDistance = 0.0
+        local real baseOffset = this.basePredictOffset
+        local real baseDelay = this.basePredictDelay
         local integer ownerUnitTypeId = GetUnitTypeId(this.ownerHero)
         local real ownerCastPoint = owner.getCastPoint()
         local integer currentOrder
+        local real timeToReachTarget = 0.0
+        local real offsetDistance = 0.0
 
-        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT then
+        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT then
             call this.botLogError("getFrontOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
             return 0.0
         endif
-
 
         set currentOrder = GetUnitCurrentOrder(targetUnit)
         if currentOrder == 0 then
@@ -134,7 +134,7 @@ struct AIAbility
                 set offsetDistance = 0.0
             endif
         else
-            set offsetDistance = this.effectiveRadius
+            set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
         endif
         return offsetDistance
     endmethod
@@ -209,10 +209,7 @@ struct AIAbility
             endif
             // set point when casting, set target unit now
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
-            if this.readyTargetUnit == null then
-                return
-            endif
-            set this.bIsReadyToCast = true
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))

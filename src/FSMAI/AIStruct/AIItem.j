@@ -134,7 +134,6 @@ struct AIItem
             return 0.0
         endif
 
-
         set currentOrder = GetUnitCurrentOrder(targetUnit)
         if currentOrder == 0 then
             // Not moving
