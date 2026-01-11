@@ -36,6 +36,11 @@ struct HazardState extends AIState
     endmethod
         
     method onUpdate takes nothing returns nothing
+        local unit blockingUnit = null
+        local boolean hasBlockingUnitAhead
+        local boolean hasBlockingUnitBehind
+        local real blockDetectRadius = 100.0
+
         if not IsUnitAliveBJ(owner.hero) then
             return
         endif
@@ -48,6 +53,8 @@ struct HazardState extends AIState
             call owner.changeState(PickUpItemState.create())
             return
         endif
+
+        call owner.tryAvoidBlockingUnit() 
 
         if this.hazardType == HAZARD_TYPE_SLOW_SPIKE then
             call this.onSlowSpikeHazardZoneUpdate()
@@ -289,9 +296,12 @@ struct HazardState extends AIState
                 return
             endif
         endif
+        
+        if owner.tryEnterCombat() then
+            return
+        endif
 
         // No more net around, keep moving to next waypoint
-        call this.botLog("No Nets")
         call owner.moveToNextWaypoint()
     endmethod
 
@@ -357,6 +367,10 @@ struct HazardState extends AIState
                 call owner.avoidTargetUnitBehind(netUnit, true, 1.0, false)
                 return
             endif
+        endif
+
+        if owner.tryEnterCombat() then
+            return
         endif
 
         // No more spider net around, keep moving to next waypoint

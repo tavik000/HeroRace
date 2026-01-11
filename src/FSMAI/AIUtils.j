@@ -2054,4 +2054,24 @@ library AIUtils requires KeyUtils
         return targetUnit
     endfunction
 
+    function StateId2String takes integer stateId returns string
+        if stateId == STATE_NONE then
+            return "None"
+        elseif stateId == STATE_RUN then
+            return "Run"
+        elseif stateId == STATE_COMBAT then
+            return "Combat"
+        elseif stateId == STATE_HAZARD then
+            return "Hazard"
+        elseif stateId == STATE_FOLLOW then
+            return "Follow"
+        elseif stateId == STATE_DEAD then
+            return "Dead"
+        elseif stateId == STATE_PICKUP_ITEM then
+            return "Pickup Item"
+        else
+            return "Unknown State Id: " + I2S(stateId)
+        endif
+    endfunction
+
 endlibrary

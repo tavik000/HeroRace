@@ -332,6 +332,85 @@ struct AIHero
         endif
     endmethod
 
+    method getBlockingUnitAround takes real detectRadius, boolean bCheckBehind returns unit
+        local group blockingUnitGroup = CreateGroup()
+        local unit u // for enumerating units
+        local real heroX = GetUnitX(this.hero)
+        local real heroY = GetUnitY(this.hero)
+        local unit resultUnit = null
+        local boolexpr filter = Filter(function AntiLeak)
+        local real closestDistance = 99999.0
+        local real currentTargetDistance
+            
+        call GroupEnumUnitsInRange(blockingUnitGroup, heroX, heroY, detectRadius, filter)
+        loop
+            set u = FirstOfGroup(blockingUnitGroup)
+            exitwhen u == null
+
+            call GroupRemoveUnit(blockingUnitGroup, u)
+            if this.checkBlockingUnit(u, bCheckBehind) then
+                set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
+                if currentTargetDistance < closestDistance then
+                    set closestDistance = currentTargetDistance
+                    set resultUnit = u
+                endif
+            endif
+        endloop
+        call DestroyGroup(blockingUnitGroup)
+            
+        return resultUnit
+    endmethod
+
+    method checkBlockingUnit takes unit u, boolean bCheckBehind returns boolean
+        if u == this.hero then
+            return false
+        endif
+        if not IsUnitValid(u) then
+            return false
+        endif
+        if bCheckBehind then
+            if IsUnitInFrontOfUnit(u, this.hero) then
+                return false
+            endif
+        else
+            if not IsUnitInFrontOfUnit(u, this.hero) then
+                return false
+            endif
+        endif
+        call this.botLog("Blocking unit found: " + GetUnitName(u))
+        return true
+    endmethod
+
+    method tryAvoidBlockingUnit takes nothing returns boolean
+        local unit blockingUnit
+        local boolean hasBlockingUnitAhead = false
+        local boolean hasBlockingUnitBehind = false
+        local real blockDetectRadius = 100.0
+
+        // Check for blocking units ahead
+        set blockingUnit = this.getBlockingUnitAround(blockDetectRadius, false)
+        set hasBlockingUnitAhead = blockingUnit != null
+        if hasBlockingUnitAhead then
+            call this.botLog("Blocking unit detected ahead, dodging")
+            call this.setDebugTextTagContent(StateId2String(this.currentState) + ": Dodging Blocking Unit Ahead")
+            call this.setDebugTextTagColorPreset("YELLOW")
+            call this.avoidTargetUnitAhead(blockingUnit, GetUnitMoveSpeed(blockingUnit) * 0.1, 2.0, true)
+            return true
+        endif
+        // Check for blocking units behind
+        set blockingUnit = this.getBlockingUnitAround(blockDetectRadius, true)
+        set hasBlockingUnitBehind = blockingUnit != null
+        if hasBlockingUnitBehind then
+            call this.botLog("Blocking unit detected behind, dodging")
+            call this.setDebugTextTagContent(StateId2String(this.currentState) + ": Dodging Blocking Unit Behind")
+            call this.setDebugTextTagColorPreset("YELLOW")
+            call this.avoidTargetUnitBehind(blockingUnit, false, 2.0, true)
+            return true
+        endif
+
+        return false
+    endmethod
+
     method avoidTargetUnitAhead takes unit targetUnit, real targetMoveSpeed, real moveDistanceScale, boolean bLeanTowardWaypoint returns nothing
         local real heroX = GetUnitX(this.hero)
         local real heroY = GetUnitY(this.hero)
@@ -402,7 +481,21 @@ struct AIHero
         call IssuePointOrder(this.hero, "move", moveX, moveY)
     endmethod
 
+    method tryEnterCombat takes nothing returns boolean
+        call this.combatData.tryPrepareTargetForItems()
+        call this.combatData.tryPrepareTargetForAbilities()
 
+        // Check if we should enter combat state
+        if this.shouldEnterCombat() then
+            call this.botLog(StateId2String(this.currentState) + " Entering combat - abilities or item ready")
+            call this.changeState(CombatState.create())
+            return true
+        endif
+        return false
+    endmethod
+
+    // =====================================================
+    // Debug Text Tag Methods
     method createDebugTextTag takes nothing returns nothing
         set this.debugTextTag = CreateTextTag()
         set this.debugTextTagContent = "Bot"
@@ -479,4 +572,6 @@ struct AIHero
             set this.debugTextTag = null
         endif
     endmethod
+
+    // =====================================================
 endstruct
