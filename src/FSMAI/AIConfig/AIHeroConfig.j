@@ -4,6 +4,7 @@ library AIHeroConfig
         
         // Keys for hero config data
         constant integer HERO_ABILITY_COUNT_KEY = 0
+        constant integer HERO_CAST_POINT_KEY = 1 // Pre-swing duration
         constant integer HERO_ABILITY_ID_BASE_KEY = 100  // Base key for ability IDs (100, 101, 102, ...)
     endglobals
 
@@ -13,17 +14,21 @@ library AIHeroConfig
         
         set HeroConfigTable = InitHashtable()
         
-        // BloodMage ('H009') Configuration
+        // BloodMage 
         set heroTypeId = 'H009'
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A00W')  // Banish
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A00S')  // Flame Strike
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A01N')  // Blood Lust
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.2)
         
-        // Mountain King ('Hmkg') Configuration - Example
-        set heroTypeId = 'Hmkg'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 1)
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'AHtc')  // Thunder Clap
+        // Mountain King 
+        set heroTypeId = 'H008'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A00C')  // Storm Bolt
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A00R')  // Thunder Clap
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A014')  // Avatar
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.4)
         
         // Add more hero configurations here...
         // Template:
@@ -43,6 +48,10 @@ library AIHeroConfig
 
     function HeroHasConfig takes integer heroTypeId returns boolean
         return LoadInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY) > 0
+    endfunction
+
+    function GetHeroCastPoint takes integer heroTypeId returns real
+        return LoadReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY)
     endfunction
 
 endlibrary

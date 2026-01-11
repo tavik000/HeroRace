@@ -71,6 +71,7 @@ globals
 
     // Ability AI cast types
     constant integer CAST_NONE = 0 
+
     constant integer CAST_INSTANT = 1
     constant integer CAST_INSTANT_BACK_ENEMY = 2
     constant integer CAST_INSTANT_BACK_ENEMY_FOLLOW = 3
@@ -113,8 +114,8 @@ globals
     constant integer FIND_TARGET_TYPE_ENEMY_CLOSE_TO_SELF_OR_BACK = 7
     constant integer FIND_TARGET_TYPE_ENEMY_FRONT = 8
     constant integer FIND_TARGET_TYPE_ENEMY_BACK = 9
-    constant integer FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT = 10
-    // constant integer FIND_TARGET_TYPE_ENEMY_LEADING = 11
+    constant integer FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE = 10 
+    constant integer FIND_TARGET_TYPE_ENEMY_CONTROL_UNIT = 11
     constant integer FIND_TARGET_TYPE_ENEMY_CC = 12
 
     constant integer FIND_TARGET_TYPE_ALLY_SPEED_UP = 20

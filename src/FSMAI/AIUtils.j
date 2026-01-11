@@ -142,15 +142,6 @@ library AIUtils requires KeyUtils
         return foundItem
     endfunction
 
-    function GetHeroCastPoint takes integer heroTypeId returns real
-        if HaveSavedReal(heroCastPointMap, heroTypeId, 0) then
-            return LoadReal(heroCastPointMap, heroTypeId, 0)
-        else
-            call BotLogError("Unknown hero type for GetHeroCastPoint: " + I2S(heroTypeId))
-            return 0.5  // Default cast point for unknown hero types
-        endif
-    endfunction
-
     // Helper function for basic unit validation
     function IsValidHeroTarget takes unit filterUnit returns boolean
         if not IsUnitAliveBJ(filterUnit) then
@@ -891,11 +882,16 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindBackEnemyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
+    function FindBackOrCloseEnemyTargetInRange takes unit ownerHero, real backRange, real closeRange, boolean bExcludeClose, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
         local player heroOwner = GetOwningPlayer(ownerHero)
+
+        if closeRange > backRange then
+            call BotLogErrorWithPlayer(heroOwner, "FindBackOrCloseEnemyTargetInRange: closeRange: " + R2S(closeRange) + " > backRange: " + R2S(backRange))
+            return null
+        endif
     
         // Set temp variables for filter function
         set tempHeroOwner = heroOwner
@@ -903,9 +899,9 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = ownerHero
         set tempAIAbility = abil
         set tempAIItem = itm
-        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+        call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), backRange, Filter(function FilterValidVisibleTeamHeroes))
 
-        // Not Allowed Target: MagicImmune, customFilter, front of hero, leading hero
+        // Not Allowed Target: MagicImmune, customFilter, front of hero if bExcludeClose is true, leading hero
         // Priority Order:
         // 1. closest to back of hero
 
@@ -918,8 +914,10 @@ library AIUtils requires KeyUtils
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
-            elseif not IsHeroGoaled(ownerHero) and IsUnitInFrontOfUnit(currentUnit, ownerHero) then
-            elseif IsUnitLeadingUnit(currentUnit, ownerHero) then
+            elseif not IsHeroGoaled(ownerHero) and IsUnitInFrontOfUnit(currentUnit, ownerHero) and bExcludeClose then
+            elseif IsUnitLeadingUnit(currentUnit, ownerHero) and bExcludeClose then
+            elseif DistanceBetweenUnits(ownerHero, currentUnit) > closeRange and not bExcludeClose and IsUnitInFrontOfUnit(currentUnit, ownerHero) and IsUnitLeadingUnit(currentUnit, ownerHero) then
+                // Exclude units that are not close and also in front and leading
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else
@@ -1815,32 +1813,39 @@ library AIUtils requires KeyUtils
     function FindTargetUnitForAbility takes AIHero owner, AIAbility abil returns unit
         local unit targetUnit = null
 
+        // difficulty < DIFF_HARD
         if not IsSmartFindingTargetUnit(owner.difficulty) then
             // Non-smart finding: use simple random selection based on findTargetType
             if abil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
-                if targetUnit == null then
-                    call owner.botLog("No valid enemy found for combo ability.")
-                    return null
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
+                set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 1.0, 0, true, abil, 0)
+                if targetUnit != null then
+                    call owner.botLog("Finding back enemy target for ability, result: " + GetUnitName(targetUnit))
                 endif
-                call owner.botLog("Finding random enemy hero, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Enemy Hero Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
-                return targetUnit
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE then
+                set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 1.0, abil.effectiveRadius, false, abil, 0)
+                if targetUnit != null then
+                    call owner.botLog("Finding back enemy target for ability, result: " + GetUnitName(targetUnit))
+                endif
             elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
                 set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
-                if targetUnit == null then
-                    call owner.botLog("No valid ally found for speed-up ability.")
-                    return null
-                endif
-                call owner.botLog("Finding ally hero target, result: " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Ally Hero Target " + GetUnitName(targetUnit))
-                call owner.setDebugTextTagColorPreset("RED")
-                return targetUnit
             else
                 call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(abil.findTargetType))
             endif
-            return null
+
+            if targetUnit == null then
+                call owner.botLog("No valid target found for combo ability.")
+                return null
+            endif
+
+            call owner.botLog("Finding random target, result: " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagContent("Combat: " + GetObjectName(abil.abilityId) + " - Target " + GetUnitName(targetUnit))
+            call owner.setDebugTextTagColorPreset("RED")
+
+            return targetUnit
         endif
             
         if abil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
@@ -1864,6 +1869,21 @@ library AIUtils requires KeyUtils
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
             else
+            endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
+            set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, abil.castRange, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Finding healthy running enemy target for ability, result: " + GetUnitName(targetUnit))
+            endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
+            set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 2.0, 0, true, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Finding back enemy target for ability, result: " + GetUnitName(targetUnit))
+            endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE then
+            set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 2.0, abil.effectiveRadius, false, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Finding back enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, abil.castRange, abil)
@@ -1896,7 +1916,7 @@ library AIUtils requires KeyUtils
             set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             call owner.botLog("Finding healthy running enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
-            set targetUnit = FindBackEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, itm)
+            set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, true, 0, itm)
             call owner.botLog("Finding back enemy target for item, result: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_FRONT then
             set targetUnit = FindFrontTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ENEMIES, itm.getMinTargetDistance(), IsHeroGoaled(owner.hero), 0, itm)

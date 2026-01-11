@@ -106,7 +106,7 @@ struct AIAbility
         local real baseOffset = 0.0
         local real offsetDistance = 0.0
         local integer ownerUnitTypeId = GetUnitTypeId(this.ownerHero)
-        local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
+        local real ownerCastPoint = owner.getCastPoint()
         local integer currentOrder
 
         if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT then
@@ -185,11 +185,23 @@ struct AIAbility
         return true
     endmethod
 
+    method markAsReadyToCast takes nothing returns nothing
+        set this.bIsReadyToCast = true
+        set this.readyTargetUnit = this.ownerHero
+    endmethod
+
     method tryPrepareTarget takes nothing returns nothing
         local integer targetUnitCount
 
         if this.castType == CAST_NONE then
             return
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY then
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_INSTANT_HEAL then
+            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
+        elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
+            // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -201,8 +213,6 @@ struct AIAbility
                 return
             endif
             set this.bIsReadyToCast = true
-        elseif this.castType == CAST_INSTANT_HEAL then
-            set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= SELF_HEAL_HP_PERCENTAGE_THRESHOLD
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -273,10 +283,39 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT then
             call this.castInstant()
             return true
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                return false
+            endif
+            // Follow target unit
+            if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
+                call this.castInstant()
+                return true
+            else
+                call IssueTargetOrder(this.ownerHero, "move", targetUnit)
+                return true
+            endif
+        elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
-                call this.botLog("No target found for point ability: " + this.orderString)
+                call this.botLog("No target found for point ability: " + GetObjectName(this.abilityId))
                 return false
             else
                 // Calculate point in front of target unit

@@ -59,6 +59,10 @@ struct AIHero
         return this
     endmethod
 
+    method getCastPoint takes nothing returns real
+        return this.castPt
+    endmethod
+
     method changeState takes AIState newState returns nothing
         if this.currentState != null then
             call this.currentState.onExit()
@@ -327,8 +331,7 @@ struct AIHero
         endif
         set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
         if selfDefenseAbility != 0 then
-            // TODO
-            // call selfDefenseAbility.markAsReadyToUse()
+            call selfDefenseAbility.markAsReadyToCast()
         endif
     endmethod
 
@@ -344,8 +347,7 @@ struct AIHero
         endif
         set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
         if selfDefenseAbility != 0 then
-            // TODO
-            // call selfDefenseAbility.markAsReadyToUse()
+            call selfDefenseAbility.markAsReadyToCast()
         endif
     endmethod
 

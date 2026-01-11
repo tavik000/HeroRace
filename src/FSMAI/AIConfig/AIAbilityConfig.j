@@ -81,6 +81,39 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0)
 
+        // Mountain King Abilities
+        set currentAbilityId = 'A00C' // Storm Bolt
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 32.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 5000.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 60)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 175.0)
+        set currentAbilityId = 'A00R' // Thunder Clap
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 20.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderclap")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 350.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_BACK_ENEMY)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 320.0)
+        set currentAbilityId = 'A014' // Avatar 
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 26.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "metamorphosis")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+
+
     
         // Add more ability...
     endfunction

@@ -126,7 +126,7 @@ struct AIItem
         local real baseDelay = 0.0
         local real offsetDistance = 0.0
         local integer ownerUnitTypeId = GetUnitTypeId(this.ownerHero)
-        local real ownerCastPoint = GetHeroCastPoint(ownerUnitTypeId)
+        local real ownerCastPoint = ownerAIHero.getCastPoint()
         local integer currentOrder
 
         if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT then

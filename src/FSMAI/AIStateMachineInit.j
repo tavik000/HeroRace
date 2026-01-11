@@ -9,9 +9,6 @@ globals
     // Global timer for tracking game time
     timer gameTimer
         
-    // Hero cast point (pre-swing) mapping by unit type
-    hashtable heroCastPointMap
-        
     // Temporary variables for filtering heroes
     player tempHeroOwner = null
     integer tempFindTeamType = 0
@@ -46,14 +43,6 @@ globals
 endglobals
 
 library AIStateMachine requires KeyUtils, AIUtils
-
-    // Initialize hero cast points (Pre-swing) by unit type
-    private function InitializeHeroCastPoints takes nothing returns nothing
-        // Configure cast points for different hero types
-        call SaveReal(heroCastPointMap, 'H009', 0, 0.2)  // BloodMage
-        // call SaveReal(heroCastPointMap, 'Hmkg', 0, 0.3)  // Mountain King  
-        // TODO: Add more hero types as needed
-    endfunction
 
     // Initialize hero-specific abilities (extend this function for different heroes)
     function InitializeHeroCombatData takes AIHero owner, integer difficulty returns HeroCombatData
@@ -122,10 +111,8 @@ library AIStateMachine requires KeyUtils, AIUtils
         set udg_TimerHeroMap = InitHashtable()
         set udg_DebugTextTagTimerHeroMap = InitHashtable()
         set udg_UnitAIHeroMap = InitHashtable()
-        set heroCastPointMap = InitHashtable()
         set gameTimer = CreateTimer()
         call TimerStart(gameTimer, 999999.0, false, null)
-        call InitializeHeroCastPoints()
         call InitializeWaypoints()
         call InitItemConfig()
         call InitAbilityConfig()
