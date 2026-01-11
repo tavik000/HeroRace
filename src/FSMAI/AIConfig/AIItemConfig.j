@@ -3,7 +3,7 @@ library AIItemConfig
         hashtable ItemDataTable
     endglobals
 
-    function InitItemData takes nothing returns nothing
+    function InitItemConfig takes nothing returns nothing
         local integer BASE_COOLDOWN_KEY = 0
         local integer CAST_RANGE_KEY = 1
         local integer EFFECTIVE_RADIUS_KEY = 2

@@ -3,7 +3,7 @@ library AIAbilityConfig
         hashtable AbilityDataTable
     endglobals
 
-    function InitAbilityData takes nothing returns nothing
+    function InitAbilityConfig takes nothing returns nothing
         local integer BASE_COOLDOWN_KEY = 0
         local integer ORDER_STRING_KEY = 1
         local integer CAST_RANGE_KEY = 2

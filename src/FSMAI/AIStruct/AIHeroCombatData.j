@@ -58,11 +58,6 @@ struct HeroCombatData
             // Exceeded max abilities - handle error as needed
             call this.botLogError("Exceeded max abilities for hero combat data.")
         endif
-        call this.botLog("Added ability to hero combat data: " + orderString)
-        call this.botLog("  - Cooldown: " + R2S(baseCooldown) + "s, Cast Type: " + I2S(castType) + ", Mana Cost: " + I2S(manaCost) + ", Cast Range: " + R2S(castRange) + ", Find Target Type: " + I2S(findTargetType) + ", Effective Radius: " + R2S(effectiveRadius) + ", Combo Index: " + I2S(comboIndex) + ", Expected Damage: " + R2S(expectedDamage))
-        call this.botLog("  - Is Passive: " + B2S(isPassive) + ", Required Cast Time: " + R2S(requiredCastTime) + "s, Is Ignore Magic Immune: " + B2S(isIgnoreMagicImmune))
-        call this.botLog("  - Must Have Buff Code When Following: " + I2S(mustHaveBuffCodeWhenFollowing) + ", Should Check Other Unit Blocking Target Unit: " + B2S(shouldCheckOtherUnitBlockingTargetUnit) + ", Min Target Distance: " + R2S(minTargetDistance) + ", Follow Target Duration: " + R2S(followTargetDuration) + "s")
-        call this.botLog("  - Base Predict Offset: " + R2S(basePredictOffset) + ", Base Predict Delay: " + R2S(basePredictDelay) + "s, Projectile Speed: " + R2S(projectileSpeed))
     endmethod
 
     method getCurrentItemCount takes nothing returns integer
