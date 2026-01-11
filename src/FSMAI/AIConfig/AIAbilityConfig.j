@@ -49,6 +49,7 @@ library AIAbilityConfig
         // call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         // call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0)
 
+        // BloodMage Abilities
         set currentAbilityId = 'A00W' // Banish
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 22.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "banish")
