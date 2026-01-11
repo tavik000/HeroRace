@@ -982,6 +982,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    // Not For Enemy because not good for killing
     function FindLowHealthTargetInRange takes unit ownerHero, real range, integer findTeamType, AIAbility abil, AIItem itm returns unit
         local group units = CreateGroup()
         local unit currentUnit = null
@@ -1688,6 +1689,65 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindLowHealthEnemyTargetInRange takes AIHero owner, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, AIAbility abil, AIItem itm returns unit
+        local group enemies = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(owner.hero)
+        local real lowHpThreshold = expectedDamage * 0.5 // 50% of expected damage
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempHeroUnit = owner.hero
+        set tempAIAbility = abil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(enemies, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune, customFilter, above expectedDamage(if isLowHealthOnly), above HP threshold(if shouldAvoidOverKill)
+        // Priority:                                                                                     
+        // 1. Ungoaled Hero
+        // 2. Hero carry more than 2 items
+        // 3. Avoid Overkill 
+        // 4. Prioritize Stunned/Slowed
+        // 5. Killable
+        // 6. Minimize Overkill Among Kills
+        // 7. Damage Efficiency
+        // 8. Fallback to Overkill if not shouldAvoidOverKill
+
+        loop
+            set currentUnit = FirstOfGroup(enemies)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(enemies, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif isLowHealthOnly and GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) > expectedDamage then
+            elseif shouldAvoidOverKill and GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) < lowHpThreshold then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // Evaluate and possibly update bestTarget
+                set bestTarget = EvaluateComboTarget(owner, currentUnit, bestTarget, expectedDamage, lowHpThreshold)
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(enemies)
+        set enemies = null
+        set currentUnit = null
+        set tempAIAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindRandomHeroInRange takes AIHero owner, real range, integer findTeamType, boolean bExcludeSelf, AIAbility abil returns unit
         local group heroes = CreateGroup()
         local unit randomHero
@@ -2050,6 +2110,10 @@ library AIUtils requires KeyUtils
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
@@ -2125,6 +2189,16 @@ library AIUtils requires KeyUtils
             if targetUnit != null then
                 call owner.botLog("Found healthy running enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH then
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, abil.castRange, abil.expectedDamage, false, false, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
+            endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL then
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, abil.castRange, abil.expectedDamage, true, false, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
+            endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
             set targetUnit = FindCrowdedHeroInRange(owner, abil.castRange, abil.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             if targetUnit != null then
@@ -2191,8 +2265,14 @@ library AIUtils requires KeyUtils
 
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            if targetUnit != null then
+                call owner.botLog("Found ally hero target for speed-up item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
             set targetUnit = FindTeleportAllyTargetInRange(owner, itm.castRange, 700.0, 0)
+            if targetUnit != null then
+                call owner.botLog("Found ally hero target for teleport item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
             set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
             if targetUnit != null then

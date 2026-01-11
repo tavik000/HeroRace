@@ -15,19 +15,6 @@ struct HeroCombatData
         return this
     endmethod
         
-    // method addAbility takes integer abilityId, real cooldown, integer castType, string orderString, integer manaCost, real castRange, integer findTargetType, real effectiveRadius, integer comboIndex, real expectedDamage returns nothing
-    //     if this.abilityCount < MAX_ABILITIES_PER_HERO then
-    //         set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, cooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage)
-    //         if comboIndex > 0 then
-    //             set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
-    //         endif
-    //         set this.abilityCount = this.abilityCount + 1
-    //     else
-    //         // Exceeded max abilities - handle error as needed
-    //         call this.botLogError("Exceeded max abilities for hero combat data.")
-    //     endif
-    // endmethod
-
     method addAbilityById takes integer abilityId returns nothing
         local real baseCooldown = GetAbilityBaseCooldown(abilityId)
         local integer castType = GetAbilityCastType(abilityId)

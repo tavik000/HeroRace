@@ -281,6 +281,38 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
+        // Lina Abilities
+        set currentAbilityId = 'A00T' // DragonSlave
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 22.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "shockwave")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 1075.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 275.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 240.0)
+        set currentAbilityId = 'A00F' // LightStrikeArray
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 25.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 225.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 45)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 240.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 0.65)
+        set currentAbilityId = 'A010' // LagunaBlade
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 52.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "chainlightning")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 900.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 90)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 440.0)
 
 
     
