@@ -78,6 +78,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A010')  // LagunaBlade
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.45)
 
+        // BeastMaster
+        set heroTypeId = 'N007'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A038')  // SummonGrizzly
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A037')  // SummonQuillBeast
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A02G')  // Stampede
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

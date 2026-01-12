@@ -17,6 +17,7 @@ struct AIHero
     timer debugTextTagTimer
     item pickingUpItem
     destructable eatingTree
+    integer lastCastingChannelAbilityId
         
     // Constructor
     static method create takes unit u, integer inDifficulty returns thistype
@@ -38,6 +39,7 @@ struct AIHero
         set this.debugTextTagTimer = null
         set this.pickingUpItem = null
         set this.eatingTree = null
+        set this.lastCastingChannelAbilityId = 0
 
 
         // Initialize combat data

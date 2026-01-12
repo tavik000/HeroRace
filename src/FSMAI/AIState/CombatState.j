@@ -51,7 +51,9 @@ struct CombatState extends AIState
                 call this.botLog("Casting Finished for ability: " + owner.castingAbility.orderString)
                 
                 // Handle teleport waypoint update on cast completion
-                call owner.updateWaypointAfterTeleport()
+                if owner.lastCastingChannelAbilityId == 'A019' then
+                    call owner.updateWaypointAfterTeleport()
+                endif
                 
                 set owner.isCasting = false
                 set owner.castingAbility = 0
@@ -123,7 +125,13 @@ struct CombatState extends AIState
                 set owner.castingAbility = abil
                 set owner.currentRequiredCastTime = abil.requiredCastTime
                 set owner.lastStartCastTime = currentTime
+                if abil.requiredCastTime > 0.01 then
+                    set owner.lastCastingChannelAbilityId = abil.abilityId
+                else
+                    set owner.lastCastingChannelAbilityId = 0
+                endif
                 call this.botLog("Ability cast successfully: " + abil.orderString)
+
                 return true
             endif
         endif

@@ -111,8 +111,8 @@ struct AIAbility
         local real offsetDistance = 0.0
         local boolean isFront = true
 
-        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT and this.castType != CAST_POINT_ENEMY_BEHIND then
-            call this.botLogError("getFrontOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
+        if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT and this.castType != CAST_POINT_ENEMY_BEHIND and this.castType != CAST_POINT_SELF_BEHIND_ENEMY_CROWDED then
+            call this.botLogError("getUnitOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
             return 0.0
         endif
 
@@ -204,18 +204,24 @@ struct AIAbility
 
         if this.castType == CAST_NONE then
             return
+        elseif this.castType == CAST_INSTANT then
+            set this.bIsReadyToCast = true
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
-            call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
+            if targetUnitCount > 0 then
+                call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
+            endif
             set this.bIsReadyToCast = targetUnitCount >= 2
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALL)
-            call this.botLog("Found " + I2S(targetUnitCount) + " heroes around for ability: " + GetObjectName(this.abilityId))
+            if targetUnitCount > 0 then
+                call this.botLog("Found " + I2S(targetUnitCount) + " heroes around for ability: " + GetObjectName(this.abilityId))
+            endif
             set this.bIsReadyToCast = targetUnitCount >= 2
         elseif this.castType == CAST_INSTANT_HEAL then
             set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD
@@ -242,6 +248,13 @@ struct AIAbility
             set this.readyTargetPointY = GetLocationY(this.readyTargetPoint)
             call RemoveLocation(this.readyTargetPoint)
             set this.bIsReadyToCast = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
+        elseif this.castType == CAST_POINT_SELF_BEHIND_ENEMY_CROWDED then
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            if targetUnitCount >= 2 then
+                call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
+                set this.readyTargetUnit = this.ownerHero
+                set this.bIsReadyToCast = this.readyTargetUnit != null
+            endif
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -372,25 +385,30 @@ struct AIAbility
             if targetUnit == null then
                 call this.botLog("No target found for point ability: " + GetObjectName(this.abilityId))
                 return false
-            else
-                // if there is hazard around, cast to hazard center + offset 150
-                set hazardUnitAround = GetHazardAroundUnit(targetUnit, this.effectiveRadius)
-                if hazardUnitAround != null then
-                    set this.readyTargetPointX = GetUnitX(hazardUnitAround) + 150.0 * Cos((GetUnitFacing(hazardUnitAround)) * bj_DEGTORAD)
-                    set this.readyTargetPointY = GetUnitY(hazardUnitAround) + 150.0 * Sin((GetUnitFacing(hazardUnitAround)) * bj_DEGTORAD)
-                    call this.botLog("Casting behind enemy to hazard center for ability: " + GetObjectName(this.abilityId))
-                    call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
-                    return true
-                endif
-
-                // fallback: Calculate point behind target unit
-                set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
-                set offset = this.getUnitOffsetDistance(targetUnit)
-                set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) - offset * Cos(targetFacingAngle * bj_DEGTORAD)
-                set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
-                call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
-                return true 
             endif
+            if not IsUnitValid(targetUnit) then
+                call this.botLog("Target unit is not valid for ability: " + this.orderString)
+                set this.bIsReadyToCast = false
+                set this.readyTargetUnit = null
+                return false
+            endif
+            // if there is hazard around, cast to hazard center + offset 150
+            set hazardUnitAround = GetHazardAroundUnit(targetUnit, this.effectiveRadius)
+            if hazardUnitAround != null then
+                set this.readyTargetPointX = GetUnitX(hazardUnitAround) + 150.0 * Cos((GetUnitFacing(hazardUnitAround)) * bj_DEGTORAD)
+                set this.readyTargetPointY = GetUnitY(hazardUnitAround) + 150.0 * Sin((GetUnitFacing(hazardUnitAround)) * bj_DEGTORAD)
+                call this.botLog("Casting behind enemy to hazard center for ability: " + GetObjectName(this.abilityId))
+                call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+                return true
+            endif
+
+            // fallback: Calculate point behind target unit
+            set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+            set offset = this.getUnitOffsetDistance(targetUnit)
+            set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) - offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true 
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
             set this.readyTargetPoint = FindPointAroundCrowdedHeroes(this.owner, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             set this.readyTargetPointX = GetLocationX(this.readyTargetPoint)
@@ -402,6 +420,26 @@ struct AIAbility
             endif
             call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
+        elseif this.castType == CAST_POINT_SELF_BEHIND_ENEMY_CROWDED then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLog("No target found for point ability: " + GetObjectName(this.abilityId))
+                return false
+            endif
+            if not IsUnitValid(targetUnit) then
+                call this.botLog("Target unit is not valid for ability: " + this.orderString)
+                set this.bIsReadyToCast = false
+                set this.readyTargetUnit = null
+                return false
+            endif
+
+            // fallback: Calculate point behind target unit
+            set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+            set offset = this.getUnitOffsetDistance(targetUnit)
+            set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) - offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true 
         elseif this.castType == CAST_UNIT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then

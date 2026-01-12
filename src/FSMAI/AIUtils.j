@@ -283,6 +283,10 @@ library AIUtils requires KeyUtils
         return LoadInteger(udg_UnitAIHeroMap, GetHandleId(u), 0)
     endfunction
 
+    function GetAIHeroByUnit takes unit u returns AIHero
+        return GetAIHeroFromUnit(u)
+    endfunction
+
     function DestroyAIHero takes unit u returns nothing
         local AIHero aiHero = GetAIHeroFromUnit(u)
         if aiHero != null then
@@ -477,7 +481,7 @@ library AIUtils requires KeyUtils
             exitwhen currentUnit == null
             call GroupRemoveUnit(targets, currentUnit)
             call BotLogWithPlayer(heroOwner, "Evaluating illusion target: " + GetUnitName(currentUnit))
-            set currentUnitAttackDamage = GetUnitStateSwap(ConvertUnitState(0x15), currentUnit)
+            set currentUnitAttackDamage = GetUnitMaxAttackDamage(currentUnit)
             call BotLogWithPlayer(heroOwner, "Current unit attack damage: " + R2S(currentUnitAttackDamage))
 
             // --- VALIDATION LAYER ---
@@ -733,6 +737,7 @@ library AIUtils requires KeyUtils
             set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
             set tolerance = itm.effectiveRadius
         endif
+
         // Not Allowed Target: customFilter, not trailing, goaled hero, within min distance, blocked by other unit if applicable
         // Priority Order:
         // 1 furthest
@@ -1689,7 +1694,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLowHealthEnemyTargetInRange takes AIHero owner, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, AIAbility abil, AIItem itm returns unit
+    function FindLowHealthEnemyTargetInRange takes AIHero owner, unit overrideCenterUnit, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1702,7 +1707,11 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = owner.hero
         set tempAIAbility = abil
         set tempAIItem = itm
-        call GroupEnumUnitsInRange(enemies, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
+        if overrideCenterUnit != null then
+            call GroupEnumUnitsInRange(enemies, GetUnitX(overrideCenterUnit), GetUnitY(overrideCenterUnit), range, Filter(function FilterValidVisibleTeamHeroes))
+        else
+            call GroupEnumUnitsInRange(enemies, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
+        endif
 
         // Not Allowed Target: MagicImmune, customFilter, above expectedDamage(if isLowHealthOnly), above HP threshold(if shouldAvoidOverKill)
         // Priority:                                                                                     
@@ -2190,12 +2199,12 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found healthy running enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH then
-            set targetUnit = FindLowHealthEnemyTargetInRange(owner, abil.castRange, abil.expectedDamage, false, false, abil, 0)
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL then
-            set targetUnit = FindLowHealthEnemyTargetInRange(owner, abil.castRange, abil.expectedDamage, true, false, abil, 0)
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, true, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
             endif

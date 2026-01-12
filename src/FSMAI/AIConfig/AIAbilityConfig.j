@@ -102,7 +102,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 320.0)
-        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.1)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
         set currentAbilityId = 'A014' // Avatar 
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 26.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "metamorphosis")
@@ -314,6 +314,41 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 440.0)
 
+        // BeastMaster Abilities
+        set currentAbilityId = 'A038' // SummonGrizzly
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 53.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "summongrizzly")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 1)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 67.0 * 4) // 4 attacks
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
+        set currentAbilityId = 'A037' // SummonQuillBeast
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 53.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "summonquillbeast")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 25)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 2)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 44.0 * 4) // 4 attacks
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
+        set currentAbilityId = 'A02G' // Stampede
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 41.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "stampede")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 700.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 1000.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_SELF_BEHIND_ENEMY_CROWDED)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 110)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 660.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 10.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 2.1) // channel time
 
     
         // Add more ability...
