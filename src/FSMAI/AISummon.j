@@ -65,7 +65,7 @@ endfunction
 function AISummonGoAndAttackNewTarget takes unit summonUnit, unit newAttackTarget, timer attackTargetTimer returns nothing
     local real distanceToAttackTarget = DistanceBetweenUnits(summonUnit, newAttackTarget)
     local real currentTime = TimerGetElapsed(gameTimer)
-    if AISummonIsUnitGrizzly(summonUnit) then
+    if AISummonIsUnitGrizzly(summonUnit) or AISummonIsUnitSpiritWolf(summonUnit) then
         if distanceToAttackTarget > 1200.0 then
             // blink then attack
             if AISummonIsBlinkCooldownReady(summonUnit, SUMMON_BLINK_CD, attackTargetTimer) then
