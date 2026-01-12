@@ -119,6 +119,13 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A01Z')  // Earthquake
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.3)
 
+        // TaurenChieftain
+        set heroTypeId = 'O008'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 2)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A03A')  // Shockwave
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A036')  // WarStomp
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.47)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

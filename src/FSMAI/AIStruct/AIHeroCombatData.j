@@ -359,6 +359,15 @@ struct HeroCombatData
             return
         endif
 
+        // TaurenChieftain keep item until close to goal
+        if GetUnitTypeId(owner.hero) == 'O008' then
+            if not IsCurrentGoalWaypoint(owner) and not IsHeroGoaled(owner.hero) then
+                if this.getCurrentItemCount() < 6 then
+                    return
+                endif
+            endif
+        endif
+
         // Prepare target for each item
         loop
             exitwhen i >= MAX_ITEM_PER_HERO
