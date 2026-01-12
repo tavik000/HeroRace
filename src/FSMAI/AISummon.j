@@ -161,6 +161,15 @@ function Trig_AISummonActions takes nothing returns nothing
     local timer attackTargetTimer = null
     local real distanceToSummoner = 0.0
 
+    if not IsAIHardOrAbove(summonerAIHero.difficulty) then
+        // clean
+        set attackTarget = null
+        set summonUnit = null
+        set summoner = null
+        set summonerAIHero = 0
+        return
+    endif
+
     // Illusion hero, just move to goal point
     if IsUnitIllusionBJ(summonUnit) then
         if IsHeroUnitId(GetUnitTypeId(summonUnit)) then

@@ -145,7 +145,7 @@ struct HeroCombatData
         local integer i = 0
         local AIAbility abil
         local real currentMana
-        local boolean bCheckCombo = IsApplyingCombo(difficulty)
+        local boolean bCheckCombo = IsDifficultyApplyingCombo(difficulty)
         local AIHero aiHero = GetAIHeroFromUnit(hero)
 
         if bCheckCombo then
@@ -317,6 +317,21 @@ struct HeroCombatData
         return true
     endmethod
 
+    method shouldPrepareAbility takes AIAbility abil returns boolean
+        // Non-combo abilities: check cooldown and mana
+        if abil.comboIndex == 0 then
+            return abil.isCooldownReady(owner.difficulty) and abil.isManaReady(owner.hero)
+        endif
+        
+        // Combo abilities: check if applying combo
+        if IsDifficultyApplyingCombo(owner.difficulty) then
+            return areComboAbilityCooldownReady(owner.hero, owner.difficulty, 1) and this.hasEnoughManaForCombo(owner.hero, 1)
+        endif
+        
+        // Not applying combo: treat as regular ability
+        return abil.isCooldownReady(owner.difficulty) and abil.isManaReady(owner.hero)
+    endmethod
+
     method tryPrepareTargetForAbilities takes nothing returns nothing
         local integer i = 0
         local AIAbility abil
@@ -325,27 +340,13 @@ struct HeroCombatData
         loop
             exitwhen i >= this.abilityCount
             set abil = this.abilities[i]
-            if abil != 0 then
-                if not abil.bIsReadyToCast then
-                    if abil.comboIndex > 0 then
-                        // Only prepare combo abilities if in combo mode
-                        if IsApplyingCombo(owner.difficulty) then
-                            if areComboAbilityCooldownReady(owner.hero, owner.difficulty, 1) then
-                                if this.hasEnoughManaForCombo(owner.hero, 1) then
-                                    call abil.tryPrepareTarget()
-                                endif
-                            endif
-                        endif
-                    else
-                        // Non-combo abilities always prepare
-                        if abil.isCooldownReady(owner.difficulty) then
-                            if abil.isManaReady(owner.hero) then
-                                call abil.tryPrepareTarget()
-                            endif
-                        endif
-                    endif
+            
+            if abil != 0 and not abil.bIsReadyToCast then
+                if this.shouldPrepareAbility(abil) then
+                    call abil.tryPrepareTarget()
                 endif
             endif
+            
             set i = i + 1
         endloop
     endmethod
@@ -353,6 +354,10 @@ struct HeroCombatData
     method tryPrepareTargetForItems takes nothing returns nothing
         local integer i = 0
         local AIItem heroItem
+
+        if not IsAIHardOrAbove(owner.difficulty) then
+            return
+        endif
 
         // Prepare target for each item
         loop

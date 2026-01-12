@@ -179,7 +179,7 @@ struct AIAbility
             return false
         endif
 
-        if not IsApplyingCombo(owner.difficulty) then
+        if not IsDifficultyApplyingCombo(owner.difficulty) then
             return false
         endif
             

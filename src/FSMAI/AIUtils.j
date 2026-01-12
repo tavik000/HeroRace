@@ -66,7 +66,7 @@ library AIUtils requires KeyUtils
         endif
     endfunction
 
-    function IsApplyingCombo takes integer difficulty returns boolean
+    function IsDifficultyApplyingCombo takes integer difficulty returns boolean
         return IsAIHardOrAbove(difficulty)
     endfunction
 

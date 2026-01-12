@@ -186,9 +186,15 @@ struct AIHero
 
     method shouldEnterPickupItemState takes nothing returns boolean
         local boolean bIsInventoryFull = IsUnitInventoryFull(this.hero)
+
+        if not IsAIHardOrAbove(this.difficulty) then
+            return false
+        endif
+
         if bIsInventoryFull then
             return false
         endif
+
         // call this.botLog("shouldenter: Item found to pick up: " + GetItemName(this.pickingUpItem))
         return this.pickingUpItem != null
     endmethod
@@ -308,7 +314,7 @@ struct AIHero
         if castingAbility != 0 then
             set this.castingAbility.lastCastTime = currentTime
             // Advance combo index if casting combo ability
-            if IsApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
+            if IsDifficultyApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
                 set this.currentComboIndex = this.currentComboIndex + 1
                 call this.botLog("Advancing combo index to: " + I2S(this.currentComboIndex))
                 // If no further combo ability, reset combo index

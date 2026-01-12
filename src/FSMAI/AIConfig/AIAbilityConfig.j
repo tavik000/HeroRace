@@ -341,7 +341,7 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 41.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "stampede")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 700.0)
-        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 1000.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 1000.0 - 200.0) // prevent missing
         call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_SELF_BEHIND_ENEMY_CROWDED)
         call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 110)

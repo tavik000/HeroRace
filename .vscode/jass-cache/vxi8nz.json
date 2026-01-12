@@ -812,11 +812,11 @@
 			"statementType": "FunctionDeclaration"
 		},
 		{
-			"label": "IsApplyingCombo",
+			"label": "IsDifficultyApplyingCombo",
 			"kind": 2,
 			"detail": "Function",
-			"documentation": "\n```jass\nfunction IsApplyingCombo takes integer difficulty returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
-			"sortText": "1_func_IsApplyingCombo",
+			"documentation": "\n```jass\nfunction IsDifficultyApplyingCombo takes integer difficulty returns boolean\n```\n\n\n**_>:** `Test/FSMAI/AIStateMachine.j`",
+			"sortText": "1_func_IsDifficultyApplyingCombo",
 			"filePath": "f:\\War3Dev\\HeroRace\\Test\\FSMAI\\AIStateMachine.j",
 			"statementType": "FunctionDeclaration"
 		},
