@@ -426,6 +426,38 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 300.0)
 
+        // ChaosBladeMaster Abilities
+        set currentAbilityId = 'A03G' // HealingWard
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 40.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "healingward")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 500.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 500.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_SELF_FRONT_HEAL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A03B' // CriticalStrike
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 18.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 150.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 200.0) // only for finding target
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 280.0)
+        set currentAbilityId = 'A02Y' // Omnislash
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 41.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 1000.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 650.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 100)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 750.0)
+
     
         // Add more ability...
     endfunction

@@ -335,6 +335,9 @@ library KeyUtils
         return true
     endfunction
 
+    function IsUnitWard takes unit u returns boolean
+        return GetUnitPointValue(u) == 233
+    endfunction
 
     // Check if u1 is in front of u2
     function IsUnitInFrontOfUnit takes unit u1, unit u2 returns boolean

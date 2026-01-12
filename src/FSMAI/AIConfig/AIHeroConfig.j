@@ -103,6 +103,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'A0A4')  // FingerOfDeath
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.35)
 
+        // ChaosBladeMaster
+        set heroTypeId = 'O003'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A03G')  // HealingWard
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A03B')  // CriticalStrike
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A02Y')  // Omnislash
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.3)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

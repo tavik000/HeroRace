@@ -161,6 +161,10 @@ function Trig_AISummonActions takes nothing returns nothing
     local timer attackTargetTimer = null
     local real distanceToSummoner = 0.0
 
+    if IsUnitWard(summonUnit) then
+        return
+    endif
+
     if not IsUnitType(summoner, UNIT_TYPE_HERO) then
         // find hero of summoner player
         set summonerAIHero = GetAIHeroByPlayer(GetOwningPlayer(summoner))

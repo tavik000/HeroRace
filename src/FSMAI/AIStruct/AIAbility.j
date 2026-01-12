@@ -255,6 +255,13 @@ struct AIAbility
                 set this.readyTargetUnit = this.ownerHero
                 set this.bIsReadyToCast = this.readyTargetUnit != null
             endif
+        elseif this.castType == CAST_POINT_SELF_FRONT_HEAL then
+            if GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD then
+                set this.readyTargetUnit = this.ownerHero
+            else
+                set this.readyTargetUnit = null
+            endif
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -440,6 +447,28 @@ struct AIAbility
             set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true 
+        elseif this.castType == CAST_POINT_SELF_FRONT_HEAL then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+            
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            // Calculate point in front of self
+            set targetFacingAngle = GetUnitFacing(this.ownerHero)
+            set offset = this.castRange
+            set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
         elseif this.castType == CAST_UNIT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
