@@ -2277,7 +2277,6 @@ library AIUtils requires KeyUtils
         endif
             
         if abil.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
-            // Use smart combo targeting for combo abilities, random for others
             if abil.comboIndex > 0 then
                 if owner.comboTargetUnit != null then
                     // Check if we should use existing combo target
@@ -2292,11 +2291,10 @@ library AIUtils requires KeyUtils
                     call owner.botLog("No valid combo target found.")
                     return null
                 endif
-                call owner.botLog("Found best combo target, result: " + GetUnitName(targetUnit))
+                call owner.botLog("Found best combo target, result: " + GetUnitName(targetUnit) + " for ability " + abil.getName())
                 call owner.setDebugTextTagContent("Combat: " + abil.orderString + " - Combo Target " + GetUnitName(targetUnit))
                 call owner.setDebugTextTagColorPreset("RED")
                 return targetUnit
-            else
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
             set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, abil.castRange, abil, 0)

@@ -327,14 +327,14 @@ struct AIHero
                 if this.combatData.getAbilityByComboIndex(this.currentComboIndex) == 0 then
                     set this.currentComboIndex = 1
                     set this.comboTargetUnit = null
-                    call this.botLog("Combo sequence complete, resetting combo index to 1")
+                    call this.botLog("Combo sequence complete, resetting combo index to 1, reset combo target.")
                 endif
             endif
             call this.botLog("Casting complete for ability (start CD): " + this.castingAbility.orderString + ", current combo index: " + I2S(this.currentComboIndex))
             call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " done, CCI: " + I2S(this.currentComboIndex))
             call this.setDebugTextTagColorPreset("RED")
         else
-            call this.botLogError("Casting complete but no casting ability recorded. No CD started.")
+            call this.botLog("Casting complete but no casting ability recorded. No CD started. (could be item)")
         endif
 
         call resetIsCasting()
@@ -360,7 +360,7 @@ struct AIHero
     method onBeTargetedByEnemyAbility takes integer abilityId returns nothing
         local AIItem selfDefenseItem
         local AIAbility selfDefenseAbility
-        call this.botLog("Hero is being targeted by enemy ability: " + I2S(abilityId))
+        call this.botLog("Hero is being targeted by enemy ability: " + GetObjectName(abilityId))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
             call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
@@ -434,7 +434,7 @@ struct AIHero
                 return false
             endif
         endif
-        call this.botLog("Blocking unit found: " + GetUnitName(u))
+        // call this.botLog("Blocking unit found: " + GetUnitName(u))
         return true
     endmethod
 
@@ -448,7 +448,7 @@ struct AIHero
         set blockingUnit = this.getBlockingUnitAround(blockDetectRadius, false)
         set hasBlockingUnitAhead = blockingUnit != null
         if hasBlockingUnitAhead then
-            call this.botLog("Blocking unit detected ahead, dodging")
+            // call this.botLog("Blocking unit detected ahead, dodging")
             call this.setDebugTextTagContent(StateId2String(this.currentState.stateID) + ": Dodging Blocking Unit Ahead")
             call this.setDebugTextTagColorPreset("YELLOW")
             call this.avoidTargetUnitAhead(blockingUnit, GetUnitMoveSpeed(blockingUnit) * 0.1, 2.0, true)
@@ -458,7 +458,7 @@ struct AIHero
         set blockingUnit = this.getBlockingUnitAround(blockDetectRadius, true)
         set hasBlockingUnitBehind = blockingUnit != null
         if hasBlockingUnitBehind then
-            call this.botLog("Blocking unit detected behind, dodging")
+            // call this.botLog("Blocking unit detected behind, dodging")
             call this.setDebugTextTagContent(StateId2String(this.currentState.stateID) + ": Dodging Blocking Unit Behind")
             call this.setDebugTextTagColorPreset("YELLOW")
             call this.avoidTargetUnitBehind(blockingUnit, false, 2.0, true)
@@ -484,11 +484,11 @@ struct AIHero
         local real moveY
 
         call this.botLog("Avoiding target unit: " + GetUnitName(targetUnit))
-        call this.botLog("heroMovingAngle: " + R2S(heroMovingAngle) + ", predictedTargetUnitToHeroAngle: " + R2S(predictedTargetUnitToHeroAngle))
-        call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
+        // call this.botLog("heroMovingAngle: " + R2S(heroMovingAngle) + ", predictedTargetUnitToHeroAngle: " + R2S(predictedTargetUnitToHeroAngle))
+        // call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
         if bLeanTowardWaypoint then
             set avoidAngle = GetMiddleAngle(heroMovingAngle, avoidAngle)
-            call this.botLog("Leaning 2x toward waypoint, new avoidAngle: " + R2S(avoidAngle))
+            // call this.botLog("Leaning 2x toward waypoint, new avoidAngle: " + R2S(avoidAngle))
         endif
 
 

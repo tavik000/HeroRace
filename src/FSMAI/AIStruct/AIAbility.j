@@ -73,7 +73,6 @@ struct AIAbility
         endif
         set requiredCooldown = this.baseCooldown * cooldownMultiplier
         if currentTime >= this.lastCastTime + requiredCooldown then
-            call this.botLog("Cooldown ready for ability: " + this.orderString)
             return true
         endif
         return false
@@ -200,6 +199,15 @@ struct AIAbility
         set this.readyTargetUnit = this.ownerHero
     endmethod
 
+    method resetNotReadyToCast takes nothing returns nothing
+        set this.bIsReadyToCast = false
+        set this.readyTargetUnit = null
+        set this.readyTargetPoint = null
+        set this.readyTargetPointX = 0.0
+        set this.readyTargetPointY = 0.0
+        call this.botLog("Resetting not ready to cast for ability: " + GetObjectName(this.abilityId))
+    endmethod
+
     method tryPrepareTarget takes nothing returns nothing
         local integer targetUnitCount
 
@@ -207,6 +215,7 @@ struct AIAbility
             return
         elseif this.castType == CAST_INSTANT then
             set this.bIsReadyToCast = true
+            call this.botLog("Instant ability ready to cast: " + GetObjectName(this.abilityId))
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
@@ -233,6 +242,15 @@ struct AIAbility
             set this.bIsReadyToCast = targetUnitCount >= 2
         elseif this.castType == CAST_INSTANT_HEAL then
             set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD
+        elseif this.castType == CAST_INSTANT_COMBO_TARGET_NOT_CC then
+            if not IsUnitValid(owner.comboTargetUnit) then
+                set this.bIsReadyToCast = false
+                return
+            endif
+            set this.bIsReadyToCast = not IsUnitStun(owner.comboTargetUnit)
+            if this.bIsReadyToCast then
+                call this.botLog("Ready Done! Combo target is not CC'ed for ability: " + GetObjectName(this.abilityId))
+            endif
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -277,6 +295,9 @@ struct AIAbility
             endif
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
+            if this.readyTargetUnit != null then
+                call owner.botLog("Found target unit: " + GetUnitName(this.readyTargetUnit) + " for unit ability: " + GetObjectName(this.abilityId))
+            endif
         else
             call this.botLogError("Ability cast type not implemented for prepare target: " + I2S(this.castType) + " for ability: " + GetObjectName(this.abilityId))
             set this.readyTargetUnit = null
@@ -287,6 +308,7 @@ struct AIAbility
         if this.readyTargetUnit != null then
             if this.shouldUpdateComboTarget(this.readyTargetUnit) then
                 set owner.comboTargetUnit = this.readyTargetUnit
+                call owner.botLog("Updated combo target to unit: " + GetUnitName(this.readyTargetUnit) + " for ability: " + GetObjectName(this.abilityId))
             endif
         endif
 
@@ -298,16 +320,13 @@ struct AIAbility
             call this.owner.moveToNextWaypoint()
         endif
         call this.botLog("Casting instant ability: " + this.orderString)
-        set this.bIsReadyToCast = false
+        call this.resetNotReadyToCast()
     endmethod
 
     method castPoint takes real targetX, real targetY returns nothing
         call IssuePointOrder(owner.hero, this.orderString, targetX, targetY)
         call this.botLog("Casting point ability at: (" + R2S(targetX) + ", " + R2S(targetY) + ") for ability: " + this.orderString)
-        set this.bIsReadyToCast = false
-        set this.readyTargetPointX = 0.0
-        set this.readyTargetPointY = 0.0
-        set this.readyTargetPoint = null
+        call this.resetNotReadyToCast()
     endmethod
 
     method castUnit takes unit targetUnit returns nothing
@@ -317,8 +336,7 @@ struct AIAbility
         endif
         call IssueTargetOrder(owner.hero, this.orderString, targetUnit)
         call this.botLog("Casting unit ability on target: " + GetUnitName(targetUnit) + " for ability: " + this.orderString)
-        set this.bIsReadyToCast = false
-        set this.readyTargetUnit = null
+        call this.resetNotReadyToCast()
     endmethod
 
     method tryCast takes nothing returns boolean
@@ -383,6 +401,14 @@ struct AIAbility
             call this.castInstant()
             return true
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
+            call this.castInstant()
+            return true
+        elseif this.castType == CAST_INSTANT_COMBO_TARGET_NOT_CC then
+            if not IsUnitValid(owner.comboTargetUnit) then
+                set this.bIsReadyToCast = false
+                return false
+            endif
+            call this.botLog("combo target: " + GetUnitName(owner.comboTargetUnit) + " is not CC'ed, casting ability: " + GetObjectName(this.abilityId))
             call this.castInstant()
             return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then

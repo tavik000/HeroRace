@@ -325,7 +325,7 @@ struct HeroCombatData
         
         // Combo abilities: check if applying combo
         if IsDifficultyApplyingCombo(owner.difficulty) then
-            return areComboAbilityCooldownReady(owner.hero, owner.difficulty, 1) and this.hasEnoughManaForCombo(owner.hero, 1)
+            return areComboAbilityCooldownReady(owner.hero, owner.difficulty, abil.comboIndex) and this.hasEnoughManaForCombo(owner.hero, abil.comboIndex)
         endif
         
         // Not applying combo: treat as regular ability

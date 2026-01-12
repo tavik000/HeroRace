@@ -129,6 +129,9 @@ struct CombatState extends AIState
                 call this.botLog("Ability cast successfully: " + abil.orderString)
 
                 return true
+            else
+                call this.botLog("Ability cast failed: " + abil.orderString)
+                call owner.resetIsCasting()
             endif
         endif
         return false

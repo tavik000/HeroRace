@@ -83,6 +83,7 @@ globals
     constant integer CAST_INSTANT_HEAL_ALLY_CROWDED = 10
     constant integer CAST_INSTANT_HAVE_CORPSE = 11
     constant integer CAST_INSTANT_JUMP = 12
+    constant integer CAST_INSTANT_COMBO_TARGET_NOT_CC = 13
 
 
     constant integer CAST_POINT_ENEMY_FRONT = 20
