@@ -126,6 +126,15 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A036')  // WarStomp
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.47)
 
+        // ShadowHunter
+        set heroTypeId = 'O009'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A033')  // HealingWave
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A031')  // Hex
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A021')  // SerpentWard
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'A0J0')  // BigBadVoodoo
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.3)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

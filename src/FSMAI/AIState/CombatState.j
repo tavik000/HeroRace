@@ -34,8 +34,7 @@ struct CombatState extends AIState
             call this.botLog("Casting failed detected for ability: " + owner.castingAbility.orderString)
             call owner.setDebugTextTagContent("Combat: Cast Failed " + owner.castingAbility.orderString)
             call owner.setDebugTextTagColorPreset("RED")
-            set owner.isCasting = false
-            set owner.castingAbility = 0
+            call owner.resetIsCasting()
             set owner.currentRequiredCastTime = 0
         endif
 
@@ -55,8 +54,7 @@ struct CombatState extends AIState
                     call owner.updateWaypointAfterTeleport()
                 endif
                 
-                set owner.isCasting = false
-                set owner.castingAbility = 0
+                call owner.resetIsCasting()
                 set owner.currentRequiredCastTime = 0
                 call owner.setDebugTextTagContent("Combat: Cast Finished")
                 call owner.setDebugTextTagColorPreset("RED")
@@ -121,8 +119,6 @@ struct CombatState extends AIState
         set abil = owner.combatData.getReadyAbility(owner.hero, difficulty)
         if abil != 0 then
             if abil.tryCast() then
-                set owner.isCasting = true
-                set owner.castingAbility = abil
                 set owner.currentRequiredCastTime = abil.requiredCastTime
                 set owner.lastStartCastTime = currentTime
                 if abil.requiredCastTime > 0.01 then

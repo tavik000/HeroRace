@@ -516,7 +516,51 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 285.0)
         call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
 
-    
+        // ShadowHunter Abilities
+        set currentAbilityId = 'A033' // HealingWave
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 48.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "healingwave")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 1300.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_CHAIN_HEAL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A031' // Hex(ShadowHunter)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 29.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "hex")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 55)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A021' // SerpentWard
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 45.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "ward")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 23.0 * 8 * 5) // 8 wards, 5 attacks each
+        // call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 0.75)
+        set currentAbilityId = 'A0J0' // BigBadVoodoo
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 60.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "voodoo")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 900.0 - 100.0) // prevent missing
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)    
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 5.0) // channel time
+
+
         // Add more ability...
     endfunction
 

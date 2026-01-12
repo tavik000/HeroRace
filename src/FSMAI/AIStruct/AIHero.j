@@ -301,17 +301,23 @@ struct AIHero
 
     endmethod
 
+    method setCurrentCastingAbility takes AIAbility abil returns nothing
+        set this.isCasting = true
+        set this.castingAbility = abil
+        call this.botLog("Set current casting ability to: " + abil.orderString)
+    endmethod
+
     method resetIsCasting takes nothing returns nothing
         set this.isCasting = false
         set this.castingAbility = 0
+        call this.botLog("Reset isCasting flag and castingAbility.")
     endmethod
 
     method onCastComplete takes nothing returns nothing
         local real currentTime = TimerGetElapsed(gameTimer)
         local integer difficulty = this.difficulty
-        set this.isCasting = false
 
-        if castingAbility != 0 then
+        if this.castingAbility != 0 then
             set this.castingAbility.lastCastTime = currentTime
             // Advance combo index if casting combo ability
             if IsDifficultyApplyingCombo(difficulty) and this.castingAbility.comboIndex > 0 then
@@ -324,12 +330,14 @@ struct AIHero
                     call this.botLog("Combo sequence complete, resetting combo index to 1")
                 endif
             endif
+            call this.botLog("Casting complete for ability (start CD): " + this.castingAbility.orderString + ", current combo index: " + I2S(this.currentComboIndex))
+            call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " done, CCI: " + I2S(this.currentComboIndex))
+            call this.setDebugTextTagColorPreset("RED")
+        else
+            call this.botLogError("Casting complete but no casting ability recorded. No CD started.")
         endif
 
-        call this.botLog("Casting complete for ability: " + this.castingAbility.orderString + ", current combo index: " + I2S(this.currentComboIndex))
-        call this.setDebugTextTagContent("Combat: " + this.castingAbility.orderString + " done, CCI: " + I2S(this.currentComboIndex))
-        call this.setDebugTextTagColorPreset("RED")
-        set this.castingAbility = 0
+        call resetIsCasting()
     endmethod
 
     method onGetItem takes item itm returns nothing

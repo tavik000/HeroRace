@@ -73,6 +73,7 @@ struct AIAbility
         endif
         set requiredCooldown = this.baseCooldown * cooldownMultiplier
         if currentTime >= this.lastCastTime + requiredCooldown then
+            call this.botLog("Cooldown ready for ability: " + this.orderString)
             return true
         endif
         return false
@@ -215,6 +216,13 @@ struct AIAbility
                 call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = targetUnitCount >= 2
+        elseif this.castType == CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE then
+            // if any CCed ally around 
+            set this.readyTargetUnit = FindCCedTargetInRange(owner.hero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES, true, this, 0)
+            if this.readyTargetUnit != null then
+                call owner.botLog("Found CC'ed ally target for ability: " + GetObjectName(this.abilityId))
+            endif
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
@@ -321,6 +329,7 @@ struct AIAbility
         local unit hazardUnitAround = null
             
         call this.botLog("Attempting to cast ability: " + this.orderString)
+        call this.owner.setCurrentCastingAbility(this)
 
         if not this.canCastAbility() then
             return false
@@ -365,6 +374,9 @@ struct AIAbility
                 return true
             endif
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
+            call this.castInstant()
+            return true
+        elseif this.castType == CAST_INSTANT_ALLY_DEFENSE_AND_CLEANSE then
             call this.castInstant()
             return true
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
@@ -537,6 +549,10 @@ struct AIAbility
 
     method destroy takes nothing returns nothing
         call this.deallocate()
+    endmethod
+
+    method getName takes nothing returns string
+        return GetObjectName(this.abilityId)
     endmethod
 
     method botLog takes string msg returns nothing
