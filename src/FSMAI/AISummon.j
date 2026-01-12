@@ -11,9 +11,9 @@ globals
 endglobals
 //===========================================================================
 
-
 function Trig_AISummonConditions takes nothing returns boolean
-	return ((YDUserDataGet(unit, GetSummoningUnit(), "bIsBot", boolean) == true))
+    local player summonedPlayer = GetOwningPlayer( GetSummonedUnit())
+    return IsPlayerBot(summonedPlayer)
 endfunction
 
 function FindSummonAttackTargetUnit takes AIHero summonerAIHero, unit summonUnit, real expectedDamage returns unit
@@ -119,10 +119,10 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
             // Attack move to summoner's location
             set distanceToSummoner = DistanceBetweenUnits(summonUnit, summoner)
             if distanceToSummoner > 500.0 then
-                call IssuePointOrder(summonUnit, "attackmove", GetUnitX(summoner), GetUnitY(summoner))
+                call IssuePointOrder(summonUnit, "attack", GetUnitX(summoner), GetUnitY(summoner))
                 call BotLog("No low health target found for summoned unit, AMove to summoner.")
             else
-                call IssuePointOrder(summonUnit, "attackmove", GoalX, GoalY)
+                call IssuePointOrder(summonUnit, "attack", GoalX, GoalY)
                 call BotLog("No low health target found for summoned unit, AMove to goal point.")
             endif
 
@@ -156,12 +156,19 @@ function Trig_AISummonActions takes nothing returns nothing
     local AIHero summonerAIHero = GetAIHeroByUnit(summoner)
     local integer spellId = GetSpellAbilityId()
     local real expectedDamage = GetUnitMaxAttackDamage(summonUnit) * 4.0 // Assume 4 attacks
-    local unit attackTarget = FindSummonAttackTargetUnit(summonerAIHero, summonUnit, expectedDamage)
+    local unit attackTarget = null
     local real distanceToAttackTarget = 0.0
     local timer attackTargetTimer = null
     local real distanceToSummoner = 0.0
 
+    if not IsUnitType(summoner, UNIT_TYPE_HERO) then
+        // find hero of summoner player
+        set summonerAIHero = GetAIHeroByPlayer(GetOwningPlayer(summoner))
+        set summoner = summonerAIHero.hero
+    endif
+
     if not IsAIHardOrAbove(summonerAIHero.difficulty) then
+        call BotLog("Summoned unit: " + GetUnitName(summonUnit) + " by summoner: " + GetUnitName(summoner) + " but AI difficulty is not hard or above, skipping summon actions.")
         // clean
         set attackTarget = null
         set summonUnit = null
@@ -178,6 +185,9 @@ function Trig_AISummonActions takes nothing returns nothing
         endif
     endif
 
+    call BotLog("Summoned unit: " + GetUnitName(summonUnit) + " by summoner: " + GetUnitName(summoner))
+
+    set attackTarget = FindSummonAttackTargetUnit(summonerAIHero, summonUnit, expectedDamage)
     if attackTarget != null then
         call AISummonGoAndAttackNewTarget(summonUnit, attackTarget, attackTargetTimer)
         // Keep track if attack target died, so that we can retarget
@@ -191,10 +201,10 @@ function Trig_AISummonActions takes nothing returns nothing
         // Attack move to summoner's location
         set distanceToSummoner = DistanceBetweenUnits(summonUnit, summoner)
         if distanceToSummoner > 500.0 then
-            call IssuePointOrder(summonUnit, "attackmove", GetUnitX(summoner), GetUnitY(summoner))
+            call IssuePointOrder(summonUnit, "attack", GetUnitX(summoner), GetUnitY(summoner))
             call BotLog("No low health target found for summoned unit, AMove to summoner.")
         else
-            call IssuePointOrder(summonUnit, "attackmove", GoalX, GoalY)
+            call IssuePointOrder(summonUnit, "attack", GoalX, GoalY)
             call BotLog("No low health target found for summoned unit, AMove to goal point.")
         endif
     endif

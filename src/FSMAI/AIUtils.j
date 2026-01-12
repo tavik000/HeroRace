@@ -41,6 +41,10 @@ library AIUtils requires KeyUtils
         endif
     endfunction
 
+    function IsPlayerBot takes player p returns boolean
+        return IsPlayerInForce(p, udg_BotPlayerGroup)
+    endfunction
+
     // Helper function to get cooldown multiplier based on difficulty
     function GetCooldownMultiplier takes integer difficulty returns real
         if difficulty == DIFF_EASY then
@@ -278,6 +282,7 @@ library AIUtils requires KeyUtils
 
     function GetAIHeroFromUnit takes unit u returns AIHero
         if u == null then
+            call BotLogError("GetAIHeroFromUnit: null unit provided")
             return 0
         endif
         return LoadInteger(udg_UnitAIHeroMap, GetHandleId(u), 0)
@@ -285,6 +290,26 @@ library AIUtils requires KeyUtils
 
     function GetAIHeroByUnit takes unit u returns AIHero
         return GetAIHeroFromUnit(u)
+    endfunction
+
+    function GetAIHeroByPlayer takes player p returns AIHero
+        local group playerHeroes = CreateGroup()
+        local unit heroUnit
+        local AIHero aiHero = 0
+        local unit currentUnit
+
+        // Find the hero unit of the player
+        call GroupEnumUnitsOfPlayer(playerHeroes, p, Filter(function AntiLeak))
+        loop
+            set currentUnit = FirstOfGroup(playerHeroes)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(playerHeroes, currentUnit)
+            if IsUnitType(currentUnit, UNIT_TYPE_HERO) then
+                set heroUnit = currentUnit
+                exitwhen true
+            endif
+        endloop
+        return GetAIHeroFromUnit(heroUnit)
     endfunction
 
     function DestroyAIHero takes unit u returns nothing
@@ -1580,15 +1605,15 @@ library AIUtils requires KeyUtils
         elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
             return bestTarget
         endif
-    
-        // 2. Hero carry more than 2 items
-        if IsUnitCarryMoreThanTwoItem(currentUnit) and not IsUnitCarryMoreThanTwoItem(bestTarget) then
-            call owner.botLog("Priority 2: Current has more items.")
+
+        // 2. Secure Kills (Is the target killable with the combo?)
+        if currentIsKillable and not bestIsKillable then
+            call owner.botLog("Priority 5: Current is killable, Best is not.")
             return currentUnit
-        elseif not IsUnitCarryMoreThanTwoItem(currentUnit) and IsUnitCarryMoreThanTwoItem(bestTarget) then
+        elseif not currentIsKillable and bestIsKillable then
             return bestTarget
         endif
-    
+
         // 3. Avoid Overkill (Target is above the min threshold)
         if currentHp >= comboMinHpThreshold and bestTargetHp < comboMinHpThreshold then
             call owner.botLog("Priority 3: Avoiding overkill on current unit.")
@@ -1596,7 +1621,7 @@ library AIUtils requires KeyUtils
         elseif currentHp < comboMinHpThreshold and bestTargetHp >= comboMinHpThreshold then
             return bestTarget
         endif
-    
+
         // 4. Prioritize Stunned/Slowed
         if currentIsStunOrSlow and not bestIsStunOrSlow then
             call owner.botLog("Priority 4: Current is CC'd.")
@@ -1604,15 +1629,15 @@ library AIUtils requires KeyUtils
         elseif not currentIsStunOrSlow and bestIsStunOrSlow then
             return bestTarget
         endif
-    
-        // 5. Secure Kills (Is the target killable with the combo?)
-        if currentIsKillable and not bestIsKillable then
-            call owner.botLog("Priority 5: Current is killable, Best is not.")
+
+        // 5. Hero carry more than 2 items
+        if IsUnitCarryMoreThanTwoItem(currentUnit) and not IsUnitCarryMoreThanTwoItem(bestTarget) then
+            call owner.botLog("Priority 2: Current has more items.")
             return currentUnit
-        elseif not currentIsKillable and bestIsKillable then
+        elseif not IsUnitCarryMoreThanTwoItem(currentUnit) and IsUnitCarryMoreThanTwoItem(bestTarget) then
             return bestTarget
         endif
-    
+     
         // 6. Minimize Overkill Among Kills (If both are killable, pick the one with higher HP)
         if currentIsKillable and bestIsKillable then
             if currentHp > bestTargetHp then
@@ -1663,10 +1688,10 @@ library AIUtils requires KeyUtils
                 
             //  Current Priority Order:                                                                                     
             // 1. Ungoaled Hero
-            // 2. Hero carry more than 2 items
+            // 2. Secure Kills
             // 3. Avoid Overkill 
             // 4. Prioritize Stunned/Slowed
-            // 5. Secure Kills
+            // 5. Hero carry more than 2 items
             // 6. Minimize Overkill Among Kills
             // 7. Damage Efficiency
             // 8. Fallback to Overkill
@@ -1716,10 +1741,10 @@ library AIUtils requires KeyUtils
         // Not Allowed Target: MagicImmune, customFilter, above expectedDamage(if isLowHealthOnly), above HP threshold(if shouldAvoidOverKill)
         // Priority:                                                                                     
         // 1. Ungoaled Hero
-        // 2. Hero carry more than 2 items
+        // 2. Killable
         // 3. Avoid Overkill 
         // 4. Prioritize Stunned/Slowed
-        // 5. Killable
+        // 5. Hero carry more than 2 items
         // 6. Minimize Overkill Among Kills
         // 7. Damage Efficiency
         // 8. Fallback to Overkill if not shouldAvoidOverKill
