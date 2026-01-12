@@ -14,13 +14,20 @@ struct PickUpItemState extends AIState
         if owner.pickingUpItem != null then
             call IssueTargetOrder(owner.hero, "smart", owner.pickingUpItem) 
             call this.botLog("Picking up item: " + GetItemName(owner.pickingUpItem))
-        else
-            call this.botLog("No item to pick up")
-            call owner.setDebugTextTagContent("Item: No Item Found")
-            call owner.setDebugTextTagColorPreset("CYAN")
-            // Transition back to RunState if no item found
-            call owner.changeState(RunState.create())
+            return
         endif
+
+        // Search for item around again
+        call owner.searchPickupItemAround()
+        if owner.shouldEnterPickupItemState() then
+            call IssueTargetOrder(owner.hero, "smart", owner.pickingUpItem) 
+            return
+        endif
+
+        call this.botLog("No item to pick up")
+        call owner.setDebugTextTagContent("Item: No Item Found")
+        call owner.setDebugTextTagColorPreset("CYAN")
+        call owner.changeState(RunState.create())
     endmethod
 
     method onUpdate takes nothing returns nothing
@@ -31,6 +38,13 @@ struct PickUpItemState extends AIState
             call this.botLog("Item picked up or no item to pick up, transitioning to Run State")
             call owner.setDebugTextTagContent("Item: Picked Up")
             call owner.setDebugTextTagColorPreset("CYAN")
+
+            // Search for item around again
+            call owner.searchPickupItemAround()
+            if owner.shouldEnterPickupItemState() then
+                call IssueTargetOrder(owner.hero, "smart", owner.pickingUpItem) 
+                return
+            endif
             call owner.changeState(RunState.create())
         endif
 
