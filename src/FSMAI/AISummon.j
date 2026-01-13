@@ -6,8 +6,14 @@ globals
     constant integer SUMMON_KEY_SUMMON_UNIT = 1
     constant integer SUMMON_KEY_SUMMONER = 2
     constant integer SUMMON_KEY_BLINK_LAST_CAST_TIME = 3
+    constant integer SUMMON_KEY_CRIPPLE_LAST_CAST_TIME = 4
+    constant integer SUMMON_KEY_STOMP_LAST_CAST_TIME = 5
+    constant integer SUMMON_KEY_DISPEL_LAST_CAST_TIME = 6
     constant real SUMMON_BLINK_CD = 20.0
     constant real SUMMON_FRENZY_MANA_COST = 100.0
+    constant real SUMMON_CRIPPLE_CD = 40.0
+    constant real SUMMON_STOMP_CD = 15.0
+    constant real SUMMON_DISPEL_CD = 10.0
 endglobals
 //===========================================================================
 
@@ -33,29 +39,51 @@ function FindSummonAttackTargetUnit takes AIHero summonerAIHero, unit summonUnit
 endfunction
 
 function AISummonIsUnitGrizzly takes unit summonUnit returns boolean
-    return (GetUnitTypeId( summonUnit) == 'n01E')
+    return (GetUnitTypeId(summonUnit) == 'n01E')
 endfunction
 
 function AISummonIsUnitQuillBeast takes unit summonUnit returns boolean
-    return (GetUnitTypeId( summonUnit) == 'n01P')
+    return (GetUnitTypeId(summonUnit) == 'n01P')
 endfunction
 
 function AISummonIsUnitInferno takes unit summonUnit returns boolean
-    return (GetUnitTypeId( summonUnit) == 'n009')
+    return (GetUnitTypeId(summonUnit) == 'n009')
 endfunction
 
 function AISummonIsUnitSpiritWolf takes unit summonUnit returns boolean
-    return (GetUnitTypeId( summonUnit) == 'o00C')
+    return (GetUnitTypeId(summonUnit) == 'o00C')
 endfunction
 
 function AISummonIsUnitTreant takes unit summonUnit returns boolean
-    return (GetUnitTypeId( summonUnit) == 'e00A')
+    return (GetUnitTypeId(summonUnit) == 'e00A')
+endfunction
+
+function AISummonIsUnitDoomGuard takes unit summonUnit returns boolean
+    return (GetUnitTypeId(summonUnit) == 'n01R')
 endfunction
 
 function AISummonIsBlinkCooldownReady takes unit summonUnit, real blinkCooldown, timer attackTargetTimer returns boolean
     local real currentTime = TimerGetElapsed(gameTimer)
     local real lastBlinkCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_BLINK_LAST_CAST_TIME)
     return (currentTime >= lastBlinkCastTime + blinkCooldown) or (IsNearlyZero(lastBlinkCastTime))
+endfunction
+
+function AISummonIsCrippleCooldownReady takes unit summonUnit, real crippleCooldown, timer attackTargetTimer returns boolean
+    local real currentTime = TimerGetElapsed(gameTimer)
+    local real lastCrippleCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_CRIPPLE_LAST_CAST_TIME)
+    return (currentTime >= lastCrippleCastTime + crippleCooldown) or (IsNearlyZero(lastCrippleCastTime))
+endfunction
+
+function AISummonIsStompCooldownReady takes unit summonUnit, real stompCooldown, timer attackTargetTimer returns boolean
+    local real currentTime = TimerGetElapsed(gameTimer)
+    local real lastStompCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_STOMP_LAST_CAST_TIME)
+    return (currentTime >= lastStompCastTime + stompCooldown) or (IsNearlyZero(lastStompCastTime))
+endfunction
+
+function AISummonIsDispelCooldownReady takes unit summonUnit, real dispelCooldown, timer attackTargetTimer returns boolean
+    local real currentTime = TimerGetElapsed(gameTimer)
+    local real lastDispelCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME)
+    return (currentTime >= lastDispelCastTime + dispelCooldown) or (IsNearlyZero(lastDispelCastTime))
 endfunction
 
 function AISummonIsFrenzyManaReady takes unit summonUnit returns boolean
@@ -92,6 +120,7 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
     local real distanceToAttackTarget = DistanceBetweenUnits(summonUnit, attackTarget)
     local real distanceToSummoner = 0.0
     local integer currentOrder = GetUnitCurrentOrder(summonUnit)
+    local unit ccAllyTarget = null
 
     if not IsUnitAliveBJ(summonUnit) then
         // Summon died, clean up timer
@@ -139,7 +168,8 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
     endif
 
     if AISummonIsUnitQuillBeast(summonUnit) then
-        if distanceToAttackTarget < 1000.0 then
+        // Use Frenzy
+        if distanceToAttackTarget < 600.0 then
             if AISummonIsFrenzyManaReady(summonUnit) then
                 call IssueImmediateOrder(summonUnit, "frenzy")
                 call IssueTargetOrder(summonUnit, "attack", attackTarget)
@@ -147,7 +177,40 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
             endif
         endif
     endif
- 
+
+    if AISummonIsUnitDoomGuard(summonUnit) then
+        // Use Cripple and Stomp
+        if distanceToAttackTarget < 600.0 then
+            if AISummonIsCrippleCooldownReady(summonUnit, SUMMON_CRIPPLE_CD, currentTimer) then
+                call IssueTargetOrder(summonUnit, "cripple", attackTarget)
+                call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_CRIPPLE_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                call PolledWait(0.5)
+                call IssueTargetOrder(summonUnit, "attack", attackTarget)
+                call BotLog("Summoned Doom Guard using Cripple on target: " + GetUnitName(attackTarget))
+            endif
+        endif
+        if distanceToAttackTarget < 300.0 then
+            if AISummonIsStompCooldownReady(summonUnit, SUMMON_STOMP_CD, currentTimer) then
+                call IssueImmediateOrder(summonUnit, "stomp")
+                call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_STOMP_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                call PolledWait(0.5)
+                call IssueTargetOrder(summonUnit, "attack", attackTarget)
+                call BotLog("Summoned Doom Guard using War Stomp on target: " + GetUnitName(attackTarget))
+            endif
+        endif
+        if AISummonIsDispelCooldownReady(summonUnit, SUMMON_DISPEL_CD, currentTimer) then
+            // Check if any allied unit around is CCed
+            set ccAllyTarget = FindCCedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ALLIES, false, 0, 0)
+            if ccAllyTarget != null then
+                call IssuePointOrder(summonUnit, "dispel", GetUnitX(ccAllyTarget), GetUnitY(ccAllyTarget))
+                call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                call PolledWait(0.5)
+                call IssueTargetOrder(summonUnit, "attack", attackTarget)
+                call BotLog("Summoned Doom Guard using Dispel on CCed ally: " + GetUnitName(ccAllyTarget))
+            endif
+        endif
+    endif
+
 endfunction
 
 function Trig_AISummonActions takes nothing returns nothing
