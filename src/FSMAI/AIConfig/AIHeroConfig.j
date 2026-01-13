@@ -143,6 +143,16 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A049')  // DemonShockwave
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.4)
 
+        // Banshee
+        set heroTypeId = 'N00C'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 5)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A056')  // CarrionSwarm
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A05L')  // Curse
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A05H')  // OutOfBody
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'A05Q')  // ChaosSorcery
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 4, 'A050')  // LocustSwarm
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

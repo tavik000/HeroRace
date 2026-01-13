@@ -110,6 +110,7 @@ struct AIAbility
         local real timeToReachTarget = 0.0
         local real offsetDistance = 0.0
         local boolean isFront = true
+        local real projectileTravelTime = 0.0
 
         if this.castType != CAST_POINT_ENEMY_FRONT and this.castType != CAST_POINT_ALL_FRONT and this.castType != CAST_POINT_ALLY_FRONT and this.castType != CAST_POINT_ENEMY_BEHIND and this.castType != CAST_POINT_SELF_BEHIND_ENEMY_CROWDED then
             call this.botLogError("getUnitOffsetDistance called for non-front-cast ability: " + GetObjectName(this.abilityId))
@@ -130,6 +131,12 @@ struct AIAbility
             set targetMoveSpeed = 0.0
         endif
 
+        if projectileSpeed > 0.0 then
+            set projectileTravelTime = targetDistance / projectileSpeed
+        else
+            set projectileTravelTime = 0.0
+        endif
+
         if this.abilityId == 'A00S' then  // Flame Strike
             set timeToReachTarget = 0.0
             set baseOffset = 0.0
@@ -140,9 +147,9 @@ struct AIAbility
             endif
         else
             if isFront then
-                set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
+                set offsetDistance = targetMoveSpeed * (baseDelay + ownerCastPoint + projectileTravelTime) + baseOffset
             else
-                set offsetDistance = - targetMoveSpeed * (baseDelay + ownerCastPoint) + baseOffset
+                set offsetDistance = - targetMoveSpeed * (baseDelay + ownerCastPoint + projectileTravelTime) + baseOffset
             endif
         endif
         return offsetDistance
@@ -219,9 +226,15 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            if targetUnitCount > 1 then
+                call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
+            endif
+            set this.bIsReadyToCast = targetUnitCount >= 2
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
-            if targetUnitCount > 0 then
+            if targetUnitCount > 1 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = targetUnitCount >= 2
@@ -391,6 +404,9 @@ struct AIAbility
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)
                 return true
             endif
+        elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             call this.castInstant()
             return true

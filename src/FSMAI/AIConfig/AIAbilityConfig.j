@@ -593,6 +593,60 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 225.0)
         call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 725.0)
 
+        // Banshee Abilities
+        set currentAbilityId = 'A056' // CarrionSwarm
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 32.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "carrionswarm")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 1000.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 100.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 210.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 950.0)
+        set currentAbilityId = 'A05L' // Curse
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 27.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)  
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_COMBO)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 45)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 1)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 250.0)
+        set currentAbilityId = 'A05H' // OutOfBody
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 30.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "shadowstrike")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)  
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_COMBO)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 35)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 2)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 150.0)
+        set currentAbilityId = 'A05Q' // ChaosSorcery
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 35.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "unholyfrenzy")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)  
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_COMBO)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 3)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 360.0)
+        set currentAbilityId = 'A050' // LocustSwarm
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 65.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "locustswarm")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)  
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 800.0 - 200.0) // prevent missing
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_ENEMY_CROWDED)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 60)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 400.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
+
 
         // Add more ability...
     endfunction
