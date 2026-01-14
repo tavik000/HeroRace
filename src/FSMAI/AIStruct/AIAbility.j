@@ -6,6 +6,7 @@ struct AIAbility
     real lastCastTime
     integer comboIndex  // For chaining abilities in sequence
     string orderString  
+    integer orderId // if string is empty, use orderId to issue order
     integer manaCost    
     real castRange
     integer findTargetType
@@ -31,7 +32,7 @@ struct AIAbility
     AIHero owner
     unit ownerHero
 
-    static method create takes integer aid, AIHero inOwner, real cd, integer inCastType, string order, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage, boolean inIsPassive, real inRequiredCastTime, boolean inIsIgnoreMagicImmune, integer inMustHaveBuffCodeWhenFollowing, boolean inShouldCheckOtherUnitBlockingTargetUnit, real inMinTargetDistance, real inFollowTargetDuration, real inBasePredictOffset, real inBasePredictDelay, real inProjectileSpeed returns thistype
+    static method create takes integer aid, AIHero inOwner, real cd, integer inCastType, string order, integer inOrderId, integer mana, real inCastRange, integer inFindTargetType, real inEffectiveRadius, integer inComboIndex, real inExpectedDamage, boolean inIsPassive, real inRequiredCastTime, boolean inIsIgnoreMagicImmune, integer inMustHaveBuffCodeWhenFollowing, boolean inShouldCheckOtherUnitBlockingTargetUnit, real inMinTargetDistance, real inFollowTargetDuration, real inBasePredictOffset, real inBasePredictDelay, real inProjectileSpeed returns thistype
         local thistype this = thistype.allocate()
         set this.abilityId = aid
         set this.baseCooldown = cd
@@ -39,6 +40,7 @@ struct AIAbility
         set this.lastCastTime = 0.0
         set this.comboIndex = inComboIndex
         set this.orderString = order
+        set this.orderId = inOrderId
         set this.manaCost = mana
         set this.castRange = inCastRange
         set this.findTargetType = inFindTargetType
@@ -232,6 +234,9 @@ struct AIAbility
                 call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = targetUnitCount >= 2
+        elseif this.castType == CAST_INSTANT_BACK_ALLY then
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
             if targetUnitCount > 1 then
@@ -328,7 +333,13 @@ struct AIAbility
     endmethod
 
     method castInstant takes nothing returns nothing
-        call IssueImmediateOrder(owner.hero, this.orderString)
+        if this.orderString == "none" then
+            call IssueImmediateOrderById(owner.hero, this.orderId)
+            call this.botLog("Casting instant ability by orderId: " + I2S(this.orderId))
+        else
+            call IssueImmediateOrder(owner.hero, this.orderString)
+            call this.botLog("Casting instant ability by orderString: " + this.orderString)
+        endif
         if this.requiredCastTime <= 0.0 then
             call this.owner.moveToNextWaypoint()
         endif
@@ -407,6 +418,34 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             call this.castInstant()
             return true
+        elseif this.castType == CAST_INSTANT_BACK_ALLY then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+            // Follow target unit
+            if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
+                call this.castInstant()
+                return true
+            else
+                call IssueTargetOrder(this.ownerHero, "move", targetUnit)
+                return true
+            endif
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             call this.castInstant()
             return true

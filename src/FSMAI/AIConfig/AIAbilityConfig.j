@@ -23,6 +23,7 @@ library AIAbilityConfig
         local integer PROJECTILE_SPEED_KEY = 16
         local integer COMBO_INDEX_KEY = 17
         local integer EXPECTED_DAMAGE_KEY = 18
+        local integer ORDER_ID_KEY = 19
         local integer currentAbilityId = 0
         
         set AbilityDataTable = InitHashtable()
@@ -715,6 +716,41 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 320.0)
 
+        // SkeletonGrunt Abilities
+        set currentAbilityId = 'A04Q' // HeavyAxeStrike
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 16.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 150.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 200.0) // only for finding target
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 65)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 350.0)
+        set currentAbilityId = 'A05M' // HadesShield
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 23.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "none")
+        call SaveInteger(AbilityDataTable, currentAbilityId, ORDER_ID_KEY, 852282)
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 650.0) // only for finding target
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 650.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_BACK_ALLY)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ALLY_HEAL)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
+        set currentAbilityId = 'A0HQ' // AshenState 
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 40.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "metamorphosis")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+
+
 
 
 
@@ -795,6 +831,10 @@ library AIAbilityConfig
 
     function GetAbilityExpectedDamage takes integer abilityId returns real
         return LoadReal(AbilityDataTable, abilityId, 18)
+    endfunction
+
+    function GetAbilityOrderId takes integer abilityId returns integer
+        return LoadInteger(AbilityDataTable, abilityId, 19)
     endfunction
 
 endlibrary

@@ -19,6 +19,7 @@ struct HeroCombatData
         local real baseCooldown = GetAbilityBaseCooldown(abilityId)
         local integer castType = GetAbilityCastType(abilityId)
         local string orderString = GetAbilityOrderString(abilityId)
+        local integer orderId = GetAbilityOrderId(abilityId)
         local integer manaCost = GetAbilityManaCost(abilityId)
         local real castRange = GetAbilityCastRange(abilityId)
         local integer findTargetType = GetAbilityFindTargetType(abilityId)
@@ -36,7 +37,7 @@ struct HeroCombatData
         local real basePredictDelay = GetAbilityBasePredictDelay(abilityId)
         local real projectileSpeed = GetAbilityProjectileSpeed(abilityId)
         if this.abilityCount < MAX_ABILITIES_PER_HERO then
-            set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, baseCooldown, castType, orderString, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage, isPassive, requiredCastTime, isIgnoreMagicImmune, mustHaveBuffCodeWhenFollowing, shouldCheckOtherUnitBlockingTargetUnit, minTargetDistance, followTargetDuration, basePredictOffset, basePredictDelay, projectileSpeed)
+            set this.abilities[this.abilityCount] = AIAbility.create(abilityId, this.owner, baseCooldown, castType, orderString, orderId, manaCost, castRange, findTargetType, effectiveRadius, comboIndex, expectedDamage, isPassive, requiredCastTime, isIgnoreMagicImmune, mustHaveBuffCodeWhenFollowing, shouldCheckOtherUnitBlockingTargetUnit, minTargetDistance, followTargetDuration, basePredictOffset, basePredictDelay, projectileSpeed)
             if comboIndex > 0 then
                 set this.comboExpectedDamage = this.comboExpectedDamage + this.abilities[this.abilityCount].expectedDamage
             endif
