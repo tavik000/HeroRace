@@ -185,6 +185,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A045')  // AnimateDead
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.452)
 
+        // Lich
+        set heroTypeId = 'U003'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A058')  // FrostNova
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A057')  // FrostArmor
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A04S')  // ChainFrost
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.4)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'
