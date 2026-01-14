@@ -85,6 +85,7 @@ globals
     constant integer CAST_INSTANT_HAVE_CORPSE = 12
     constant integer CAST_INSTANT_JUMP = 13
     constant integer CAST_INSTANT_COMBO_TARGET_NOT_CC = 14
+    constant integer CAST_INSTANT_ANIMATE_DEAD = 15
 
 
     constant integer CAST_POINT_ENEMY_FRONT = 20
@@ -128,13 +129,12 @@ globals
 
     constant integer FIND_TARGET_TYPE_SELF_FORCE_STAFF = 40
 
-    constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 50
     constant integer FIND_TARGET_TYPE_ALL_ILLUSION = 51
     constant integer FIND_TARGET_TYPE_ALL_FRONT = 52 // Furthest
     constant integer FIND_TARGET_TYPE_ALL_UNIT_FRONT = 53 // Furthest, including non-hero units
     constant integer FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING = 54 
     constant integer FIND_TARGET_TYPE_ALL_HOLY_LIGHT = 55 
-    constant integer FIND_TARGET_TYPE_ALL_DEAD_COIL = 56 
+    constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 56
 
 
     constant integer FIND_TEAM_TYPE_NONE = 0

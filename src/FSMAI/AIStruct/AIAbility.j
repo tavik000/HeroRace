@@ -269,6 +269,12 @@ struct AIAbility
             if this.bIsReadyToCast then
                 call this.botLog("Ready Done! Combo target is not CC'ed for ability: " + GetObjectName(this.abilityId))
             endif
+        elseif this.castType == CAST_INSTANT_ANIMATE_DEAD then
+            set this.readyTargetUnit = FindDeadUnitInRange(owner.hero, this.effectiveRadius)
+            if this.readyTargetUnit != null then
+                call owner.botLog("Found dead body target for ability: " + GetObjectName(this.abilityId))
+            endif
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -464,6 +470,9 @@ struct AIAbility
                 return false
             endif
             call this.botLog("combo target: " + GetUnitName(owner.comboTargetUnit) + " is not CC'ed, casting ability: " + GetObjectName(this.abilityId))
+            call this.castInstant()
+            return true
+        elseif this.castType == CAST_INSTANT_ANIMATE_DEAD then
             call this.castInstant()
             return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
