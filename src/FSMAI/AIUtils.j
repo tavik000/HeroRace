@@ -2222,6 +2222,8 @@ library AIUtils requires KeyUtils
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
@@ -2305,6 +2307,11 @@ library AIUtils requires KeyUtils
             set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
+            endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY then
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, true, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found low health only enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL then
             set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, true, false, abil, 0)
