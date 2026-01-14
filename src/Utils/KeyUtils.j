@@ -279,6 +279,10 @@ library KeyUtils
         if UnitHasBuffBJ(u, 'BOvd') then
             return true
         endif
+        // Sleep
+        if UnitHasBuffBJ(u, 'BUsl') then
+            return true
+        endif
         // Cyclone
         if UnitHasBuffBJ(u, 'Bcyc') then
             return true
