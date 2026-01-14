@@ -360,8 +360,8 @@ struct HeroCombatData
             return
         endif
 
-        // TaurenChieftain keep item until close to goal
-        if GetUnitTypeId(owner.hero) == 'O008' then
+        // TaurenChieftain or SkeletonGrunt keep item until close to goal
+        if GetUnitTypeId(owner.hero) == 'O008' or GetUnitTypeId(owner.hero) == 'O00F' then
             if not IsCurrentGoalWaypoint(owner) and not IsHeroGoaled(owner.hero) then
                 if this.getCurrentItemCount() < 6 then
                     return

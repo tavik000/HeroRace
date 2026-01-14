@@ -16,7 +16,9 @@ struct FollowState extends AIState
     endmethod
 
     method onEnter takes nothing returns nothing
-        call IssueTargetOrder(owner.hero, "move", this.targetUnit)
+        if owner.currentRequiredCastTime <= 0.0 then
+            call IssueTargetOrder(owner.hero, "move", this.targetUnit)
+        endif
         call this.botLog("Entering Follow State")
         call owner.setDebugTextTagContent("Follow: Entering")
         call owner.setDebugTextTagColorPreset("BLUE")
@@ -24,6 +26,23 @@ struct FollowState extends AIState
 
     method onUpdate takes nothing returns nothing
         local integer currentOrder = GetUnitCurrentOrder(owner.hero)
+        local real currentTime = TimerGetElapsed(gameTimer)
+
+        
+        if owner.currentRequiredCastTime > 0.0 then
+            if currentTime > (owner.lastStartCastTime + owner.currentRequiredCastTime) then
+                call this.botLog("FollowState: Casting Finished for ability: " + owner.castingAbility.orderString)
+                call owner.resetIsCasting()
+                set owner.currentRequiredCastTime = 0.0
+                call owner.setDebugTextTagContent("Follow: Cast Finished")
+                call owner.setDebugTextTagColorPreset("BLUE")
+            else
+                call this.botLog("FollowState: Currently casting an ability, skipping update")
+                call owner.setDebugTextTagContent("Follow: Casting " + owner.castingAbility.orderString)
+                call owner.setDebugTextTagColorPreset("BLUE")
+                return
+            endif
+        endif
 
         call owner.setDebugTextTagContent("Follow: Following Target")
         call owner.setDebugTextTagColorPreset("BLUE")

@@ -228,6 +228,10 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_BACK_ENEMY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY_FOLLOW then
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            set this.bIsReadyToCast = this.readyTargetUnit != null
+            call this.botLog("Prepared target for CAST_INSTANT_BACK_ENEMY ability: " + GetObjectName(this.abilityId))
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             if targetUnitCount > 1 then
@@ -421,6 +425,33 @@ struct AIAbility
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)
                 return true
             endif
+        elseif this.castType == CAST_INSTANT_BACK_ENEMY_FOLLOW then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                set this.readyTargetUnit = null
+                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                return false
+            endif
+            // Follow target unit
+            if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
+                call this.castInstant()
+                // call this.owner.changeState(FollowState.create(targetUnit, this.followTargetDuration, this.mustHaveBuffCodeWhenFollowing))
+                return true
+            else
+                call IssueTargetOrder(this.ownerHero, "move", targetUnit)
+                return true
+            endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             call this.castInstant()
             return true
@@ -486,6 +517,11 @@ struct AIAbility
                 set offset = this.getUnitOffsetDistance(targetUnit)
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                 set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+                if DistanceBetweenXY(GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY) > this.castRange then
+                    call resetNotReadyToCast()
+                    call this.botLog("Target point is out of cast range for ability: " + GetObjectName(this.abilityId))
+                    return false
+                endif
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
                 return true 
             endif

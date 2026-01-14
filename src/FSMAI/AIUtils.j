@@ -1122,6 +1122,62 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindStunnedTargetInRange takes unit ownerHero, real range, integer findTeamType, boolean bExcludeSelf, AIAbility abil, AIItem itm returns unit
+        local group units = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+        local player heroOwner = GetOwningPlayer(ownerHero)
+    
+        // Set temp variables for filter function
+        set tempHeroOwner = heroOwner
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = ownerHero
+        set tempAIAbility = abil
+        set tempAIItem = itm
+        call GroupEnumUnitsInRange(units, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
+
+        // Not Allowed Target: MagicImmune, customFilter, not Stunned, self if bExcludeSelf
+        // Priority Order: 
+        // 1. Ungoaled
+
+        loop
+            set currentUnit = FirstOfGroup(units)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(units, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
+            elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif not IsUnitStun(currentUnit) then
+            elseif bExcludeSelf and currentUnit == ownerHero then
+            elseif bestTarget == null then
+                set bestTarget = currentUnit
+                exitwhen true
+            else
+                // --- PRIORITY TOURNAMENT LAYER ---
+                // 1. Ungoaled Priority
+                if not IsHeroGoaled(currentUnit) and IsHeroGoaled(bestTarget) then
+                    set bestTarget = currentUnit
+                elseif IsHeroGoaled(currentUnit) and not IsHeroGoaled(bestTarget) then
+                    // Keep bestTarget
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(units)
+        set units = null
+        set currentUnit = null
+        set tempAIAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindDeathCoilAllyTargetInRange takes unit ownerHero, real range, real expectedDamage returns unit
         local group targets = CreateGroup()
         local unit currentUnit = null
@@ -2431,6 +2487,8 @@ library AIUtils requires KeyUtils
             set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, true, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
+            else
+                call owner.botLog("No valid low health enemy target found avoiding overkill.")
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
             set targetUnit = FindCrowdedHeroInRange(owner, abil.castRange, abil.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)

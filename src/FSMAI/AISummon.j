@@ -62,6 +62,10 @@ function AISummonIsUnitDoomGuard takes unit summonUnit returns boolean
     return (GetUnitTypeId(summonUnit) == 'n01R')
 endfunction
 
+function AISummonIsUnitCarrionBeetle takes unit summonUnit returns boolean
+    return (GetUnitTypeId(summonUnit) == 'u008')
+endfunction
+
 function AISummonIsBlinkCooldownReady takes unit summonUnit, real blinkCooldown, timer attackTargetTimer returns boolean
     local real currentTime = TimerGetElapsed(gameTimer)
     local real lastBlinkCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_BLINK_LAST_CAST_TIME)
@@ -250,6 +254,14 @@ function Trig_AISummonActions takes nothing returns nothing
             call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
             return
         endif
+    endif
+
+    if AISummonIsUnitCarrionBeetle(summonUnit) then
+        set attackTarget = FindStunnedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ENEMIES, true, 0, 0)
+        if attackTarget != null then
+            call IssueTargetOrder(summonUnit, "move", attackTarget)
+        endif
+        return
     endif
 
     call BotLog("Summoned unit: " + GetUnitName(summonUnit) + " by summoner: " + GetUnitName(summoner))
