@@ -80,7 +80,6 @@ struct AIAbility
         return false
     endmethod
 
-
     method isManaReady takes unit caster returns boolean
         local real currentMana = GetUnitState(caster, UNIT_STATE_MANA)
         if currentMana >= I2R(this.manaCost) then
@@ -443,10 +442,11 @@ struct AIAbility
             if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
                 return false
             endif
+
             // Follow target unit
             if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
                 call this.castInstant()
-                // call this.owner.changeState(FollowState.create(targetUnit, this.followTargetDuration, this.mustHaveBuffCodeWhenFollowing))
+                call this.owner.changeState(FollowState.create(targetUnit, this.followTargetDuration, this.mustHaveBuffCodeWhenFollowing, false))
                 return true
             else
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)

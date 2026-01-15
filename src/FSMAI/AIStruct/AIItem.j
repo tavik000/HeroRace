@@ -732,7 +732,7 @@ struct AIItem
                 // Follow target unit
                 if DistanceBetweenUnits(this.ownerHero, targetUnit) <= this.effectiveRadius then
                     call this.useToTargetUnit(this.ownerHero)
-                    call this.ownerAIHero.changeState(FollowState.create(targetUnit, this.getFollowTargetDuration(), this.mustHaveBuffCodeWhenFollowing()))
+                    call this.ownerAIHero.changeState(FollowState.create(targetUnit, this.getFollowTargetDuration(), this.mustHaveBuffCodeWhenFollowing(), true))
                     return true
                 else
                     call IssueTargetOrder(this.ownerHero, "move", targetUnit)
