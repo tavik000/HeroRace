@@ -932,6 +932,43 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 230.0)
         call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 1300.0)
 
+        // Chimera Abilities
+        set currentAbilityId = 'A0HU' // DualBreath
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 27.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "carrionswarm")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 550.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 250.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 275.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 700.0)
+        set currentAbilityId = 'A0HV' // IcePath
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 36.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "breathoffire")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 8000.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 150.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 230.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 2000.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 0.5)
+        set currentAbilityId = 'A0HY' // Macropyre
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 44.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "shockwave")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 1575.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 300.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_CC)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 480.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 3000.0)
+
+
 
 
 

@@ -218,6 +218,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A06T')  // TempestAssault
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.25)
 
+        // Chimera
+        set heroTypeId = 'N02N'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A0HU')  // DualBreath
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A0HV')  // IcePath
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0HY')  // Macropyre
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.7)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'
