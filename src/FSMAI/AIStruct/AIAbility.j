@@ -263,6 +263,13 @@ struct AIAbility
             set this.bIsReadyToCast = targetUnitCount >= 2
         elseif this.castType == CAST_INSTANT_HEAL then
             set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD
+        elseif this.castType == CAST_INSTANT_HEAL_ALLY_CROWDED then
+            set targetUnitCount = GetHealHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
+            if targetUnitCount >= 1 then
+                call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
+                set this.readyTargetUnit = this.ownerHero
+            endif
+            set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_COMBO_TARGET_NOT_CC then
             if not IsUnitValid(owner.comboTargetUnit) then
                 set this.bIsReadyToCast = false
@@ -315,6 +322,16 @@ struct AIAbility
                 set this.readyTargetUnit = null
             endif
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_POINT_TREE_NEAR_ENEMY then
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            if IsUnitValid(this.readyTargetUnit) then
+                call this.botLog("Found enemy target unit: " + GetUnitName(this.readyTargetUnit) + " for ability: " + GetObjectName(this.abilityId))
+                set this.readyTargetPoint = FindPointOfTreeAroundUnit(this.readyTargetUnit, 3500.0)
+                set this.readyTargetPointX = GetLocationX(this.readyTargetPoint)
+                set this.readyTargetPointY = GetLocationY(this.readyTargetPoint)
+                call RemoveLocation(this.readyTargetPoint)
+            endif
+            set this.bIsReadyToCast = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY) and this.readyTargetUnit != null)
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -495,6 +512,9 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
             call this.castInstant()
             return true
+        elseif this.castType == CAST_INSTANT_HEAL_ALLY_CROWDED then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_INSTANT_COMBO_TARGET_NOT_CC then
             if not IsUnitValid(owner.comboTargetUnit) then
                 set this.bIsReadyToCast = false
@@ -605,6 +625,9 @@ struct AIAbility
             set offset = this.castRange
             set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
             set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_TREE_NEAR_ENEMY then
             call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_UNIT then

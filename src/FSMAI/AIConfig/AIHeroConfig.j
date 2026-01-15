@@ -226,6 +226,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0HY')  // Macropyre
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.7)
 
+        // KeeperOfTheGrove
+        set heroTypeId = 'E004'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A06F')  // EntanglingRoots
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A07D')  // ForceOfNature
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A06Q')  // Tranquility
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

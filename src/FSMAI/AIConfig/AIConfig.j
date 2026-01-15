@@ -98,7 +98,7 @@ globals
     constant integer CAST_POINT_SELF_FRONT_HEAL = 27
     constant integer CAST_POINT_SELF_BEHIND_ENEMY_CROWDED = 28
     constant integer CAST_POINT_ALL_FRONT = 29
-    constant integer CAST_POINT_TREE = 30
+    constant integer CAST_POINT_TREE_NEAR_ENEMY = 30
     constant integer CAST_POINT_BLINK = 31
 
     constant integer CAST_UNIT = 40 

@@ -1717,6 +1717,27 @@ library AIUtils requires KeyUtils
         return heroGroup
     endfunction
 
+    function GetHealHeroCountAroundUnit takes unit centerUnit, real radius, integer findTeamType returns integer
+        local group heroGroup = GetHeroGroupAroundUnit(centerUnit, radius, findTeamType)
+        local integer count = 0
+        local unit currentUnit = null
+
+        loop
+            set currentUnit = FirstOfGroup(heroGroup)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(heroGroup, currentUnit)
+
+            if GetUnitLifePercent(currentUnit) < HEAL_HP_PERCENTAGE_THRESHOLD then
+                set count = count + 1
+            endif
+        endloop
+
+        call DestroyGroup(heroGroup)
+        set heroGroup = null
+        set currentUnit = null
+        return count
+    endfunction
+
     function GetHeroCountAroundUnit takes unit centerUnit, real radius, integer findTeamType returns integer
         local group heroGroup = GetHeroGroupAroundUnit(centerUnit, radius, findTeamType)
         local integer count = CountUnitsInGroup(heroGroup)
@@ -2303,6 +2324,35 @@ library AIUtils requires KeyUtils
         call RemoveLocation(sourceLoc)
         set sourceLoc = null
         return nearestTree
+    endfunction
+
+    function FindPointOfTreeAroundUnit takes unit targetUnit, real rangeRadius returns location
+        local location bestLoc = Location(0.0, 0.0)
+        local location sourceLoc = Location(GetUnitX(targetUnit), GetUnitY(targetUnit))
+        local destructable nearestTree = null
+        local real treeX = 0.0
+        local real treeY = 0.0
+
+        set tempHeroUnit = targetUnit
+        set tempTree = null
+        set tempNearestTreeDist = MAX_RANGE
+
+        call EnumDestructablesInCircle(rangeRadius, sourceLoc, function EnumNearDestructableTrees)
+        set nearestTree = tempTree
+
+        // Clean up
+        set tempHeroUnit = null
+        set tempTree = null
+        set tempNearestTreeDist = MAX_RANGE
+        call RemoveLocation(sourceLoc)
+        call RemoveLocation(bestLoc)
+
+        if nearestTree != null then
+            set treeX = GetDestructableX(nearestTree)
+            set treeY = GetDestructableY(nearestTree)
+            set bestLoc = Location(treeX, treeY)
+        endif
+        return bestLoc
     endfunction
 
     // Get nearest forward waypoint index after teleport
