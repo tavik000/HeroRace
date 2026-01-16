@@ -563,6 +563,7 @@ struct AIItem
             set offset = this.getUnitFrontOffsetDistance(targetUnit)
             set this.readyTargetPointX = GetUnitX(targetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
             set this.readyTargetPointY = GetUnitY(targetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_SELF_FRONT then
@@ -649,6 +650,16 @@ struct AIItem
                     set offset = this.effectiveRadius
                     set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                     set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+
+                    if this.shouldCheckOtherUnitBlockingTargetUnit() then
+                        if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                            set this.readyTargetUnit = null
+                            set this.bIsReadyToUse = false
+                            call this.botLog("Another unit is blocking the target point for item: " + GetItemName(this.itemHandle) + ", cannot use now.")
+                            return false
+                        endif
+                    endif
+
                     call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
                     return true
                 endif
