@@ -242,6 +242,15 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A06L')  // Starfall
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.0)
 
+        // Luna
+        set heroTypeId = 'E00J'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A02K')  // LucentBeam
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A02L')  // MoonGlaive
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0I0')  // MoonlightShadow
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'A04U')  // Eclipse
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.6)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

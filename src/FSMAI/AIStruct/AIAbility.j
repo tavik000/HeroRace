@@ -235,7 +235,7 @@ struct AIAbility
             call this.botLog("Prepared target for CAST_INSTANT_BACK_ENEMY ability: " + GetObjectName(this.abilityId))
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
-            if targetUnitCount > 1 then
+            if targetUnitCount > 0 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = targetUnitCount >= 2
