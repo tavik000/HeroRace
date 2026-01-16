@@ -684,10 +684,60 @@ library AIUtils requires KeyUtils
         set dist = DistanceBetweenXY(px, py, ix, iy)
 
         if dist <= tolerance then
+            call BotLog("Point is on the line segment within tolerance: dist=" + R2S(dist))
             return true
         else
+            call BotLog("Point is not on the line segment: dist=" + R2S(dist))
             return false
         endif
+    endfunction
+
+    function IsThereOtherUnitBlockingBetweenXY takes unit sourceUnit, integer findTeamType, real sx, real sy, real tx, real ty, real tolerance returns boolean
+        local group unitsBetween = CreateGroup()
+        local unit currentUnit = null
+        local real midX = (sx + tx) / 2.0
+        local real midY = (sy + ty) / 2.0
+        local real range = DistanceBetweenXY(sx, sy, tx, ty) / 2.0 + 300.0 // extra buffer
+
+        set tempHeroOwner = GetOwningPlayer(sourceUnit)
+        set tempHeroUnit = sourceUnit
+        set tempFindTeamType = findTeamType
+        set tempAIAbility = 0
+        set tempAIItem = 0
+
+        call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamUnits))
+
+        // Exclude Flying and Structures
+
+        loop
+            set currentUnit = FirstOfGroup(unitsBetween)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(unitsBetween, currentUnit)
+
+            call BotLog("Checking unit in between: " + GetUnitName(currentUnit))
+
+            if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
+            else
+                if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
+                    // Found blocking unit
+                    call DestroyGroup(unitsBetween)
+                    return true
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(unitsBetween)
+        set unitsBetween = null
+        set currentUnit = null
+        set tempAIAbility = 0
+        set tempAIItem = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return false
     endfunction
 
     function IsThereOtherUnitBlockingBetweenUnits takes unit sourceUnit, unit targetUnit, real tolerance returns boolean

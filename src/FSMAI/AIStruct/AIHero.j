@@ -127,6 +127,9 @@ struct AIHero
             if this.combatData.hasAbilityOfCastType(CAST_POINT_BLINK) then
                 return true
             endif
+            if this.combatData.hasAbilityOfCastType(CAST_INSTANT_JUMP) and this.combatData.getAbilityOfCastType(CAST_INSTANT_JUMP).isCooldownReady(this.difficulty) then
+                return true
+            endif
         endif
         return false
     endmethod

@@ -218,6 +218,8 @@ struct AIAbility
 
     method tryPrepareTarget takes nothing returns nothing
         local integer targetUnitCount
+        local real heroX = 0.0 // only for jump 
+        local real heroY = 0.0 // only for jump
 
         if this.castType == CAST_NONE then
             return
@@ -285,6 +287,46 @@ struct AIAbility
                 call owner.botLog("Found dead body target for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_INSTANT_JUMP then
+            set heroX = GetUnitX(owner.hero)
+            set heroY = GetUnitY(owner.hero)
+            if owner.currentWaypointIndex == 31 then
+                if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
+                    if not IsUnitFacingEastNarrow(owner.hero) then
+                        // issue move right to face east
+                        call IssuePointOrder(owner.hero, "move", heroX + 10.0, heroY)
+                        call owner.botLog("Adjusting facing direction to east for Force Staff self-use.")
+                        return
+                    endif
+                    call IssueImmediateOrder(owner.hero, "stop")
+                    set this.bIsReadyToCast = true
+                    return
+                endif
+                set this.bIsReadyToCast = false
+                return
+            endif
+            if owner.currentWaypointIndex == 131 then
+                if RectContainsCoords(gg_rct_AIWayPointAreaCrossTree, heroX, heroY) then
+                    if not IsUnitFacingWestNarrow(owner.hero) then
+                        // issue move up to face west
+                        call IssuePointOrder(owner.hero, "move", heroX - 10.0, heroY)
+                        call owner.botLog("Adjusting facing direction to west for Force Staff self-use.")
+                        return
+                    endif
+                    // stop moving before using item
+                    call IssueImmediateOrder(owner.hero, "stop")
+                    set this.bIsReadyToCast = true
+                    return
+                endif
+                set this.bIsReadyToCast = false
+                return
+            endif
+            if owner.currentWaypointIndex == 3 or owner.currentWaypointIndex == 13 then
+                // save CD for crossing sea or tree
+                set this.bIsReadyToCast = false
+                return
+            endif
+            set this.bIsReadyToCast = true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -526,6 +568,9 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_ANIMATE_DEAD then
             call this.castInstant()
             return true
+        elseif this.castType == CAST_INSTANT_JUMP then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
@@ -541,6 +586,13 @@ struct AIAbility
                     call resetNotReadyToCast()
                     call this.botLog("Target point is out of cast range for ability: " + GetObjectName(this.abilityId))
                     return false
+                endif
+                if this.shouldCheckOtherUnitBlockingTargetUnit then
+                    if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, FIND_TEAM_TYPE_ENEMIES, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                        call resetNotReadyToCast()
+                        call this.botLog("Another unit is blocking the target point for ability: " + GetObjectName(this.abilityId))
+                        return false
+                    endif
                 endif
                 call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
                 return true 
