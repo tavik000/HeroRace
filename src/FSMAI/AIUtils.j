@@ -1477,7 +1477,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, AIAbility abil, AIItem itm returns unit
+    function FindHealthyRunningEnemyTargetInRange takes unit ownerHero, real range, unit excludeUnit, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -1492,7 +1492,7 @@ library AIUtils requires KeyUtils
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
-        // Not Allowed Target: MagicImmune, customFilter, CCed
+        // Not Allowed Target: MagicImmune, customFilter, CCed, excludeUnit
         // Priority Order:
         // 1. Ungoaled
         // 1. In Hazard Zone
@@ -1509,6 +1509,7 @@ library AIUtils requires KeyUtils
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif IsUnitStunOrSlow(currentUnit) then
+            elseif currentUnit == excludeUnit then
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else
@@ -1903,7 +1904,6 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = owner.hero
         set tempAIAbility = abil
         call GroupEnumUnitsInRange(heroes, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
-        call owner.botLog("Found " + I2S(CountUnitsInGroup(heroes)) + " potential combo targets in range.")
             
         // Iterate through filtered enemies to find best target
         loop
@@ -2443,7 +2443,7 @@ library AIUtils requires KeyUtils
             set i = i + 1
         endloop
         
-        return bestIndex
+        return IMinBJ(bestIndex, GoalWaypointIndex)
     endfunction
 
     function FindNearestTreeInRange takes unit sourceUnit, real range returns destructable
@@ -2577,7 +2577,6 @@ library AIUtils requires KeyUtils
                 endif
                 set targetUnit = FindBestComboTarget(owner, abil.castRange, abil)
                 if targetUnit == null then
-                    call owner.botLog("No valid combo target found.")
                     return null
                 endif
                 call owner.botLog("Found best combo target, result: " + GetUnitName(targetUnit) + " for ability " + abil.getName())
@@ -2586,7 +2585,7 @@ library AIUtils requires KeyUtils
                 return targetUnit
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
-            set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, abil.castRange, abil, 0)
+            set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, abil.castRange, null, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found healthy running enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
@@ -2705,7 +2704,7 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found ally hero target for teleport item, result: " + GetUnitName(targetUnit))
             endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
-            set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, itm.castRange, 0, itm)
+            set targetUnit = FindHealthyRunningEnemyTargetInRange(owner.hero, itm.castRange, null, 0, itm)
             if targetUnit != null then
                 call owner.botLog("Found healthy running enemy target for item, result: " + GetUnitName(targetUnit))
             endif

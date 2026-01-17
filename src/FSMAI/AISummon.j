@@ -9,11 +9,13 @@ globals
     constant integer SUMMON_KEY_CRIPPLE_LAST_CAST_TIME = 4
     constant integer SUMMON_KEY_STOMP_LAST_CAST_TIME = 5
     constant integer SUMMON_KEY_DISPEL_LAST_CAST_TIME = 6
+    constant integer SUMMON_KEY_THROW_STONE_LAST_CAST_TIME = 7
     constant real SUMMON_BLINK_CD = 20.0
     constant real SUMMON_FRENZY_MANA_COST = 100.0
     constant real SUMMON_CRIPPLE_CD = 40.0
     constant real SUMMON_STOMP_CD = 15.0
     constant real SUMMON_DISPEL_CD = 10.0
+    constant real SUMMON_THROW_STONE_CD = 50.0
 endglobals
 //===========================================================================
 
@@ -66,6 +68,18 @@ function AISummonIsUnitCarrionBeetle takes unit summonUnit returns boolean
     return (GetUnitTypeId(summonUnit) == 'u008')
 endfunction
 
+function AISummonIsUnitEarthPanda takes unit summonUnit returns boolean
+    return (GetUnitTypeId(summonUnit) == 'n01M')
+endfunction
+
+function AISummonIsUnitWindPanda takes unit summonUnit returns boolean
+    return (GetUnitTypeId(summonUnit) == 'n01N')
+endfunction
+
+function AISummonIsUnitFirePanda takes unit summonUnit returns boolean
+    return (GetUnitTypeId(summonUnit) == 'n01O')
+endfunction
+
 function AISummonIsBlinkCooldownReady takes unit summonUnit, real blinkCooldown, timer attackTargetTimer returns boolean
     local real currentTime = TimerGetElapsed(gameTimer)
     local real lastBlinkCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_BLINK_LAST_CAST_TIME)
@@ -90,6 +104,12 @@ function AISummonIsDispelCooldownReady takes unit summonUnit, real dispelCooldow
     return (currentTime >= lastDispelCastTime + dispelCooldown) or (IsNearlyZero(lastDispelCastTime))
 endfunction
 
+function AISummonIsThrowStoneCooldownReady takes unit summonUnit, real throwStoneCooldown, timer attackTargetTimer returns boolean
+    local real currentTime = TimerGetElapsed(gameTimer)
+    local real lastThrowStoneCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_THROW_STONE_LAST_CAST_TIME)
+    return (currentTime >= lastThrowStoneCastTime + throwStoneCooldown) or (IsNearlyZero(lastThrowStoneCastTime))
+endfunction
+
 function AISummonIsFrenzyManaReady takes unit summonUnit returns boolean
     return (GetUnitStateSwap(UNIT_STATE_MANA, summonUnit) >= SUMMON_FRENZY_MANA_COST)
 endfunction
@@ -97,6 +117,12 @@ endfunction
 function AISummonGoAndAttackNewTarget takes unit summonUnit, unit newAttackTarget, timer attackTargetTimer returns nothing
     local real distanceToAttackTarget = DistanceBetweenUnits(summonUnit, newAttackTarget)
     local real currentTime = TimerGetElapsed(gameTimer)
+
+    if AISummonIsUnitEarthPanda(summonUnit) then
+        call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+        return
+    endif
+
     if AISummonIsUnitGrizzly(summonUnit) or AISummonIsUnitSpiritWolf(summonUnit) then
         if distanceToAttackTarget > 1200.0 then
             // blink then attack
@@ -110,6 +136,12 @@ function AISummonGoAndAttackNewTarget takes unit summonUnit, unit newAttackTarge
             endif
         endif
     endif
+
+    if AISummonIsUnitFirePanda(summonUnit) then
+        call IssueTargetOrder(summonUnit, "move", newAttackTarget)
+        return
+    endif
+
     call IssueTargetOrder(summonUnit, "attack", newAttackTarget)
 endfunction
 
@@ -149,6 +181,20 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
             // Update saved attack target
             call SaveUnitHandle(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_ATTACK_TARGET, newAttackTarget)
         else
+            if AISummonIsUnitEarthPanda(summonUnit) then
+                call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+
+                // Clean up timer
+                set attackTarget = null
+                set summonUnit = null
+                set summoner = null
+                call RemoveSavedHandle(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_ATTACK_TARGET)
+                call RemoveSavedHandle(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_SUMMON_UNIT)
+                call RemoveSavedHandle(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_SUMMONER)
+                call DestroyTimer(currentTimer)
+                return
+            endif
+
             // Attack move to summoner's location
             set distanceToSummoner = DistanceBetweenUnits(summonUnit, summoner)
             if distanceToSummoner > 500.0 then
@@ -215,6 +261,37 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
         endif
     endif
 
+    if AISummonIsUnitWindPanda(summonUnit) then
+        if AISummonIsDispelCooldownReady(summonUnit, SUMMON_DISPEL_CD, currentTimer) then
+            // Check if any allied unit around is CCed
+            set ccAllyTarget = FindCCedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ALLIES, false, 0, 0)
+            if ccAllyTarget != null then
+                call IssuePointOrder(summonUnit, "dispel", GetUnitX(ccAllyTarget), GetUnitY(ccAllyTarget))
+                call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                call PolledWait(0.5)
+                call IssueTargetOrder(summonUnit, "attack", attackTarget)
+                call BotLog("Summoned Wind Panda using Dispel on CCed ally: " + GetUnitName(ccAllyTarget))
+            endif
+        endif
+    endif
+
+    if AISummonIsUnitEarthPanda(summonUnit) then
+        if distanceToAttackTarget < 900.0 then
+            if AISummonIsThrowStoneCooldownReady(summonUnit, SUMMON_THROW_STONE_CD, currentTimer) then
+                call IssueTargetOrder(summonUnit, "creepthunderbolt", attackTarget)
+                call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_THROW_STONE_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                call PolledWait(0.5)
+                call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+                call BotLog("Summoned Earth Panda using Throw Stone on target: " + GetUnitName(attackTarget))
+            endif
+        endif
+
+        if currentOrder == 0 then
+            call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+        endif
+        return
+    endif
+
 endfunction
 
 function Trig_AISummonActions takes nothing returns nothing
@@ -264,10 +341,18 @@ function Trig_AISummonActions takes nothing returns nothing
         return
     endif
 
+
     call BotLog("Summoned unit: " + GetUnitName(summonUnit) + " by summoner: " + GetUnitName(summoner))
 
     set attackTarget = FindSummonAttackTargetUnit(summonerAIHero, summonUnit, expectedDamage)
     if attackTarget != null then
+
+        if AISummonIsUnitWindPanda(summonUnit) then
+            call IssueTargetOrder(summonUnit, "cyclone", FindHealthyRunningEnemyTargetInRange(summonUnit, MAX_RANGE, attackTarget, 0, 0))
+            call PolledWait(0.8)
+            call IssueImmediateOrder(summonUnit, "windwalk")
+        endif
+
         call AISummonGoAndAttackNewTarget(summonUnit, attackTarget, attackTargetTimer)
         // Keep track if attack target died, so that we can retarget
         set attackTargetTimer = CreateTimer()

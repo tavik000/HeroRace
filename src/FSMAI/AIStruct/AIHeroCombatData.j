@@ -241,7 +241,6 @@ struct HeroCombatData
                 
             if i == aiHero.currentComboIndex then
                 if not abil.bIsReadyToCast then
-                    call this.botLog("Ability not prepared for combo: " + abil.orderString)
                     return 0
                 else
                     set resultComboAbility = abil

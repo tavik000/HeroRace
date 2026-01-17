@@ -19,6 +19,8 @@ struct AIHero
     destructable eatingTree
     integer lastCastingChannelAbilityId
     boolean isMovingForCast
+    real lastX
+    real lastY
         
     // Constructor
     static method create takes unit u, integer inDifficulty returns thistype
@@ -42,6 +44,8 @@ struct AIHero
         set this.eatingTree = null
         set this.lastCastingChannelAbilityId = 0
         set this.isMovingForCast = false
+        set this.lastX = GetUnitX(u)
+        set this.lastY = GetUnitY(u)
 
 
         // Initialize combat data
@@ -81,11 +85,23 @@ struct AIHero
         set this.currentWaypointIndex = newIndex
     endmethod
 
-    method updateWaypointAfterTeleport takes nothing returns nothing
+    method updateWaypointAfterAnyKindOfTeleport takes nothing returns nothing
         local real teleportX = GetUnitX(this.hero)
         local real teleportY = GetUnitY(this.hero)
-        local integer newWaypointIndex = GetNearestForwardWaypointIndex(this.currentWaypointIndex, teleportX, teleportY)
-        call this.botLog("Updating waypoint after teleport. Current Index: " + I2S(this.currentWaypointIndex) + ", New Index: " + I2S(newWaypointIndex))
+        local integer previousIndex = this.currentWaypointIndex
+        local integer newWaypointIndex
+
+        // cross sea special case handling
+        if previousIndex == 31 then
+            set previousIndex = 3
+        endif
+        if previousIndex == 131 then
+            set previousIndex = 13
+        endif
+
+        set newWaypointIndex = GetNearestForwardWaypointIndex(previousIndex - 1, teleportX, teleportY)
+
+        call this.botLog("Updating waypoint after any kind of teleport. Current Index: " + I2S(this.currentWaypointIndex) + ", New Index: " + I2S(newWaypointIndex))
         
         if newWaypointIndex > this.currentWaypointIndex then
             set this.currentWaypointIndex = newWaypointIndex
@@ -93,6 +109,11 @@ struct AIHero
         endif
 
         // update track progress, if close to TopRight rather than BotRight, set to 1, otherwise set to 2
+        if teleportX <= - 20596.0 and teleportY >= 18822.0 then
+            // belong to top left area, no need to update
+            call this.botLog("Teleport in Top Left area, no track progression update needed.")
+            return
+        endif
         if DistanceBetweenXY(teleportX, teleportY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(teleportX, teleportY, BotRightAreaCenterX, BotRightAreaCenterY) then
             call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 1)
             call this.botLog("Updated track progression to 1 (Top Right side)")
@@ -301,7 +322,18 @@ struct AIHero
 
     static method onUpdate takes nothing returns nothing
         local thistype this = LoadInteger(udg_TimerHeroMap, GetHandleId(GetExpiredTimer()), 0)
+        local real currentX = GetUnitX(this.hero)
+        local real currentY = GetUnitY(this.hero)
+        local real movedDistance = DistanceBetweenXY(currentX, currentY, this.lastX, this.lastY)
+
         if this != null and this.currentState != null then
+            // Sudden teleport detection
+            set this.lastX = GetUnitX(this.hero)
+            set this.lastY = GetUnitY(this.hero)
+            if movedDistance > 900.0 then
+                call this.updateWaypointAfterAnyKindOfTeleport()
+            endif
+
             // Check if hero died and transition to dead state if needed
             if not IsUnitAliveBJ(this.hero) and this.currentState.stateID != STATE_DEAD then
                 call this.changeState(DeadState.create())

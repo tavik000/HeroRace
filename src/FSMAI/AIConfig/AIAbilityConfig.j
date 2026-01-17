@@ -1330,6 +1330,39 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 260.0)
         call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 1050.0)
 
+        // BrewMaster(Panda) Abilities
+        set currentAbilityId = 'A03E' // CinderBrew
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 22.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "drunkenhaze")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 390.0 - 100.0) // original 1200, but reduce for combo
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_COMBO)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 45) // For combo
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 1)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        set currentAbilityId = 'A02E' // BreathOfFire(Panda)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 21.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "breathoffire")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 390.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 135.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_COMBO)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 75)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 2)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 270.0 + 250.0) // initial + burn
+        call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 1050.0)
+        set currentAbilityId = 'A02D' // PrimalSplit
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 73.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "elementalfury")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 95)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
 
 
 
