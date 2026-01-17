@@ -147,6 +147,7 @@ struct CombatState extends AIState
     endmethod
 
     method onExit takes nothing returns nothing
+        set owner.isMovingForCast = false
         call this.botLog("Exiting Combat State")
         call owner.setDebugTextTagContent("Combat: Exit")
         call owner.setDebugTextTagColorPreset("RED")

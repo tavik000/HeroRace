@@ -213,6 +213,7 @@ struct AIAbility
         set this.readyTargetPoint = null
         set this.readyTargetPointX = 0.0
         set this.readyTargetPointY = 0.0
+        set this.owner.isMovingForCast = false
         call this.botLog("Resetting not ready to cast for ability: " + GetObjectName(this.abilityId))
     endmethod
 
@@ -533,20 +534,17 @@ struct AIAbility
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
                 call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
 
             if not IsUnitValid(targetUnit) then
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
 
             if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
             // Follow target unit
@@ -562,18 +560,17 @@ struct AIAbility
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
                 call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
 
             if not IsUnitValid(targetUnit) then
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
 
             if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                call this.resetNotReadyToCast()
                 return false
             endif
 
@@ -594,20 +591,17 @@ struct AIAbility
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
                 call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
 
             if not IsUnitValid(targetUnit) then
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
 
             if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
             // Follow target unit
@@ -635,7 +629,7 @@ struct AIAbility
             return true
         elseif this.castType == CAST_INSTANT_COMBO_TARGET_NOT_CC then
             if not IsUnitValid(owner.comboTargetUnit) then
-                set this.bIsReadyToCast = false
+                call this.resetNotReadyToCast()
                 return false
             endif
             call this.botLog("combo target: " + GetUnitName(owner.comboTargetUnit) + " is not CC'ed, casting ability: " + GetObjectName(this.abilityId))
@@ -659,13 +653,13 @@ struct AIAbility
                 set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                 set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
                 if DistanceBetweenXY(GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY) > this.castRange then
-                    call resetNotReadyToCast()
+                    call this.resetNotReadyToCast()
                     call this.botLog("Target point is out of cast range for ability: " + GetObjectName(this.abilityId))
                     return false
                 endif
                 if this.shouldCheckOtherUnitBlockingTargetUnit then
                     if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, targetUnit, FIND_TEAM_TYPE_ENEMIES, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
-                        call resetNotReadyToCast()
+                        call this.resetNotReadyToCast()
                         call this.botLog("Another unit is blocking the target point for ability: " + GetObjectName(this.abilityId))
                         return false
                     endif
@@ -680,9 +674,8 @@ struct AIAbility
                 return false
             endif
             if not IsUnitValid(targetUnit) then
+                call this.resetNotReadyToCast()
                 call this.botLog("Target unit is not valid for ability: " + this.orderString)
-                set this.bIsReadyToCast = false
-                set this.readyTargetUnit = null
                 return false
             endif
             // if there is hazard around, cast to hazard center + offset 150
@@ -720,9 +713,8 @@ struct AIAbility
                 return false
             endif
             if not IsUnitValid(targetUnit) then
+                call this.resetNotReadyToCast()
                 call this.botLog("Target unit is not valid for ability: " + this.orderString)
-                set this.bIsReadyToCast = false
-                set this.readyTargetUnit = null
                 return false
             endif
 
@@ -788,7 +780,7 @@ struct AIAbility
         elseif this.castType == CAST_POINT_BLINK then
             set targetUnit = this.readyTargetUnit
             if not IsUnitValid(targetUnit) then
-                call resetNotReadyToCast()
+                call this.resetNotReadyToCast()
                 call this.botLog("Target unit is not valid for blink ability: " + this.orderString)
                 return false
             endif
@@ -803,17 +795,16 @@ struct AIAbility
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
                 call this.botLogError("No target found for unit ability: " + this.orderString)
+                call this.resetNotReadyToCast()
                 return false
             endif
             if not IsUnitValid(targetUnit) then
                 call this.botLog("Target unit is not valid for ability: " + this.orderString)
-                set this.bIsReadyToCast = false
-                set this.readyTargetUnit = null
+                call this.resetNotReadyToCast()
                 return false
             endif
             if not IsUnitVisible(targetUnit, GetOwningPlayer(owner.hero)) then
-                set this.bIsReadyToCast = false
-                set this.readyTargetUnit = null
+                call this.resetNotReadyToCast()
                 call this.botLog("Target unit is not visible for ability: " + this.orderString)
                 return false
             endif
@@ -822,28 +813,24 @@ struct AIAbility
             if this.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT_FULL_MAP then
                 if IsHeroGoaled(owner.hero) then
                     call this.botLog("Skipping teleport cast, hero already goaled.")
-                    set this.bIsReadyToCast = false
-                    set this.readyTargetUnit = null
+                    call this.resetNotReadyToCast()
                     return false
                 endif
                 if GetUnitLifePercent(owner.hero) < 35.0 then
                     call this.botLog("Skipping teleport cast due to low health.")
-                    set this.bIsReadyToCast = false
-                    set this.readyTargetUnit = null
+                    call this.resetNotReadyToCast()
                     return false
                 endif
                 if DistanceBetweenUnits(owner.hero, targetUnit) < 3000.0 then
                     call this.botLog("Skipping teleport cast, target too close.")
-                    set this.bIsReadyToCast = false
-                    set this.readyTargetUnit = null
+                    call this.resetNotReadyToCast()
                     return false
                 endif
             endif
 
             if this.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE or this.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
                 if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.castRange * 2.0 then
-                    set this.bIsReadyToCast = false
-                    set this.readyTargetUnit = null
+                    call this.resetNotReadyToCast()
                     return false
                 endif
                 // Follow target unit
