@@ -318,6 +318,10 @@ library KeyUtils
         return false
     endfunction
 
+    function IsUnitLocus takes unit u returns boolean
+        return GetUnitAbilityLevel(u, 'Aloc') > 0
+    endfunction
+
     // Alive, not Flying, not Building.
     function IsUnitValid takes unit filterUnit returns boolean
         if filterUnit == null then
@@ -333,6 +337,10 @@ library KeyUtils
         //     return false
         // endif
         if IsUnitHiddenBJ(filterUnit) then
+            return false
+        endif
+
+        if IsUnitLocus(filterUnit) then
             return false
         endif
         return true
