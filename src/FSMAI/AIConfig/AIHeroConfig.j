@@ -274,6 +274,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A09G')  // SummonLavaSpawn
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A08I')  // Volcano
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.6)
+        
+        // Venomancer
+        set heroTypeId = 'N026'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A0D5')  // VenomousGale
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A0D2')  // PlagueWard
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0D0')  // PoisonNova
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.4)
 
         // Add more hero configurations here...
         // Template:

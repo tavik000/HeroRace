@@ -243,7 +243,7 @@ struct AIAbility
             if targetUnitCount > 0 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
             endif
-            set this.bIsReadyToCast = targetUnitCount >= 2
+            set this.bIsReadyToCast = targetUnitCount >= 0
         elseif this.castType == CAST_INSTANT_BACK_ALLY then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null

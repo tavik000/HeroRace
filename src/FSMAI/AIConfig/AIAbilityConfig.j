@@ -636,7 +636,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 3)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 360.0)
-        set currentAbilityId = 'A050' // LocustSwarm
+        set currentAbilityId = 'A050' // LocustSwarm(Banshee)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 65.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "locustswarm")
         call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)  
@@ -1182,6 +1182,42 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 320.0)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 120.0)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 1.0)
+
+        // Venomancer Abilities
+        set currentAbilityId = 'A0D5' // VenomousGale
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 38.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 150.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 50)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 280.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, PROJECTILE_SPEED_KEY, 1250.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 0.5)
+        set currentAbilityId = 'A0D2' // PlagueWard
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 8.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "ward")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 2400.0 - 600.0) // prevent missing
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_LOW_HEALTH)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 5)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 28.0 * 5)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 600.0)
+        set currentAbilityId = 'A0D0' // PoisonNova
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 49.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "summongrizzly")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)  
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 820.0 - 200.0) // prevent missing
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_ENEMY_CROWDED)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 95)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 504.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
 
 
 
