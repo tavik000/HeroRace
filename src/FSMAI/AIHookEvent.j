@@ -28,5 +28,12 @@ library AIHookEvent requires AIUtils
         endif
     endfunction
 
+    function OnAIHeroBeMeatHookedReturnFinish takes unit u returns nothing
+        local AIHero aiHero = GetAIHeroFromUnit(u)
+        if aiHero != null then
+            call aiHero.onBeMeatHookedReturnFinish()
+        endif
+    endfunction
+
 
 endlibrary

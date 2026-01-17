@@ -234,7 +234,7 @@ struct AIHero
             return false
         endif
 
-        // call this.botLog("shouldenter: Item found to pick up: " + GetItemName(this.pickingUpItem))
+        // call this.botLog("should enter: Item found to pick up: " + GetItemName(this.pickingUpItem))
         return this.pickingUpItem != null
     endmethod
 
@@ -330,7 +330,7 @@ struct AIHero
             // Sudden teleport detection
             set this.lastX = GetUnitX(this.hero)
             set this.lastY = GetUnitY(this.hero)
-            if movedDistance > 900.0 then
+            if movedDistance > 550.0 then
                 call this.updateWaypointAfterAnyKindOfTeleport()
             endif
 
@@ -437,6 +437,10 @@ struct AIHero
         if selfDefenseAbility != 0 then
             call selfDefenseAbility.markAsReadyToCast()
         endif
+    endmethod
+
+    method onBeMeatHookedReturnFinish takes nothing returns nothing
+        call this.updateWaypointAfterAnyKindOfTeleport()
     endmethod
 
     method getBlockingUnitAround takes real detectRadius, boolean bCheckBehind returns unit

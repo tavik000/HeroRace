@@ -258,7 +258,6 @@ library KeyUtils
         return false
     endfunction
 
-
     function IsUnitInvulnerableOrMagicImmune takes unit u returns boolean
         // Invulnerability
         if UnitHasBuffBJ(u, 'Bvul') then

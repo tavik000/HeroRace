@@ -424,20 +424,27 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
-
     function IsInSlowSpikeHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
-        if wpi == 8 then
-            return true
+        local real ux = GetUnitX(aiHero.hero)
+        local real uy = GetUnitY(aiHero.hero)
+        if wpi >= 8 then
+            if RectContainsCoords(gg_rct_HazardSlowSpikeArea, ux, uy) then
+                return true
+            endif
         endif
         return false
     endfunction
 
     function IsInFastSpikeHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
+        local real ux = GetUnitX(aiHero.hero)
+        local real uy = GetUnitY(aiHero.hero)
         if IsTriggerEnabled(gg_trg_FastSpike) then
-            if wpi == 10 then
-                return true
+            if wpi >= 10 then
+                if RectContainsCoords(gg_rct_HazardFastSpikeArea, ux, uy) then
+                    return true
+                endif
             endif
         endif
         return false
@@ -445,9 +452,13 @@ library AIUtils requires KeyUtils
 
     function IsInNetHazardZone takes AIHero aiHero returns boolean
         local integer wpi = aiHero.currentWaypointIndex
+        local real ux = GetUnitX(aiHero.hero)
+        local real uy = GetUnitY(aiHero.hero)
         if IsTriggerEnabled(gg_trg_Net01) then
-            if wpi == 12 then
-                return true
+            if wpi >= 12 then
+                if RectContainsCoords(gg_rct_HazardNetArea, ux, uy) then
+                    return true
+                endif
             endif
         endif
         return false

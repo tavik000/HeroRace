@@ -11,16 +11,28 @@ struct HazardState extends AIState
     method onEnter takes nothing returns nothing
         if IsInSlowSpikeHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_SLOW_SPIKE
+            if owner.currentWaypointIndex > 8 then
+                call owner.setWaypointIndex(8) // Reset to before Slow Spike Hazard
+                call this.botLog("Resetting waypoint index to 8 for Slow Spike Hazard")
+            endif
             call this.botLog("Detected Slow Spike Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Slow Spike Zone")
             call owner.setDebugTextTagColorPreset("ORANGE")
         elseif IsInFastSpikeHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_FAST_SPIKE
+            if owner.currentWaypointIndex > 10 then
+                call owner.setWaypointIndex(10) // Reset to before Fast Spike Hazard
+                call this.botLog("Resetting waypoint index to 10 for Fast Spike Hazard")
+            endif
             call this.botLog("Detected Fast Spike Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Fast Spike Zone")
             call owner.setDebugTextTagColorPreset("ORANGE")
         elseif IsInNetHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_NET
+            if owner.currentWaypointIndex > 12 then
+                call owner.setWaypointIndex(12) // Reset to before Net Hazard
+                call this.botLog("Resetting waypoint index to 12 for Net Hazard")
+            endif
             call this.botLog("Detected Net Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Net Zone")
             call owner.setDebugTextTagColorPreset("ORANGE")
