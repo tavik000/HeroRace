@@ -1148,6 +1148,43 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 240.0)
 
+        // FireLord Abilities
+        set currentAbilityId = 'A08X' // SoulBurn
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 34.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "soulburn")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_COMBO)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 45)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 1)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 240.0)
+        set currentAbilityId = 'A09G' // SummonLavaSpawn
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 38.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "lavamonster")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 40)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 2)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 48.0 * 5) // 5 attacks
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
+        set currentAbilityId = 'A08I' // Volcano
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 52.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "channel")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, MAX_RANGE)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 400.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_POINT_ENEMY_FRONT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_CC)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 95)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 320.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_OFFSET_KEY, 120.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_PREDICT_DELAY_KEY, 1.0)
+
+
+
 
 
 

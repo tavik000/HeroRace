@@ -952,8 +952,8 @@ library AIUtils requires KeyUtils
         set tempHeroUnit = ownerHero
         set tempAIAbility = abil
         set tempAIItem = itm
-        call BotLogWithPlayer(heroOwner, "bHeroOnly: " + B2S(bHeroOnly))
         if bHeroOnly then
+            call BotLogWithPlayer(heroOwner, "Finding front target in range " + R2S(range) + " (Hero Only)")
             call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
         else
             call BotLogWithPlayer(heroOwner, "Finding front target in range " + R2S(range) + " (All Units)")

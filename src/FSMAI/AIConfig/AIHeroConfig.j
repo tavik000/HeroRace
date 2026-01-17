@@ -267,6 +267,14 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A064')  // ShadowStrike
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
 
+        // FireLord
+        set heroTypeId = 'N010'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A08X')  // SoulBurn
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A09G')  // SummonLavaSpawn
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A08I')  // Volcano
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.6)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'
