@@ -443,7 +443,7 @@ struct HeroCombatData
             set i = i + 1
         endloop
 
-        call this.botLog("No item found with find target type: " + I2S(findTargetType))
+        // call this.botLog("No item found with find target type: " + I2S(findTargetType))
         return false
     endmethod
 

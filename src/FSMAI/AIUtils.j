@@ -705,10 +705,10 @@ library AIUtils requires KeyUtils
         set dist = DistanceBetweenXY(px, py, ix, iy)
 
         if dist <= tolerance then
-            call BotLog("Point is on the line segment within tolerance: dist=" + R2S(dist))
+            // call BotLog("Point is on the line segment within tolerance: dist=" + R2S(dist))
             return true
         else
-            call BotLog("Point is not on the line segment: dist=" + R2S(dist))
+            // call BotLog("Point is not on the line segment: dist=" + R2S(dist))
             return false
         endif
     endfunction
