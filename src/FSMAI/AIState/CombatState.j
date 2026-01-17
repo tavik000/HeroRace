@@ -77,6 +77,13 @@ struct CombatState extends AIState
         if this.tryCastAnyReadyAbility() then
             return
         endif
+
+        if this.owner.isMovingForCast then
+            call this.botLog("Moving for cast, skipping update")
+            call owner.setDebugTextTagContent("Combat: Moving for Cast")
+            call owner.setDebugTextTagColorPreset("RED")
+            return
+        endif
             
         // Return to run state after combat
         call owner.changeState(RunState.create())
@@ -99,6 +106,7 @@ struct CombatState extends AIState
             if heroItem.tryUse() then
                 call this.botLog("Item used successfully: " + GetItemName(heroItem.itemHandle))
                 set owner.isCasting = true
+                set owner.isMovingForCast = false
                 set owner.currentRequiredCastTime = heroItem.requiredCastTime
                 set owner.lastStartCastTime = currentTime
                 call owner.combatData.syncItemCooldown(heroItem)
@@ -119,6 +127,7 @@ struct CombatState extends AIState
         set abil = owner.combatData.getReadyAbility(owner.hero, difficulty)
         if abil != 0 then
             if abil.tryCast() then
+                set owner.isMovingForCast = false
                 set owner.currentRequiredCastTime = abil.requiredCastTime
                 set owner.lastStartCastTime = currentTime
                 if abil.requiredCastTime > 0.01 then

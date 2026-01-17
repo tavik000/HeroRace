@@ -18,6 +18,7 @@ struct AIHero
     item pickingUpItem
     destructable eatingTree
     integer lastCastingChannelAbilityId
+    boolean isMovingForCast
         
     // Constructor
     static method create takes unit u, integer inDifficulty returns thistype
@@ -40,6 +41,7 @@ struct AIHero
         set this.pickingUpItem = null
         set this.eatingTree = null
         set this.lastCastingChannelAbilityId = 0
+        set this.isMovingForCast = false
 
 
         // Initialize combat data

@@ -9,6 +9,7 @@ struct DeadState extends AIState
         call this.botLog("Hero died - Entering Dead State")
         call owner.combatData.removeAllItems()
         call owner.resetIsCasting()
+        set owner.isMovingForCast = false
         call owner.setDebugTextTagContent("Dead: Entering")
         call owner.setDebugTextTagColorPreset("GRAY")
         call IssueImmediateOrder(owner.hero, "stop")

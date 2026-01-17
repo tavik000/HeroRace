@@ -692,7 +692,7 @@ library AIUtils requires KeyUtils
         endif
     endfunction
 
-    function IsThereOtherUnitBlockingBetweenXY takes unit sourceUnit, integer findTeamType, real sx, real sy, real tx, real ty, real tolerance returns boolean
+    function IsThereOtherUnitBlockingBetweenXY takes unit sourceUnit, unit targetUnit, integer findTeamType, real sx, real sy, real tx, real ty, real tolerance returns boolean
         local group unitsBetween = CreateGroup()
         local unit currentUnit = null
         local real midX = (sx + tx) / 2.0
@@ -714,9 +714,10 @@ library AIUtils requires KeyUtils
             exitwhen currentUnit == null
             call GroupRemoveUnit(unitsBetween, currentUnit)
 
-            call BotLog("Checking unit in between: " + GetUnitName(currentUnit))
+            call BotLog("Checking unit in betweenXY: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif currentUnit == sourceUnit or currentUnit == targetUnit then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
             else
                 if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
@@ -766,7 +767,7 @@ library AIUtils requires KeyUtils
             exitwhen currentUnit == null
             call GroupRemoveUnit(unitsBetween, currentUnit)
 
-            call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between: " + GetUnitName(currentUnit))
+            call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between units: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
@@ -811,6 +812,11 @@ library AIUtils requires KeyUtils
         if itm != 0 then
             set bShouldCheckOtherUnitBlockingTargetUnit = itm.shouldCheckOtherUnitBlockingTargetUnit()
             set tolerance = itm.effectiveRadius
+        endif
+
+        if abil != 0 then
+            set bShouldCheckOtherUnitBlockingTargetUnit = abil.shouldCheckOtherUnitBlockingTargetUnit
+            set tolerance = abil.effectiveRadius
         endif
 
         // Not Allowed Target: customFilter, not trailing, goaled hero, within min distance, blocked by other unit if applicable
@@ -880,6 +886,10 @@ library AIUtils requires KeyUtils
             set tolerance = itm.effectiveRadius
         endif
 
+        if abil != 0 then
+            set bShouldCheckOtherUnitBlockingTargetUnit = abil.shouldCheckOtherUnitBlockingTargetUnit
+            set tolerance = abil.effectiveRadius
+        endif
 
         // Not Allowed Target: customFilter, not leading, goaled hero, within min distance, blocked by other unit if applicable
         // Priority Order:
@@ -2522,6 +2532,8 @@ library AIUtils requires KeyUtils
                     call owner.botLog("Found ally hero target for teleport ability, result: " + GetUnitName(targetUnit))
                 endif
                 return targetUnit
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING then
+                set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_HOLY_LIGHT then
                 set targetUnit = FindHolyLightAllyTargetInRange(owner.hero, abil.castRange, abil.expectedDamage)
                 if targetUnit != null then
@@ -2587,8 +2599,6 @@ library AIUtils requires KeyUtils
             set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, true, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
-            else
-                call owner.botLog("No valid low health enemy target found avoiding overkill.")
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
             set targetUnit = FindCrowdedHeroInRange(owner, abil.castRange, abil.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
@@ -2642,6 +2652,19 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found ally hero target for teleport ability, result: " + GetUnitName(targetUnit))
             endif
             return targetUnit
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING then
+            set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, abil.castRange, abil.minTargetDistance, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found leading enemy target for ability " + abil.getName() + ", result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            set targetUnit = FindTrailingAllyTargetInRange(owner.hero, abil.castRange, abil.minTargetDistance, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found trailing ally target for ability " + abil.getName() + ", result: " + GetUnitName(targetUnit))
+                return targetUnit
+            endif
+            call owner.botLog("No target found for leading enemy or trailing ally for ability " + abil.getName())
+            return null
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_HOLY_LIGHT then
             set targetUnit = FindHolyLightAllyTargetInRange(owner.hero, abil.castRange, abil.expectedDamage)
             if targetUnit != null then

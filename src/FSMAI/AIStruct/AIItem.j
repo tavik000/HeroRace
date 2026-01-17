@@ -194,6 +194,8 @@ struct AIItem
         local integer targetUnitCount
         local real heroX = GetUnitX(this.ownerHero)
         local real heroY = GetUnitY(this.ownerHero)
+        local real targetFacingAngle
+        local real offset
 
         if this.bIsPassive then
             return false
@@ -308,6 +310,17 @@ struct AIItem
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
             if this.readyTargetUnit != null then
+                // Calculate point in front of target unit
+                set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+                set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
+                if this.shouldCheckOtherUnitBlockingTargetUnit() then
+                    if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, this.readyTargetUnit, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                        set this.readyTargetUnit = null
+                        set this.bIsReadyToUse = false
+                        call this.botLog("Another unit is blocking the target point for item: " + GetItemName(this.itemHandle) + ", cannot use now.")
+                        return false
+                    endif
+                endif
                 call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
             endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
@@ -513,7 +526,8 @@ struct AIItem
                     return true
                 else
                     call IssueTargetOrder(this.ownerHero, "move", targetUnit)
-                    return true
+                    set this.ownerAIHero.isMovingForCast = true
+                    return false
                 endif
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
@@ -651,25 +665,25 @@ struct AIItem
                     set this.readyTargetPointX = GetUnitX(this.ownerHero) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
                     set this.readyTargetPointY = GetUnitY(this.ownerHero) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
 
-                    if this.shouldCheckOtherUnitBlockingTargetUnit() then
-                        if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
-                            set this.readyTargetUnit = null
-                            set this.bIsReadyToUse = false
-                            call this.botLog("Another unit is blocking the target point for item: " + GetItemName(this.itemHandle) + ", cannot use now.")
-                            return false
-                        endif
-                    endif
-
                     call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
                     return true
                 endif
             endif
-            
+
             // Calculate point in front of target unit
             set targetFacingAngle = GetUnitFacing(targetUnit)
             set offset = this.getUnitFrontOffsetDistance(targetUnit)
             set this.readyTargetPointX = GetUnitX(targetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
             set this.readyTargetPointY = GetUnitY(targetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+
+            if this.shouldCheckOtherUnitBlockingTargetUnit() then
+                if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, targetUnit, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                    set this.readyTargetUnit = null
+                    set this.bIsReadyToUse = false
+                    call this.botLog("Another unit is blocking the target point for item: " + GetItemName(this.itemHandle) + ", cannot use now.")
+                    return false
+                endif
+            endif
             call this.useToPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_ENEMY_CROWDED then
@@ -747,7 +761,8 @@ struct AIItem
                     return true
                 else
                     call IssueTargetOrder(this.ownerHero, "move", targetUnit)
-                    return true
+                    set this.ownerAIHero.isMovingForCast = true
+                    return false
                 endif
             endif
         elseif this.castType == CAST_TREE_FRONT then

@@ -220,6 +220,8 @@ struct AIAbility
         local integer targetUnitCount
         local real heroX = 0.0 // only for jump 
         local real heroY = 0.0 // only for jump
+        local real targetFacingAngle
+        local real offset
 
         if this.castType == CAST_NONE then
             return
@@ -232,7 +234,9 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_BACK_ENEMY_FOLLOW then
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
-            call this.botLog("Prepared target for CAST_INSTANT_BACK_ENEMY ability: " + GetObjectName(this.abilityId))
+            if this.bIsReadyToCast then
+                call this.botLog("Prepared target for CAST_INSTANT_BACK_ENEMY ability: " + GetObjectName(this.abilityId))
+            endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             if targetUnitCount > 0 then
@@ -367,6 +371,24 @@ struct AIAbility
                 set this.readyTargetUnit = this.ownerHero
             else
                 set this.readyTargetUnit = null
+            endif
+            set this.bIsReadyToCast = this.readyTargetUnit != null
+        elseif this.castType == CAST_POINT_ALL_FRONT then
+            set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
+            if this.readyTargetUnit != null then
+                call this.botLog("Prepared meat hook target unit: " + GetUnitName(this.readyTargetUnit))
+                // Calculate point in front of target unit
+                set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+                set offset = this.getUnitOffsetDistance(this.readyTargetUnit)
+                set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+                set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+                if this.shouldCheckOtherUnitBlockingTargetUnit then
+                    if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, this.readyTargetUnit, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                        call resetNotReadyToCast()
+                        call this.botLog("Another unit is blocking the target point for ability: " + GetObjectName(this.abilityId) + ", cannot use now.")
+                        return
+                    endif
+                endif
             endif
             set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_TREE_NEAR_ENEMY then
@@ -533,7 +555,8 @@ struct AIAbility
                 return true
             else
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)
-                return true
+                set this.owner.isMovingForCast = true
+                return false
             endif
         elseif this.castType == CAST_INSTANT_BACK_ENEMY_FOLLOW then
             set targetUnit = this.readyTargetUnit
@@ -561,7 +584,8 @@ struct AIAbility
                 return true
             else
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)
-                return true
+                set this.owner.isMovingForCast = true
+                return false
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
             call this.castInstant()
@@ -592,7 +616,7 @@ struct AIAbility
                 return true
             else
                 call IssueTargetOrder(this.ownerHero, "move", targetUnit)
-                return true
+                set this.owner.isMovingForCast = true
             endif
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             call this.castInstant()
@@ -640,7 +664,7 @@ struct AIAbility
                     return false
                 endif
                 if this.shouldCheckOtherUnitBlockingTargetUnit then
-                    if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, FIND_TEAM_TYPE_ENEMIES, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                    if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, targetUnit, FIND_TEAM_TYPE_ENEMIES, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
                         call resetNotReadyToCast()
                         call this.botLog("Another unit is blocking the target point for ability: " + GetObjectName(this.abilityId))
                         return false
@@ -709,18 +733,45 @@ struct AIAbility
             set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) - offset * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true 
-        elseif this.castType == CAST_POINT_SELF_FRONT_HEAL then
+        elseif this.castType == CAST_POINT_ALL_FRONT then
             set targetUnit = this.readyTargetUnit
             if targetUnit == null then
                 call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                return false
+            endif
+
+            if not IsUnitValid(targetUnit) then
+                call resetNotReadyToCast()
+                call this.botLog("Target unit is not valid for ability: " + this.orderString)
+                return false
+            endif
+
+            // Calculate point in front of target unit
+            set targetFacingAngle = GetUnitFacing(targetUnit)
+            set offset = this.getUnitOffsetDistance(targetUnit)
+            set this.readyTargetPointX = GetUnitX(targetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(targetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+            if this.shouldCheckOtherUnitBlockingTargetUnit then
+                if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, targetUnit, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                    call resetNotReadyToCast()
+                    call this.botLog("Another unit is blocking the target point for ability: " + GetObjectName(this.abilityId) + ", cannot use now.")
+                    return false
+                endif
+            endif
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+
+        elseif this.castType == CAST_POINT_SELF_FRONT_HEAL then
+            set targetUnit = this.readyTargetUnit
+            if targetUnit == null then
+                call resetNotReadyToCast()
+                call this.botLogError("No valid target found for ability, should be blocked by prepare target: " + GetObjectName(this.abilityId))
                 return false
             endif
             
             if not IsUnitValid(targetUnit) then
-                set this.readyTargetUnit = null
-                set this.bIsReadyToCast = false
+                call resetNotReadyToCast()
+                call this.botLog("Target unit is not valid for ability: " + this.orderString)
                 return false
             endif
 
@@ -801,7 +852,8 @@ struct AIAbility
                     return true
                 else
                     call IssueTargetOrder(this.ownerHero, "move", targetUnit)
-                    return true
+                    set this.owner.isMovingForCast = true
+                    return false
                 endif
             endif
 
@@ -811,7 +863,7 @@ struct AIAbility
             call this.botLogError("Ability cast type not implemented: " + I2S(this.castType) + " for ability: " + this.orderString)
             return false
         endif
-            
+        return false
     endmethod
 
     method destroy takes nothing returns nothing
