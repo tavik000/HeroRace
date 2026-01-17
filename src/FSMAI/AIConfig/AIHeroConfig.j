@@ -299,6 +299,15 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A07U')  // Stampede(Centaur)
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.45)
 
+        // ForestTrollShadowPriest
+        set heroTypeId = 'O00J' 
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A0A1')  // ThunderFirebolt(Troll)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A08G')  // FireballBarrage
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0F9')  // Dispel(Troll)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'A08J')  // BreathOfFire(Troll)
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.35)
+
         // Add more hero configurations here...
         // Template:
         // set heroTypeId = 'H0XX'

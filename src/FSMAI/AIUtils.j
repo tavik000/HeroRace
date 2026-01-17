@@ -2626,8 +2626,10 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found CC'ed enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_CC then
-            set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, 0)
-            call owner.botLog("Force using ability on CC'ed ally: " + GetUnitName(targetUnit))
+            set targetUnit = FindCCedTargetInRange(owner.hero, abil.castRange, FIND_TEAM_TYPE_ALLIES, false, abil, 0)
+            if targetUnit != null then
+                call owner.botLog("Found CC'ed ally target for ability, result: " + GetUnitName(targetUnit))
+            endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, abil.castRange, abil)
             if targetUnit != null then
