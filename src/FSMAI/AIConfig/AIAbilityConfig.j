@@ -1219,6 +1219,9 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 504.0)
         call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
 
+        // Sven Abilities
+        set currentAbilityId = 'A003' // StormHammer
+
 
 
 
