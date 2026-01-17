@@ -52,7 +52,7 @@ globals
     constant real FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD = 30.0 // 30%
 
     // Combat settings
-    constant real EASY_CD_MULTIPLIER = 2.0
+    constant real EASY_CD_MULTIPLIER = 2.5
     constant real NORMAL_CD_MULTIPLIER = 1.0
     constant real HARD_CD_MULTIPLIER = 1.0
     constant real CRAZY_CD_MULTIPLIER = 1.0

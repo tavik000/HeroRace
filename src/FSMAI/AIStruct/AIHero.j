@@ -66,8 +66,7 @@ struct AIHero
 
         // Nerf or Buff hero based on difficulty
         if inDifficulty == DIFF_EASY then
-            // TODO
-            // call this.applyEasyDifficultyModifiers()
+            call this.applyEasyDifficultyModifiers()
         elseif inDifficulty == DIFF_NORMAL then
             // No changes for normal difficulty
         elseif inDifficulty == DIFF_HARD then
@@ -617,6 +616,14 @@ struct AIHero
             return true
         endif
         return false
+    endmethod
+
+    method applyEasyDifficultyModifiers takes nothing returns nothing
+        // -300 HP
+        call UnitAddItemByIdSwapped( 'I02K', this.hero)
+        call UnitAddItemByIdSwapped( 'I02K', this.hero)
+        call UnitAddItemByIdSwapped( 'I02K', this.hero)
+        call this.botLog("Applied Easy difficulty modifiers: -300 HP")
     endmethod
 
     method applyCrazyDifficultyModifiers takes nothing returns nothing
