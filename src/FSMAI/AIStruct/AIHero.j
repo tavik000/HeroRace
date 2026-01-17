@@ -190,14 +190,14 @@ struct AIHero
         local player randomEnemyPlayer = GetRandomEnemyPlayer(this.hero)
 
         if IsUnitInvisible(this.hero, randomEnemyPlayer) then
-            call this.botLog("Cannot enter combat, hero is invisible.")
+            // call this.botLog("Cannot enter combat, hero is invisible.")
             call this.setDebugTextTagContent("Run: Invisible")
             call this.setDebugTextTagColorPreset("YELLOW")
             return false
         endif
             
         if IsUnitStunOrSilence(this.hero) then
-            call this.botLog("Cannot enter combat, hero is stunned or silenced.")
+            // call this.botLog("Cannot enter combat, hero is stunned or silenced.")
             call this.setDebugTextTagContent("Run: Stunned/Silenced")
             call this.setDebugTextTagColorPreset("YELLOW")
             return false

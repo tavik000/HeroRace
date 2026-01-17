@@ -192,7 +192,7 @@ struct HeroCombatData
                         set currentMana = GetUnitState(hero, UNIT_STATE_MANA)
                         if not abil.isManaReady(hero) then
                             // call this.botLog("Not enough mana for ability. Need: " + I2S(abil.manaCost) + ", Have: " + I2S(R2I(currentMana)))
-                            call aiHero.setDebugTextTagContent("Combat: " + abil.orderString + ", No Mana" + "(" + I2S(abil.manaCost) + "/" + I2S(R2I(currentMana)) + ")")
+                            call aiHero.setDebugTextTagContent("Combat: " + abil.orderString + ", No Mana" + "(" + I2S(R2I(currentMana)) + "/" + I2S(abil.manaCost) + ")")
                             call aiHero.setDebugTextTagColorPreset("RED")
                         else
                             if abil.bIsReadyToCast then
