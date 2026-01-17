@@ -423,7 +423,7 @@ struct AIHero
     method onBeTargetedByEnemyAbility takes integer abilityId returns nothing
         local AIItem selfDefenseItem
         local AIAbility selfDefenseAbility
-        call this.botLog("Hero is being targeted by enemy ability: " + GetObjectName(abilityId))
+        // call this.botLog("Hero is being targeted by enemy ability: " + GetObjectName(abilityId))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
             call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
@@ -439,7 +439,7 @@ struct AIHero
     method onBeTargetedByEnemyAttack takes unit attacker returns nothing
         local AIItem selfDefenseItem
         local AIAbility selfDefenseAbility
-        call this.botLog("Hero is being targeted by enemy attack from unit: " + GetUnitName(attacker))
+        // call this.botLog("Hero is being targeted by enemy attack from unit: " + GetUnitName(attacker))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
             call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))

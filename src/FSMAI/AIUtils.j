@@ -511,7 +511,7 @@ library AIUtils requires KeyUtils
         local real bestDist = 0.0
         local real closeRange = 3000.0
 
-        // Not Allowed Target: MagicImmune, Building, Flying Unit, Not Alive, Non-hero-no-Attack unit
+        // Not Allowed Target: MagicImmune, Building, Flying Unit, Not Alive, Non-hero-no-Attack unit, Lich King
         // Priority Order:
         // 1. within range 3000
         // 2. Highest Attack Damage
@@ -534,6 +534,7 @@ library AIUtils requires KeyUtils
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
             elseif IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
             elseif not IsUnitAliveBJ(currentUnit) then
+            elseif GetUnitTypeId(currentUnit) == 'nzlc' then // Lich King
             elseif IsUnitType(currentUnit, UNIT_TYPE_HERO) == false and currentUnitAttackDamage <= 0 then
             elseif bestTarget == null then
                 call BotLogWithPlayer(heroOwner, "Selected illusion target: " + GetUnitName(currentUnit))
@@ -584,7 +585,7 @@ library AIUtils requires KeyUtils
         local unit bestTarget = null
         local player heroOwner = GetOwningPlayer(ownerHero)
     
-        set enemies = GetUnitsOfTypeIdAll( 'n00P') // Tower
+        set enemies = GetUnitsOfTypeIdAll('n00P') // Tower
         if CountUnitsInGroup(enemies) > 0 then
             loop 
                 set currentUnit = FirstOfGroup(enemies)
@@ -600,7 +601,7 @@ library AIUtils requires KeyUtils
                 return bestTarget
             endif
         endif
-        set enemies = GetUnitsOfTypeIdAll( 'nzlc') // Lich King
+        set enemies = GetUnitsOfTypeIdAll('nzlc') // Lich King
         if CountUnitsInGroup(enemies) > 0 then
             loop 
                 set currentUnit = FirstOfGroup(enemies)
@@ -616,7 +617,7 @@ library AIUtils requires KeyUtils
                 return bestTarget
             endif
         endif
-        set enemies = GetUnitsOfTypeIdAll( 'n00U') // Purple Fish
+        set enemies = GetUnitsOfTypeIdAll('n00U') // Purple Fish
         if CountUnitsInGroup(enemies) > 0 then
             loop 
                 set currentUnit = FirstOfGroup(enemies)

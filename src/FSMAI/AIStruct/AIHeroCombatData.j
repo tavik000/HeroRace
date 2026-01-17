@@ -472,7 +472,7 @@ struct HeroCombatData
             set i = i + 1
         endloop
 
-        call this.botLog("No item found with cast type: " + I2S(castType))
+        // call this.botLog("No item found with cast type: " + I2S(castType))
         return 0
     endmethod
 
@@ -501,7 +501,7 @@ struct HeroCombatData
             set i = i + 1
         endloop
 
-        call this.botLog("No ability found with cast type: " + I2S(castType))
+        // call this.botLog("No ability found with cast type: " + I2S(castType))
         return 0
     endmethod
 
