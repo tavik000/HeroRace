@@ -62,6 +62,16 @@ library AIUtils requires KeyUtils
         endif
     endfunction
 
+    function GetExtraDamagePercentage takes integer difficulty returns real
+        if difficulty == DIFF_CRAZY then
+            return CRAZY_EXTRA_DAMAGE_PERCENTAGE
+        elseif difficulty == DIFF_NIGHTMARE then
+            return NIGHTMARE_EXTRA_DAMAGE_PERCENTAGE
+        else
+            return 0.0
+        endif
+    endfunction
+
     function IsAIHardOrAbove takes integer difficulty returns boolean
         if difficulty == DIFF_HARD or difficulty == DIFF_CRAZY or difficulty == DIFF_NIGHTMARE then
             return true

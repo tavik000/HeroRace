@@ -73,6 +73,9 @@ struct AIAbility
         if this.lastCastTime == 0.0 then
             return true
         endif
+        if cooldownMultiplier < 1.0 then
+            call UnitResetCooldown(this.ownerHero)
+        endif
         set requiredCooldown = this.baseCooldown * cooldownMultiplier
         if currentTime >= this.lastCastTime + requiredCooldown then
             return true
@@ -83,6 +86,11 @@ struct AIAbility
     method isManaReady takes unit caster returns boolean
         local real currentMana = GetUnitState(caster, UNIT_STATE_MANA)
         if currentMana >= I2R(this.manaCost) then
+            return true
+        endif
+        if owner.difficulty == DIFF_NIGHTMARE then
+            // In Nightmare difficulty, ignore mana cost
+            call SetUnitState(caster, UNIT_STATE_MANA, I2R(this.manaCost))
             return true
         endif
         return false

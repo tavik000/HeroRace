@@ -64,6 +64,20 @@ struct AIHero
             call this.createDebugTextTag()
         endif
 
+        // Nerf or Buff hero based on difficulty
+        if inDifficulty == DIFF_EASY then
+            // TODO
+            // call this.applyEasyDifficultyModifiers()
+        elseif inDifficulty == DIFF_NORMAL then
+            // No changes for normal difficulty
+        elseif inDifficulty == DIFF_HARD then
+            // No changes for hard difficulty
+        elseif inDifficulty == DIFF_CRAZY then
+            call this.applyCrazyDifficultyModifiers()
+        elseif inDifficulty == DIFF_NIGHTMARE then
+            call this.applyNightmareDifficultyModifiers()
+        endif
+
         return this
     endmethod
 
@@ -603,6 +617,31 @@ struct AIHero
             return true
         endif
         return false
+    endmethod
+
+    method applyCrazyDifficultyModifiers takes nothing returns nothing
+        local real speedBoost = 5.0
+
+        // Increase move speed
+        call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
+        call SetUnitMoveSpeed(this.hero, GetUnitMoveSpeed(this.hero) + speedBoost)
+
+        // +200 HP
+        call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
+        call this.botLog("Applied Crazy difficulty modifiers: +5 move speed and +200 HP")
+    endmethod
+
+    method applyNightmareDifficultyModifiers takes nothing returns nothing
+        local real speedBoost = 15.0
+
+        // Increase move speed
+        call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
+        call SetUnitMoveSpeed(this.hero, GetUnitMoveSpeed(this.hero) + speedBoost)
+
+        // +400 HP
+        call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
+        call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
+        call this.botLog("Applied Nightmare difficulty modifiers: +15 move speed and +400 HP")
     endmethod
 
     // =====================================================
