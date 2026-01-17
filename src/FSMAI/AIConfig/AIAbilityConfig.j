@@ -1253,6 +1253,39 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
 
+        // CentaurWarRunner Abilities
+        set currentAbilityId = 'A09F' // WarStomp(Centaur)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 34.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "stomp")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 365.0 - 50.0) // prevent missing
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_BACK_ENEMY)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 70)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 240.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
+        set currentAbilityId = 'A093' // DoubleEdge
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 33.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "thunderbolt")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 150.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 200.0) // only for finding target
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_UNIT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 400.0)
+        set currentAbilityId = 'A07U' // Stampede(Centaur)
+        call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 47.0)
+        call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "windwalk")
+        call SaveReal(AbilityDataTable, currentAbilityId, CAST_RANGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
+        call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT)
+        call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 75)
+        call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
+        call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+
 
 
 

@@ -77,7 +77,8 @@
 		"Ungoaled",
 		"unholyfrenzy",
 		"Venomancer",
-		"WALKABILITY"
+		"WALKABILITY",
+		"windwalk"
 	],
 	"editor.defaultFormatter": "unouo.jassplus",
 	"[jass]": {
