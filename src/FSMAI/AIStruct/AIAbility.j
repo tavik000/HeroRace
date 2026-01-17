@@ -624,6 +624,9 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
             call this.castInstant()
             return true
+        elseif this.castType == CAST_INSTANT_HEAL then
+            call this.castInstant()
+            return true
         elseif this.castType == CAST_INSTANT_HEAL_ALLY_CROWDED then
             call this.castInstant()
             return true
