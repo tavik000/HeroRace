@@ -326,7 +326,12 @@ struct AIAbility
                 set this.bIsReadyToCast = false
                 return
             endif
-            set this.bIsReadyToCast = true
+            if IsUnitFacingAlongTrack(this.ownerHero) then
+                set this.readyTargetUnit = this.ownerHero
+                set this.bIsReadyToCast = true
+            else
+                set this.bIsReadyToCast = false
+            endif
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -374,6 +379,53 @@ struct AIAbility
                 call RemoveLocation(this.readyTargetPoint)
             endif
             set this.bIsReadyToCast = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY) and this.readyTargetUnit != null)
+        elseif this.castType == CAST_POINT_BLINK then
+            set heroX = GetUnitX(owner.hero)
+            set heroY = GetUnitY(owner.hero)
+            if owner.currentWaypointIndex == 31 then
+                if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
+                    if not IsUnitFacingEastNarrow(this.ownerHero) then
+                        // issue move right to face east
+                        call IssuePointOrder(this.ownerHero, "move", heroX + 10.0, heroY)
+                        call this.owner.botLog("Adjusting facing direction to east for Force Staff self-use.")
+                        return
+                    endif
+                    call IssueImmediateOrder(this.ownerHero, "stop")
+                    set this.readyTargetUnit = this.ownerHero
+                    set this.bIsReadyToCast = true
+                    return
+                endif
+                set this.bIsReadyToCast = false
+                return
+            endif
+            if owner.currentWaypointIndex == 131 then
+                if RectContainsCoords(gg_rct_AIWayPointAreaCrossTree, heroX, heroY) then
+                    if not IsUnitFacingWestNarrow(this.ownerHero) then
+                        // issue move up to face west
+                        call IssuePointOrder(this.ownerHero, "move", heroX - 10.0, heroY)
+                        call this.owner.botLog("Adjusting facing direction to west for Force Staff self-use.")
+                        return
+                    endif
+                    // stop moving before using item
+                    call IssueImmediateOrder(this.ownerHero, "stop")
+                    set this.readyTargetUnit = this.ownerHero
+                    set this.bIsReadyToCast = true
+                    return
+                endif
+                set this.bIsReadyToCast = false
+                return
+            endif
+            if owner.currentWaypointIndex == 3 or owner.currentWaypointIndex == 13 then
+                // save CD for crossing sea or tree
+                set this.bIsReadyToCast = false
+                return
+            endif
+            if IsUnitFacingAlongTrack(this.ownerHero) then
+                set this.readyTargetUnit = this.ownerHero
+                set this.bIsReadyToCast = true
+            else
+                set this.bIsReadyToCast = false
+            endif
         elseif this.castType == CAST_UNIT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -680,6 +732,20 @@ struct AIAbility
             call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_POINT_TREE_NEAR_ENEMY then
+            call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
+            return true
+        elseif this.castType == CAST_POINT_BLINK then
+            set targetUnit = this.readyTargetUnit
+            if not IsUnitValid(targetUnit) then
+                call resetNotReadyToCast()
+                call this.botLog("Target unit is not valid for blink ability: " + this.orderString)
+                return false
+            endif
+
+            // Calculate blink target point
+            set targetFacingAngle = GetUnitFacing(this.ownerHero)
+            set this.readyTargetPointX = GetUnitX(this.ownerHero) + this.castRange * Cos(targetFacingAngle * bj_DEGTORAD)
+            set this.readyTargetPointY = GetUnitY(this.ownerHero) + this.castRange * Sin(targetFacingAngle * bj_DEGTORAD)
             call this.castPoint(this.readyTargetPointX, this.readyTargetPointY)
             return true
         elseif this.castType == CAST_UNIT then

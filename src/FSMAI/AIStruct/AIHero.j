@@ -115,6 +115,7 @@ struct AIHero
     endmethod
 
     method shouldCrossSeaOrTree takes nothing returns boolean
+        local AIAbility crossingAbility
         if this.difficulty >= DIFF_HARD then
             // Have force staff item
             if this.combatData.hasItemOfFindTargetType(FIND_TARGET_TYPE_SELF_FORCE_STAFF) then
@@ -125,9 +126,21 @@ struct AIHero
                 return true
             endif
             if this.combatData.hasAbilityOfCastType(CAST_POINT_BLINK) then
+                set crossingAbility = this.combatData.getAbilityOfCastType(CAST_POINT_BLINK)
+                if crossingAbility != 0 then
+                    if crossingAbility.isCooldownReady(this.difficulty) then
+                        return true
+                    endif
+                endif
                 return true
             endif
-            if this.combatData.hasAbilityOfCastType(CAST_INSTANT_JUMP) and this.combatData.getAbilityOfCastType(CAST_INSTANT_JUMP).isCooldownReady(this.difficulty) then
+            if this.combatData.hasAbilityOfCastType(CAST_INSTANT_JUMP) then
+                set crossingAbility = this.combatData.getAbilityOfCastType(CAST_INSTANT_JUMP)
+                if crossingAbility != 0 then
+                    if crossingAbility.isCooldownReady(this.difficulty) then
+                        return true
+                    endif
+                endif
                 return true
             endif
         endif
