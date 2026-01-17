@@ -743,6 +743,7 @@ library AIUtils requires KeyUtils
             call BotLog("Checking unit in betweenXY: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif not IsUnitValid(currentUnit) then
             elseif currentUnit == sourceUnit or currentUnit == targetUnit then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
             else
@@ -796,6 +797,7 @@ library AIUtils requires KeyUtils
             call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between units: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
+            elseif not IsUnitValid(currentUnit) then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
             elseif currentUnit != sourceUnit and currentUnit != targetUnit then
                 if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
