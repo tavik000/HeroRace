@@ -292,7 +292,6 @@ library AIUtils requires KeyUtils
 
     function GetAIHeroFromUnit takes unit u returns AIHero
         if u == null then
-            call BotLogError("GetAIHeroFromUnit: null unit provided")
             return 0
         endif
         return LoadInteger(udg_UnitAIHeroMap, GetHandleId(u), 0)
