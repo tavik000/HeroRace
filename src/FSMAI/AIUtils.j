@@ -705,6 +705,11 @@ library AIUtils requires KeyUtils
         set tempAIAbility = 0
         set tempAIItem = 0
 
+        if IsNearlyZero(sx) or IsNearlyZero(sy) or IsNearlyZero(tx) or IsNearlyZero(ty) then
+            call BotLogError("IsThereOtherUnitBlockingBetweenXY: Invalid source or target coordinates")
+            return false
+        endif
+
         call GroupEnumUnitsInRange(unitsBetween, midX, midY, range, Filter(function FilterValidVisibleTeamUnits))
 
         // Exclude Flying and Structures
