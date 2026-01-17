@@ -10,6 +10,9 @@ function Trig_AIDamageBoostActions takes nothing returns nothing
     local AIHero aiHero
     local integer difficulty
 
+    if sourcePlayer == Player(11) then
+        return
+    endif
     if eventDamage < 1.0 then
         return
     endif
@@ -21,6 +24,9 @@ function Trig_AIDamageBoostActions takes nothing returns nothing
         set aiHero = GetAIHeroByPlayer(sourcePlayer)
     else
         set aiHero = GetAIHeroFromUnit(damageSource)
+    endif
+    if aiHero == 0 then
+        return
     endif
     set damageSource = aiHero.hero
 
