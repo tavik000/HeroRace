@@ -623,11 +623,12 @@ struct AIHero
     endmethod
 
     method applyEasyDifficultyModifiers takes nothing returns nothing
-        // -300 HP
+        // -400 HP
         call UnitAddItemByIdSwapped( 'I02K', this.hero)
         call UnitAddItemByIdSwapped( 'I02K', this.hero)
         call UnitAddItemByIdSwapped( 'I02K', this.hero)
-        call this.botLog("Applied Easy difficulty modifiers: -300 HP")
+        call UnitAddItemByIdSwapped( 'I02K', this.hero)
+        call this.botLog("Applied Easy difficulty modifiers: -400 HP")
     endmethod
 
     method applyCrazyDifficultyModifiers takes nothing returns nothing
