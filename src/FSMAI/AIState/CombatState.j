@@ -19,11 +19,19 @@ struct CombatState extends AIState
         // Turn Time and Pre-swing and ability required cast time
         local boolean isCastOvertime = currentTime > (owner.lastStartCastTime + owner.castPt + TURN_TIME + owner.currentRequiredCastTime)
         local boolean isCastFailed = owner.isCasting and isCastOvertime
+        local integer currentOrder = GetUnitCurrentOrder(owner.hero)
 
         call owner.setDebugTextTagContent("Combat: Updating")
         call owner.setDebugTextTagColorPreset("RED")
 
         if owner.eatingTree != null then
+            if currentOrder == 0 then
+                call this.botLog("Finished eating tree cuz no order: " + GetUnitName(owner.eatingTree))
+                call owner.setDebugTextTagContent("Combat: Finished Eating Tree")
+                call owner.setDebugTextTagColorPreset("RED")
+                set owner.eatingTree = null
+                return
+            endif
             call this.botLog("Currently eating a tree, skipping update")
             call owner.setDebugTextTagContent("Combat: Eating Tree")
             call owner.setDebugTextTagColorPreset("RED")
