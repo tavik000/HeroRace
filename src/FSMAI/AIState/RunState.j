@@ -9,6 +9,7 @@ struct RunState extends AIState
         call this.botLog("Entering Run State")
         call owner.setDebugTextTagContent("Run: Entering")
         call owner.setDebugTextTagColorPreset("GREEN")
+        set owner.idleReissueCount = 0
         if owner.isCasting then
             call this.botLogError("Hero is casting when entering Run State, resetting casting state")
             set owner.isCasting = false
@@ -121,8 +122,31 @@ struct RunState extends AIState
 
         if currentOrder == 0 then
             // Hero is idle (no current order) - reissue move command to current waypoint
-            call this.botLog("Hero is idle, issuing move command")
-            call owner.setDebugTextTagContent("Run: Reissuing Move Command")
+
+            // Check if reissuing frequently (within 5 seconds) - might be stuck
+            if owner.lastIdleReissueTime > 0.0 and (TimerGetElapsed(gameTimer) - owner.lastIdleReissueTime) < 5.0 then
+                set owner.idleReissueCount = owner.idleReissueCount + 1
+                if owner.idleReissueCount >= 5 then
+                    // Unstuck logic
+                    set udg_Stuck_Unit = owner.hero
+                    call TriggerExecute( gg_trg_Stuck_in_tree)
+
+                    set owner.idleReissueCount = 0
+                    set owner.lastIdleReissueTime = TimerGetElapsed(gameTimer)
+
+                    call this.botLog("Hero is stuck! Reissued move command 5 times. Calling UnstuckUnit()")
+                    call owner.setDebugTextTagContent("Run: STUCK - Recovering")
+                    call owner.setDebugTextTagColorPreset("YELLOW")
+                    return
+                endif
+            else
+                // Been a while since last reissue, reset counter
+                set owner.idleReissueCount = 1
+            endif
+            
+            set owner.lastIdleReissueTime = TimerGetElapsed(gameTimer)
+            call this.botLog("Hero is idle, issuing move command (reissue #" + I2S(owner.idleReissueCount) + ")")
+            call owner.setDebugTextTagContent("Run: Reissuing Move Command #" + I2S(owner.idleReissueCount))
             call owner.setDebugTextTagColorPreset("GREEN")
             call owner.moveToNextWaypoint()
         endif
