@@ -30,19 +30,25 @@ struct DeadState extends AIState
     endmethod
 
     method applyDifficultyModifiersOnRevival takes nothing returns nothing
+        local real speedBonus = 0.0
         // Apply difficulty-based modifiers on revival
         if owner.difficulty >= DIFF_CRAZY then
             if owner.difficulty == DIFF_NIGHTMARE then
                 // Increase move speed
-                call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + 5.0))
-                call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + 5.0)
+                set speedBonus = 10.0
+                call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
+                call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
                 // +200 HP
                 call UnitAddItemByIdSwapped( 'I00L', owner.hero ) 
-                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +5 Move Speed, +200 HP")
+                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +10 Move Speed, +200 HP")
             else
+                // Increase move speed
+                set speedBonus = 5.0
+                call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
+                call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
                 // +100 HP
                 call UnitAddItemByIdSwapped( 'I02J', owner.hero )
-                call this.botLog("Applying Crazy difficulty modifiers on revival: +100 HP")
+                call this.botLog("Applying Crazy difficulty modifiers on revival: +5 Move Speed, +100 HP")
             endif
         endif
     endmethod
