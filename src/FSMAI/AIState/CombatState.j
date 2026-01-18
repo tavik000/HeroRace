@@ -26,7 +26,7 @@ struct CombatState extends AIState
 
         if owner.eatingTree != null then
             if currentOrder == 0 then
-                call this.botLog("Finished eating tree cuz no order: " + GetUnitName(owner.eatingTree))
+                call this.botLog("Finished eating tree cuz No order")
                 call owner.setDebugTextTagContent("Combat: Finished Eating Tree")
                 call owner.setDebugTextTagColorPreset("RED")
                 set owner.eatingTree = null
