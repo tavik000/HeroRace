@@ -303,7 +303,7 @@ library AIUtils requires KeyUtils
 
     function GetAIHeroByPlayer takes player p returns AIHero
         local group playerHeroes = CreateGroup()
-        local unit heroUnit
+        local unit heroUnit = null
         local AIHero aiHero = 0
         local unit currentUnit
 
