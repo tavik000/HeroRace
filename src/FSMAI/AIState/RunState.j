@@ -126,7 +126,7 @@ struct RunState extends AIState
             // Check if reissuing frequently (within 5 seconds) - might be stuck
             if owner.lastIdleReissueTime > 0.0 and (TimerGetElapsed(gameTimer) - owner.lastIdleReissueTime) < 5.0 then
                 set owner.idleReissueCount = owner.idleReissueCount + 1
-                if owner.idleReissueCount >= 5 then
+                if owner.idleReissueCount >= 15 then
                     // Unstuck logic
                     set udg_Stuck_Unit = owner.hero
                     call TriggerExecute( gg_trg_Stuck_in_tree)
@@ -134,7 +134,7 @@ struct RunState extends AIState
                     set owner.idleReissueCount = 0
                     set owner.lastIdleReissueTime = TimerGetElapsed(gameTimer)
 
-                    call this.botLog("Hero is stuck! Reissued move command 5 times. Calling UnstuckUnit()")
+                    call this.botLog("Hero is stuck! Reissued move command 15 times. Calling UnstuckUnit()")
                     call owner.setDebugTextTagContent("Run: STUCK - Recovering")
                     call owner.setDebugTextTagColorPreset("YELLOW")
                     return
