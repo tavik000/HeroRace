@@ -318,6 +318,10 @@ library AIUtils requires KeyUtils
                 exitwhen true
             endif
         endloop
+        call DestroyGroup(playerHeroes)
+        if heroUnit == null then
+            return 0
+        endif
         return GetAIHeroFromUnit(heroUnit)
     endfunction
 
