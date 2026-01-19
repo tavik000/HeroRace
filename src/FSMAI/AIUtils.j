@@ -290,6 +290,10 @@ library AIUtils requires KeyUtils
         return true
     endfunction
 
+    function GetHeroTrackProgress takes unit u returns integer
+        return LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(u), S2I("trackProgress"))
+    endfunction
+
     function GetAIHeroFromUnit takes unit u returns AIHero
         if u == null then
             return 0
@@ -383,33 +387,40 @@ library AIUtils requires KeyUtils
         local real followingY = GetUnitY(followingUnit)
         local real goalX = GoalX
         local real goalY = GoalY
-        local integer TrackProgress = 0
-        // Crossing mid track line
-        set TrackProgress = MaxI(LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(leadingUnit), S2I("trackProgress")), LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(followingUnit), S2I("trackProgress")))
-        if IsHeroGoaled(leadingUnit) or IsHeroGoaled(followingUnit) then
-            set TrackProgress = 2
+        local integer maxTrackProgress = 0
+        local integer leadingTrackProgress = GetHeroTrackProgress(leadingUnit)
+        local integer followingTrackProgress = GetHeroTrackProgress(followingUnit)
+
+        if followingTrackProgress > leadingTrackProgress then
+            return false
         endif
 
-        if TrackProgress == 0 then
+        // Crossing mid track line
+        set maxTrackProgress = MaxI(leadingTrackProgress, followingTrackProgress)
+        if IsHeroGoaled(leadingUnit) or IsHeroGoaled(followingUnit) then
+            set maxTrackProgress = 2
+        endif
+
+        if maxTrackProgress == 0 then
             if DistanceBetweenXY(leadingX, leadingY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(followingX, followingY, TopRightAreaCenterX, TopRightAreaCenterY) then
                 return true
             else
                 return false
             endif
-        elseif TrackProgress == 1 then
+        elseif maxTrackProgress == 1 then
             if DistanceBetweenXY(leadingX, leadingY, BotRightAreaCenterX, BotRightAreaCenterY) < DistanceBetweenXY(followingX, followingY, BotRightAreaCenterX, BotRightAreaCenterY) then
                 return true
             else
                 return false
             endif
-        elseif TrackProgress == 2 then
+        elseif maxTrackProgress == 2 then
             if DistanceBetweenXY(leadingX, leadingY, goalX, goalY) < DistanceBetweenXY(followingX, followingY, goalX, goalY) then
                 return true
             else
                 return false
             endif
         else
-            call BotLogError("Unknown Track Progress value: " + I2S(TrackProgress))
+            call BotLogError("Unknown Track Progress value: " + I2S(maxTrackProgress))
             return false
         endif
 
@@ -2677,7 +2688,6 @@ library AIUtils requires KeyUtils
                 return null
             endif
             if GetUnitLifePercent(owner.hero) < 35.0 then
-                call owner.botLog("Skipping teleport target finding due to low health.")
                 return null
             endif
             set targetUnit = FindTeleportAllyTargetInRange(owner, abil.castRange, 3000.0, abil)
@@ -2689,11 +2699,13 @@ library AIUtils requires KeyUtils
             set targetUnit = FindLeadingEnemyTargetInRange(owner.hero, abil.castRange, abil.minTargetDistance, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found leading enemy target for ability " + abil.getName() + ", result: " + GetUnitName(targetUnit))
+                call owner.botLog("(MeatHook) owner track progress: " + I2S(GetHeroTrackProgress(owner.hero)) + ", target track progress: " + I2S(GetHeroTrackProgress(targetUnit)))
                 return targetUnit
             endif
             set targetUnit = FindTrailingAllyTargetInRange(owner.hero, abil.castRange, abil.minTargetDistance, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found trailing ally target for ability " + abil.getName() + ", result: " + GetUnitName(targetUnit))
+                call owner.botLog("(MeatHook) owner track progress: " + I2S(GetHeroTrackProgress(owner.hero)) + ", target track progress: " + I2S(GetHeroTrackProgress(targetUnit)))
                 return targetUnit
             endif
             call owner.botLog("No target found for leading enemy or trailing ally for ability " + abil.getName())

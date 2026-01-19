@@ -837,6 +837,7 @@ struct AIAbility
                     call this.resetNotReadyToCast()
                     return false
                 endif
+                call this.botLog("(Teleport) owner track progress: " + I2S(GetHeroTrackProgress(owner.hero)) + ", target track progress: " + I2S(GetHeroTrackProgress(targetUnit)))
             endif
 
             if this.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE or this.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
