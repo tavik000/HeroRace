@@ -86,7 +86,6 @@ struct HazardState extends AIState
         local boolean hasSlowSpikeBehind = false
         local unit slowSpikeUnit = null
         local rect currentWaypointArea
-        call this.botLog("onSlowSpikeHazardZoneUpdate")
 
         set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             
@@ -128,7 +127,6 @@ struct HazardState extends AIState
         endif
 
         // No more spikes around, keep moving to next waypoint
-        call this.botLog("No Slow Spikes")
         call owner.moveToNextWaypoint()
     endmethod
 
