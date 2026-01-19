@@ -9,11 +9,18 @@ struct HazardState extends AIState
     endmethod
 
     method onEnter takes nothing returns nothing
+        local real ux = GetUnitX(owner.hero)
+        local real uy = GetUnitY(owner.hero)
+        call this.botLog("Entering Hazard State")
+        
+        // Determine hazard type based on current location
         if IsInSlowSpikeHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_SLOW_SPIKE
             if owner.currentWaypointIndex > 8 then
-                call owner.setWaypointIndex(8) // Reset to before Slow Spike Hazard
-                call this.botLog("Resetting waypoint index to 8 for Slow Spike Hazard")
+                if not RectContainsCoords(gg_rct_AIWayPointArea08, ux, uy) then
+                    call owner.setWaypointIndex(8) // Reset to before Slow Spike Hazard
+                    call this.botLog("Resetting waypoint index to 8 for Slow Spike Hazard")
+                endif
             endif
             call this.botLog("Detected Slow Spike Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Slow Spike Zone")
@@ -21,8 +28,10 @@ struct HazardState extends AIState
         elseif IsInFastSpikeHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_FAST_SPIKE
             if owner.currentWaypointIndex > 10 then
-                call owner.setWaypointIndex(10) // Reset to before Fast Spike Hazard
-                call this.botLog("Resetting waypoint index to 10 for Fast Spike Hazard")
+                if not RectContainsCoords(gg_rct_AIWayPointArea10, ux, uy) then
+                    call owner.setWaypointIndex(10) // Reset to before Fast Spike Hazard
+                    call this.botLog("Resetting waypoint index to 10 for Fast Spike Hazard")
+                endif
             endif
             call this.botLog("Detected Fast Spike Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Fast Spike Zone")
@@ -89,6 +98,11 @@ struct HazardState extends AIState
 
         set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             
+        if owner.currentWaypointIndex < 8 then
+            call this.botLogError("Waypoint index less than 8 in Slow Spike Hazard Zone, correcting to 8")
+            call owner.setWaypointIndex(8)
+        endif
+
         // Check if hero has reached the current waypoint area
         if RectContainsCoords(currentWaypointArea, heroX, heroY) then
             call owner.changeState(RunState.create())
@@ -203,6 +217,11 @@ struct HazardState extends AIState
         local real heroY = GetUnitY(owner.hero)
         local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
 
+        if owner.currentWaypointIndex < 10 then
+            call this.botLogError("Waypoint index less than 10 in Fast Spike Hazard Zone, correcting to 10")
+            call owner.setWaypointIndex(10)
+        endif
+
         if not IsTriggerEnabled(gg_trg_FastSpike) then
             call this.botLog("Fast Spike trigger is disabled, skipping hazard handling")
             call owner.setDebugTextTagContent("Hazard: Fast Spike Trigger Disabled")
@@ -254,6 +273,11 @@ struct HazardState extends AIState
         local boolean hasNetBehind = false
         local unit netUnit = null
         local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+
+        if owner.currentWaypointIndex < 12 then
+            call this.botLogError("Waypoint index less than 12 in Net Hazard Zone, correcting to 12")
+            call owner.setWaypointIndex(12)
+        endif
 
 
         if not IsTriggerEnabled(gg_trg_Net01) then
