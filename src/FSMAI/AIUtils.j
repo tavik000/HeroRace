@@ -2896,8 +2896,10 @@ library AIUtils requires KeyUtils
             endif
             call owner.botLog("Force using speed-up item on ally: " + GetUnitName(targetUnit))
         elseif itm.findTargetType == FIND_TARGET_TYPE_ALLY_TELEPORT then
-            set targetUnit = FindRandomAllyHeroInRange(owner, itm.castRange, true, 0)
-            call owner.botLog("Force using teleport item on random ally: " + GetUnitName(targetUnit))
+            set targetUnit = FindTeleportAllyTargetInRange(owner, itm.castRange, 0.0, 0)
+            if targetUnit != null then
+                call owner.botLog("Found ally hero target for force teleport item, result: " + GetUnitName(targetUnit))
+            endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_HEALTHY_RUNNING then
             set targetUnit = FindRandomEnemyHeroInRange(owner, itm.castRange, 0)
             call owner.botLog("Force using item on healthy running enemy: " + GetUnitName(targetUnit))
