@@ -1608,7 +1608,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, AIAbility abil returns unit
+    function FindSpeedUpAllyTargetInRange takes unit ownerHero, real range, boolean bExcludeSelf, AIAbility abil returns unit
         local group heroes = CreateGroup()
         local unit currentUnit = null
         local real minHpPercent = 50.0 
@@ -1625,7 +1625,7 @@ library AIUtils requires KeyUtils
         local real currentDist
         local real bestDist
 
-        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >300, Goaled Hero
+        // Not Allowed Target: MagicImmune, customFilter, CCed, In Hazard Zone, Speed <200 or >300, Goaled Hero, self if bExcludeSelf
         // Priority Order:
         // 1. HP >= 50%
         // 2. Behind
@@ -1645,6 +1645,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif bExcludeSelf and currentUnit == ownerHero then
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif IsUnitStunOrSlow(currentUnit) then
             elseif IsUnitInAnyHazardZone(currentUnit) then
@@ -1689,7 +1690,9 @@ library AIUtils requires KeyUtils
         // 4. Self Priority (Fallback)
         // Select self if no valid target found, or if the best found target is in front.
         if bestTarget == null or IsUnitInFrontOfUnit(bestTarget, ownerHero) then
-            set bestTarget = ownerHero
+            if not bExcludeSelf then
+                set bestTarget = ownerHero
+            endif
         endif
 
         // Clean up
@@ -2680,7 +2683,7 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found CC'ed ally target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, abil.castRange, abil)
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, abil.castRange, false, abil)
             if targetUnit != null then
                 call owner.botLog("Found ally hero target for speed-up ability, result: " + GetUnitName(targetUnit))
             endif
@@ -2745,7 +2748,7 @@ library AIUtils requires KeyUtils
         local real heroY = GetUnitY(owner.hero)
 
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, false, 0)
             if targetUnit != null then
                 call owner.botLog("Found ally hero target for speed-up item, result: " + GetUnitName(targetUnit))
             endif
@@ -2800,6 +2803,10 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found low health ally target for item, result: " + GetUnitName(targetUnit))
             endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
+            if IsHeroGoaled(owner.hero) then
+                set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, true, 0)
+                return targetUnit
+            endif
             if RectContainsCoords(gg_rct_AIWayPointAreaCrossSea, heroX, heroY) then
                 if not IsUnitFacingEast(owner.hero) then
                     // issue move right to face east
@@ -2857,7 +2864,7 @@ library AIUtils requires KeyUtils
     function FindForceToUseTargetUnitForItem takes AIHero owner, AIItem itm returns unit
         local unit targetUnit = null
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, false, 0)
             if targetUnit == null then
                 set targetUnit = owner.hero
             endif
@@ -2899,7 +2906,7 @@ library AIUtils requires KeyUtils
             set targetUnit = owner.hero
             call owner.botLog("Force using item on self")
         elseif itm.findTargetType == FIND_TARGET_TYPE_SELF_FORCE_STAFF then
-            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, 0)
+            set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, false, 0)
             if targetUnit == null then
                 set targetUnit = owner.hero
             endif

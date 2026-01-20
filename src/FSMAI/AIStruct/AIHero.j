@@ -160,6 +160,10 @@ struct AIHero
     method shouldCrossSeaOrTree takes nothing returns boolean
         local AIAbility crossingAbility
         if this.difficulty >= DIFF_HARD then
+            if IsHeroGoaled(this.hero) then
+                return false
+            endif
+
             // Have force staff item
             if this.combatData.hasItemOfFindTargetType(FIND_TARGET_TYPE_SELF_FORCE_STAFF) then
                 return true
