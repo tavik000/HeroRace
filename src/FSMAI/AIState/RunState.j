@@ -171,6 +171,17 @@ struct RunState extends AIState
             return
         endif
 
+        if owner.currentWaypointIndex == 6 and owner.shouldGoThroughThreeFish() then
+            // Special case: go through 3 fishes hazard
+            call owner.setWaypointIndex(7)  
+            call owner.moveToNextWaypoint()
+
+            call this.botLog("Going through 3 Fishes Hazard at waypoint 6")
+            call owner.setDebugTextTagContent("Run: Through 3 Fishes Hazard")
+            call owner.setDebugTextTagColorPreset("GREEN")
+            return
+        endif
+
         set currentWaypointArea = null
     endmethod
 

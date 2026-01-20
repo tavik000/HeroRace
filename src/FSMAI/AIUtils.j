@@ -526,6 +526,32 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function IsThreeFishHazardStable takes nothing returns boolean
+        local integer fishCurrentOrder = 0
+        if not IsUnitValid(gg_unit_n00V_0038) then
+            return false
+        endif
+        if not IsUnitValid(gg_unit_n00X_0036) then
+            return false
+        endif
+        if not IsUnitValid(gg_unit_n00X_0037) then
+            return false
+        endif
+        set fishCurrentOrder = GetUnitCurrentOrder(gg_unit_n00V_0038)
+        if fishCurrentOrder != 0 then
+            return false
+        endif
+        set fishCurrentOrder = GetUnitCurrentOrder(gg_unit_n00X_0036)
+        if fishCurrentOrder != 0 then
+            return false
+        endif
+        set fishCurrentOrder = GetUnitCurrentOrder(gg_unit_n00X_0037)
+        if fishCurrentOrder != 0 then
+            return false
+        endif
+        return true
+    endfunction
+
     function FindIllusionTargetInRange takes unit ownerHero, real range returns unit
         local group targets = CreateGroup()
         local unit currentUnit = null

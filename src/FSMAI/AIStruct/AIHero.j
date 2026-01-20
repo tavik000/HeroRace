@@ -157,6 +157,10 @@ struct AIHero
         set currentWaypointArea = null
     endmethod
 
+    method shouldGoThroughThreeFish takes nothing returns boolean
+        return not IsThreeFishHazardStable()
+    endmethod
+
     method shouldCrossSeaOrTree takes nothing returns boolean
         local AIAbility crossingAbility
         if this.difficulty >= DIFF_HARD then
