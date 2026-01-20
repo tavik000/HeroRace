@@ -16,6 +16,7 @@ struct AIHero
     string debugTextTagContent
     timer debugTextTagTimer
     item pickingUpItem
+    item givingItem
     destructable eatingTree
     integer lastCastingChannelAbilityId
     boolean isMovingForCast
@@ -43,6 +44,7 @@ struct AIHero
         set this.debugTextTagContent = ""
         set this.debugTextTagTimer = null
         set this.pickingUpItem = null
+        set this.givingItem = null
         set this.eatingTree = null
         set this.lastCastingChannelAbilityId = 0
         set this.isMovingForCast = false
@@ -266,6 +268,33 @@ struct AIHero
         endif
         return false
     endmethod
+
+    method TryEnterGiveItemState takes nothing returns boolean
+        local item itmToGive = null
+        local unit targetUnit = null
+
+        if GetUnitLifePercent(this.hero) > FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD then
+            return false
+        endif
+
+        set itmToGive = this.combatData.getAnyItemToGive()
+        if itmToGive == null then
+            return false
+        endif
+
+        set targetUnit = FindBackOrCloseTargetInRange(this.hero, GIVE_ITEM_RANGE, 150.0, false, true, FIND_TEAM_TYPE_ALLIES, 0, 0)
+        if targetUnit == null then
+            return false
+        endif
+
+        if IsUnitInventoryFull(targetUnit) then
+            return false
+        endif
+
+        set this.givingItem = itmToGive
+        call this.changeState(GiveItemState.create(targetUnit))
+        return true
+    endmethod
         
     method shouldEnterHazardState takes nothing returns boolean
         if this.difficulty < DIFF_HARD then
@@ -430,9 +459,11 @@ struct AIHero
         // call this.botLog("Hero is being targeted by enemy ability: " + GetObjectName(abilityId))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
-            call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
-            call selfDefenseItem.markAsReadyToUse()
-            return
+            if not selfDefenseItem.bIsReadyToUse then
+                call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
+                call selfDefenseItem.markAsReadyToUse()
+                return
+            endif
         endif
         set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
         if selfDefenseAbility != 0 then
@@ -446,9 +477,11 @@ struct AIHero
         // call this.botLog("Hero is being targeted by enemy attack from unit: " + GetUnitName(attacker))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
-            call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
-            call selfDefenseItem.markAsReadyToUse()
-            return
+            if not selfDefenseItem.bIsReadyToUse then
+                call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
+                call selfDefenseItem.markAsReadyToUse()
+                return
+            endif
         endif
         set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
         if selfDefenseAbility != 0 then

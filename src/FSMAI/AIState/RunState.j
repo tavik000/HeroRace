@@ -155,6 +155,10 @@ struct RunState extends AIState
             return
         endif
 
+        if owner.TryEnterGiveItemState() then
+            return 
+        endif
+
         if owner.TryEnterPickupItemState() then
             return
         endif

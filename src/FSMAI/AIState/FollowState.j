@@ -83,6 +83,10 @@ struct FollowState extends AIState
         if owner.tryEnterHazardState() then
             return
         endif
+
+        if owner.TryEnterGiveItemState() then
+            return 
+        endif
        
         if owner.TryEnterPickupItemState() then
             return

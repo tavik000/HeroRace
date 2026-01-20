@@ -9,6 +9,7 @@ globals
     constant integer STATE_DEAD = 5
     constant integer STATE_PICKUP_ITEM = 6
     constant integer STATE_GOALED = 7
+    constant integer STATE_GIVE_ITEM = 8
         
     // Difficulty Levels
     constant integer DIFF_EASY = 0
@@ -45,6 +46,9 @@ globals
     constant real PICKUP_ITEM_RANGE_LARGE = 1000.0
     constant real PICKUP_ITEM_RANGE_NORMAL = 800.0
     constant real PICKUP_ITEM_RANGE_SMALL = 200.0
+
+    // Give Item Range
+    constant real GIVE_ITEM_RANGE = 400.0
 
     // Heal HP Percentage Threshold
     constant real HEAL_HP_PERCENTAGE_THRESHOLD = 40.0 // 40% HP

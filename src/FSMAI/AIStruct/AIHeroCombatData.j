@@ -465,7 +465,6 @@ struct HeroCombatData
             set heroItem = this.items[i]
             if heroItem != 0 then
                 if heroItem.castType == castType then
-                    call this.botLog("Found item with cast type: " + I2S(castType))
                     return heroItem
                 endif
             endif
@@ -516,6 +515,26 @@ struct HeroCombatData
             set resultItem = this.getItemOfCastType(CAST_POINT_SELF_FRONT_DEFENSE_AND_CLEANSE)
         endif
         return resultItem
+    endmethod
+
+    method getAnyItemToGive takes nothing returns item
+        local AIItem heroItem
+        local integer i = 0
+
+        // Find and return the first item that matches the cast type
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            set heroItem = this.items[i]
+            if heroItem != 0 then
+                if heroItem.itemId == 'I02H' or heroItem.itemId == 'I00W' or heroItem.itemId == 'I01A' then
+                    // GiantBelt or Reincarnation or SpellShieldAmulet
+                elseif heroItem.isPassive() and heroItem.isCooldownReady() then
+                    return heroItem.itemHandle
+                endif
+            endif
+            set i = i + 1
+        endloop
+        return null
     endmethod
 
     method syncItemCooldown takes AIItem heroItem returns nothing

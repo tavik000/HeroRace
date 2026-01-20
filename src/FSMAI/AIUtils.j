@@ -165,7 +165,10 @@ library AIUtils requires KeyUtils
         if GetItemTypeId(itm) == 'I01D' then // CompetitionBoots Powerup majia
             return
         endif
-        if GetItemTypeId(itm) == 'I02G' then // RingOfSelfDeprecation
+        if GetItemTypeId(itm) == 'I02H' then // GiantsBelt
+            return
+        endif
+        if GetItemTypeId(itm) == 'I02G' or GetItemTypeId(itm) == 'I022' then // RingOfSelfDeprecation
             return
         endif
         if not bIsInFrontArc then
@@ -187,12 +190,20 @@ library AIUtils requires KeyUtils
         set tempFoundItemX = ux
         set tempFoundItemY = uy
         set tempFoundItemRange = range
-        set tempFoundItemMinDist = 999999.0
+        set tempFoundItemMinDist = MAX_RANGE
         set tempFoundItemUnitFacingAngle = GetUnitFacing(u)
 
         call EnumItemsInRectBJ(rec, function FilterSuitablePickUpItem)
         call RemoveRect(rec)
         set foundItem = tempFoundItem
+
+        // clean up temp variables
+        set tempFoundItem = null
+        set tempFoundItemX = 0.0
+        set tempFoundItemY = 0.0
+        set tempFoundItemRange = 0.0
+        set tempFoundItemMinDist = MAX_RANGE
+        set tempFoundItemUnitFacingAngle = 0.0
 
         return foundItem
     endfunction
@@ -1056,26 +1067,26 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindBackOrCloseEnemyTargetInRange takes unit ownerHero, real backRange, real closeRange, boolean bExcludeClose, AIAbility abil, AIItem itm returns unit
+    function FindBackOrCloseTargetInRange takes unit ownerHero, real backRange, real closeRange, boolean bExcludeClose, boolean bExcludeSelf, integer findTeamType, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
         local player heroOwner = GetOwningPlayer(ownerHero)
 
         if closeRange > backRange then
-            call BotLogErrorWithPlayer(heroOwner, "FindBackOrCloseEnemyTargetInRange: closeRange: " + R2S(closeRange) + " > backRange: " + R2S(backRange))
+            call BotLogErrorWithPlayer(heroOwner, "FindBackOrCloseTargetInRange: closeRange: " + R2S(closeRange) + " > backRange: " + R2S(backRange))
             return null
         endif
     
         // Set temp variables for filter function
         set tempHeroOwner = heroOwner
-        set tempFindTeamType = FIND_TEAM_TYPE_ENEMIES
+        set tempFindTeamType = findTeamType
         set tempHeroUnit = ownerHero
         set tempAIAbility = abil
         set tempAIItem = itm
         call GroupEnumUnitsInRange(enemies, GetUnitX(ownerHero), GetUnitY(ownerHero), backRange, Filter(function FilterValidVisibleTeamHeroes))
 
-        // Not Allowed Target: MagicImmune, customFilter, front of hero if bExcludeClose is true, leading hero
+        // Not Allowed Target: MagicImmune, customFilter, front of hero if bExcludeClose is true, leading hero, exclude self if bExcludeSelf
         // Priority Order:
         // 1. closest to back of hero
 
@@ -1086,6 +1097,7 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif bExcludeSelf and currentUnit == ownerHero then
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif not IsHeroGoaled(ownerHero) and IsUnitInFrontOfUnit(currentUnit, ownerHero) and bExcludeClose then
@@ -2547,12 +2559,12 @@ library AIUtils requires KeyUtils
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_CROWDED then
                 set targetUnit = FindRandomEnemyHeroInRange(owner, abil.castRange, abil)
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
-                set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 1.0, 0, true, abil, 0)
+                set targetUnit = FindBackOrCloseTargetInRange(owner.hero, abil.effectiveRadius * 1.0, 0, true, true, FIND_TEAM_TYPE_ENEMIES, abil, 0)
                 if targetUnit != null then
                     call owner.botLog("Found back enemy target for ability, result: " + GetUnitName(targetUnit))
                 endif
             elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE then
-                set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 1.0, abil.effectiveRadius, false, abil, 0)
+                set targetUnit = FindBackOrCloseTargetInRange(owner.hero, abil.effectiveRadius * 1.0, abil.effectiveRadius, false, true, FIND_TEAM_TYPE_ENEMIES, abil, 0)
                 if targetUnit != null then
                     call owner.botLog("Found back enemy target for ability, result: " + GetUnitName(targetUnit))
                 endif
@@ -2648,12 +2660,12 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found crowded low health enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
-            set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 2.0, 0, true, abil, 0)
+            set targetUnit = FindBackOrCloseTargetInRange(owner.hero, abil.effectiveRadius * 2.0, 0, true, true, FIND_TEAM_TYPE_ENEMIES, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found back enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK_OR_CLOSE then
-            set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, abil.effectiveRadius * 2.0, abil.effectiveRadius, false, abil, 0)
+            set targetUnit = FindBackOrCloseTargetInRange(owner.hero, abil.effectiveRadius * 2.0, abil.effectiveRadius, false, true, FIND_TEAM_TYPE_ENEMIES, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found back enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
@@ -2748,7 +2760,7 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found healthy running enemy target for item, result: " + GetUnitName(targetUnit))
             endif
         elseif itm.findTargetType == FIND_TARGET_TYPE_ENEMY_BACK then
-            set targetUnit = FindBackOrCloseEnemyTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, true, 0, itm)
+            set targetUnit = FindBackOrCloseTargetInRange(owner.hero, itm.effectiveRadius * 2.0, 0, true, true, FIND_TEAM_TYPE_ENEMIES, 0, itm)
             if targetUnit != null then
                 call owner.botLog("Found back enemy target for item, result: " + GetUnitName(targetUnit))
             endif

@@ -19,7 +19,6 @@ struct AIItem
     location readyTargetPoint
     destructable readyTargetTree
 
-
     static method create takes item newItemHandle, integer newItemId, real newBaseCooldown, real newCastRange, real newEffectiveRadius, real requiredCastTime, integer newManaCost, unit newOwnerHero, boolean bNewIsPassive, integer newCastType, integer newFindTargetType returns thistype
         local thistype this = thistype.allocate()
         set this.itemHandle = newItemHandle
@@ -78,6 +77,10 @@ struct AIItem
             return true
         endif
         return false
+    endmethod
+
+    method isPassive takes nothing returns boolean
+        return this.bIsPassive
     endmethod
 
     method mustHaveBuffCodeWhenFollowing takes nothing returns integer

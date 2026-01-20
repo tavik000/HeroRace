@@ -30,6 +30,10 @@ struct GoaledState extends AIState
         call owner.setDebugTextTagContent("Goaled: Updating")
         call owner.setDebugTextTagColorPreset("PINK")
 
+        if owner.TryEnterGiveItemState() then
+            return 
+        endif
+
         if owner.TryEnterPickupItemState() then
             return
         endif
