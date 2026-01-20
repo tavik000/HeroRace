@@ -157,6 +157,10 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
     local real distanceToSummoner = 0.0
     local integer currentOrder = GetUnitCurrentOrder(summonUnit)
     local unit ccAllyTarget = null
+    local item itemToAttackOnTargetDied = null
+    local real itemSearchRadius = 600.0
+    local real itemOfAllyAroundRadius = 700.0
+    local integer allyCountOnItemAround = 0
 
     if not IsUnitAliveBJ(summonUnit) then
         // Summon died, clean up timer
@@ -173,6 +177,27 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
 
     // Retarget if attack target died or currently idle
     if not IsUnitAliveBJ(attackTarget) or currentOrder == 0 then
+
+        // target died, find item on ground to attack if no ally around
+        if not IsUnitAliveBJ(attackTarget) then
+            loop
+                set itemToAttackOnTargetDied = GetSuitablePickupItemInRange(summonUnit, itemSearchRadius)
+                exitwhen itemToAttackOnTargetDied == null
+                if itemToAttackOnTargetDied != null then
+                    // check if ally around
+                    set allyCountOnItemAround = GetHeroCountAroundUnit(summonUnit, itemOfAllyAroundRadius, FIND_TEAM_TYPE_ALLIES)
+                    exitwhen allyCountOnItemAround > 0
+                    if allyCountOnItemAround == 0 then
+                        // attack item
+                        call IssueTargetOrder(summonUnit, "attack", itemToAttackOnTargetDied)
+                        call BotLog("Summoned unit attacking item on ground: " + GetItemName(itemToAttackOnTargetDied) + " since no ally around.")
+                        call PolledWait(0.5)
+                    endif
+                endif
+            endloop
+            call BotLog("No suitable item found on ground for summoned unit to attack after target died.")
+        endif
+
         // Attack target died, find new target
         set newAttackTarget = FindSummonAttackTargetUnit(summonerAIHero, summonUnit, expectedDamage)
         if newAttackTarget != null then
