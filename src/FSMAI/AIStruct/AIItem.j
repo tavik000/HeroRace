@@ -310,23 +310,24 @@ struct AIItem
             if this.isForcedToUse() then
                 set this.readyTargetUnit = FindForceToUseTargetUnitForItem(this.ownerAIHero, this)
                 set this.bIsReadyToUse = this.readyTargetUnit != null
-                call this.botLog("Forced to use item: " + GetItemName(this.itemHandle) + " on self: " + GetUnitName(this.readyTargetUnit))
-                return this.bIsReadyToUse
+                call this.botLog("Forced to use item: " + GetItemName(this.itemHandle) + " on target: " + GetUnitName(this.readyTargetUnit))
             else
                 set this.readyTargetUnit = FindTargetUnitForItem(this.ownerAIHero, this)
             endif
             if this.readyTargetUnit != null then
                 // Calculate point in front of target unit
-                set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
-                set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
-                set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
-                set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
-                if this.shouldCheckOtherUnitBlockingTargetUnit() then
-                    if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, this.readyTargetUnit, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
-                        set this.readyTargetUnit = null
-                        set this.bIsReadyToUse = false
-                        call this.botLog("Another unit is blocking the target point for item: " + GetItemName(this.itemHandle) + ", cannot use now.")
-                        return false
+                if this.readyTargetUnit != this.ownerHero then
+                    set targetFacingAngle = GetUnitFacing(this.readyTargetUnit)
+                    set offset = this.getUnitFrontOffsetDistance(this.readyTargetUnit)
+                    set this.readyTargetPointX = GetUnitX(this.readyTargetUnit) + offset * Cos(targetFacingAngle * bj_DEGTORAD)
+                    set this.readyTargetPointY = GetUnitY(this.readyTargetUnit) + offset * Sin(targetFacingAngle * bj_DEGTORAD)
+                    if this.shouldCheckOtherUnitBlockingTargetUnit() then
+                        if IsThereOtherUnitBlockingBetweenXY(this.ownerHero, this.readyTargetUnit, FIND_TEAM_TYPE_ALL, GetUnitX(this.ownerHero), GetUnitY(this.ownerHero), this.readyTargetPointX, this.readyTargetPointY, this.effectiveRadius) then
+                            set this.readyTargetUnit = null
+                            set this.bIsReadyToUse = false
+                            call this.botLog("Another unit is blocking the target point for item: " + GetItemName(this.itemHandle) + ", cannot use now.")
+                            return false
+                        endif
                     endif
                 endif
                 call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
