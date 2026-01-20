@@ -106,9 +106,11 @@ struct FollowState extends AIState
 
     method onExit takes nothing returns nothing
         call owner.resetIsCasting()
-        call this.botLog("Exiting Dead State")
-        call owner.setDebugTextTagContent("Dead: Exiting")
-        call owner.setDebugTextTagColorPreset("GRAY")
+        call this.botLog("Exiting Follow State")
+        call owner.setDebugTextTagContent("Follow: Exiting")
+        call owner.setDebugTextTagColorPreset("BLUE")
+
+        call owner.updateWaypointAfterAnyKindOfTeleport()
     endmethod
 
 endstruct

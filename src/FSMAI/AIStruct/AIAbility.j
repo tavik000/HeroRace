@@ -223,6 +223,11 @@ struct AIAbility
         set this.readyTargetPointY = 0.0
         set this.owner.isMovingForCast = false
         call this.botLog("Resetting not ready to cast for ability: " + GetObjectName(this.abilityId))
+
+        if this.findTargetType == FIND_TARGET_TYPE_ENEMY_COMBO then
+            set owner.comboTargetUnit = null
+            call owner.botLog("Resetting combo target unit for ability: " + GetObjectName(this.abilityId))
+        endif
     endmethod
 
     method tryPrepareTarget takes nothing returns nothing

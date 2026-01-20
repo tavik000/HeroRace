@@ -124,6 +124,7 @@ struct AIHero
         
         if newWaypointIndex > this.currentWaypointIndex then
             set this.currentWaypointIndex = newWaypointIndex
+            call this.moveToNextWaypoint()
             call this.botLog("Updated waypoint after teleport to index: " + I2S(newWaypointIndex))
         endif
 
@@ -258,6 +259,10 @@ struct AIHero
     endmethod
 
     method TryEnterPickupItemState takes nothing returns boolean
+        if not IsUnitValid(this.hero) then
+            return false
+        endif
+
         call this.searchPickupItemAround()
         if this.shouldEnterPickupItemState() then
             call this.botLog("Entering Pickup Item State")
@@ -272,6 +277,10 @@ struct AIHero
     method TryEnterGiveItemState takes nothing returns boolean
         local item itmToGive = null
         local unit targetUnit = null
+
+        if not IsUnitValid(this.hero) then
+            return false
+        endif
 
         if GetUnitLifePercent(this.hero) > FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD then
             return false
@@ -321,6 +330,11 @@ struct AIHero
     endmethod
 
     method tryEnterHazardState takes nothing returns boolean
+
+        if not IsUnitValid(this.hero) then
+            return false
+        endif
+
         if this.shouldEnterHazardState() then
             call this.botLog("Spike hazard detected - entering spike dodge state")
             call this.changeState(HazardState.create())
@@ -643,6 +657,10 @@ struct AIHero
     endmethod
 
     method tryEnterCombat takes nothing returns boolean
+        if not IsUnitValid(this.hero) then
+            return false
+        endif
+
         call this.combatData.tryPrepareTargetForItems()
         call this.combatData.tryPrepareTargetForAbilities()
 
