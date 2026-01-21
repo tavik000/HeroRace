@@ -281,6 +281,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 90)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
 
         // Lina Abilities
         set currentAbilityId = 'A00T' // DragonSlave
