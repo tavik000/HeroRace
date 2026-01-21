@@ -16,9 +16,30 @@ library AIHookEvent requires AIUtils
 
     function OnAIHeroBeTargetedByEnemyAbility takes unit u, unit caster, integer abilityId returns nothing
         local AIHero aiHero = GetAIHeroFromUnit(u)
-        if aiHero != null then
-            call aiHero.onBeTargetedByEnemyAbility(caster, abilityId)
+        local real distanceToEnemyCaster = 0.0
+        local real projectileSpeed = 0.0
+        local boolean bIsProjectileAbility = IsTargetUnitProjectileAbility(abilityId)
+        local real timeToWait = 0.0
+        if aiHero == null then
+            return
         endif
+
+        call aiHero.onBeTargetedByEnemyAbilityImmediate(caster, abilityId)
+
+        if bIsProjectileAbility then
+            set distanceToEnemyCaster = DistanceBetweenUnits(u, caster)
+            set projectileSpeed = GetNonAIAbilityProjectileSpeed(abilityId)
+            if projectileSpeed > 0.0 then
+                set timeToWait = (distanceToEnemyCaster / projectileSpeed) - 0.9
+                if timeToWait > 0.0 then
+                    call aiHero.botLog("Waiting for " + R2S(timeToWait) + " seconds before processing being targeted by enemy ability: " + GetObjectName(abilityId))
+                    call PolledWait(timeToWait)
+                endif
+            endif
+        endif
+
+        call aiHero.onBeTargetedByEnemyAbilityProjectileDelayed(caster, abilityId)
+
     endfunction
 
     function OnAIHeroBeTargetedByEnemyAttack takes unit u, unit attacker returns nothing

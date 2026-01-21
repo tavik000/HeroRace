@@ -475,37 +475,20 @@ struct AIHero
         call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, manaCost, this.hero, bIsPassive, castType, findTargetType)
     endmethod
 
-    method onBeTargetedByEnemyAbility takes unit caster, integer abilityId returns nothing
-        local AIItem selfDefenseItem
-        local AIAbility selfDefenseAbility
+    method onBeTargetedByEnemyAbilityImmediate takes unit caster, integer abilityId returns nothing
         local AIAbility shadowmeldAbil
+        local boolean bIsProjectileAbility = IsTargetUnitProjectileAbility(abilityId)
         local real distanceToEnemyCaster = 0.0
-
-        // call this.botLog("Hero is being targeted by enemy ability: " + GetObjectName(abilityId))
-        set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
-        if selfDefenseItem != 0 then
-            if not selfDefenseItem.bIsReadyToUse then
-                call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
-                call selfDefenseItem.markAsReadyToUse()
-                return
-            endif
-        endif
-        set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
-        if selfDefenseAbility != 0 then
-            if not selfDefenseAbility.bIsReadyToCast then
-                call this.botLog("Marking self-defense ability as ready to cast: " + selfDefenseAbility.orderString)
-                call selfDefenseAbility.markAsReadyToCast()
-                return
-            endif
-        endif
+        local real projectileSpeed = 0.0
 
         if IsNightTime() then
             set shadowmeldAbil = this.combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
             if shadowmeldAbil != 0 then
                 if not shadowmeldAbil.bIsReadyToCast then
-                    if IsTargetUnitProjectileAbility(abilityId) then
+                    if bIsProjectileAbility then
                         set distanceToEnemyCaster = DistanceBetweenUnits(this.hero, caster)
-                        if distanceToEnemyCaster > GetNonAIAbilityProjectileSpeed(abilityId) * 1.0 then
+                        set projectileSpeed = GetNonAIAbilityProjectileSpeed(abilityId)
+                        if distanceToEnemyCaster > projectileSpeed * 1.0 then
                             call shadowmeldAbil.markAsReadyToCast()
                             call this.botLog("Marking Shadowmeld ability as ready to cast due to being targeted by projectile ability: " + GetObjectName(abilityId))
                         endif
@@ -513,6 +496,29 @@ struct AIHero
                 endif
             endif
         endif
+    endmethod
+
+    method onBeTargetedByEnemyAbilityProjectileDelayed takes unit caster, integer abilityId returns nothing
+        local AIItem selfDefenseItem
+        local AIAbility selfDefenseAbility
+
+        set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
+        if selfDefenseItem != 0 then
+            if not selfDefenseItem.bIsReadyToUse then
+                call selfDefenseItem.markAsReadyToUse()
+                call this.botLog("Marking self-defense item as ready to use: " + GetItemName(selfDefenseItem.itemHandle))
+                return
+            endif
+        endif
+        set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
+        if selfDefenseAbility != 0 then
+            if not selfDefenseAbility.bIsReadyToCast then
+                call selfDefenseAbility.markAsReadyToCast()
+                call this.botLog("Marking self-defense ability as ready to cast: " + selfDefenseAbility.orderString)
+                return
+            endif
+        endif
+
     endmethod
 
     method onBeTargetedByEnemyAttack takes unit attacker returns nothing
