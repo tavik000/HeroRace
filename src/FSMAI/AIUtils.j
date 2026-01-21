@@ -908,7 +908,9 @@ library AIUtils requires KeyUtils
             exitwhen currentUnit == null
             call GroupRemoveUnit(allies, currentUnit)
 
-            call BotLogWithPlayer(heroOwner, "Evaluating Trailing Ally target: " + GetUnitName(currentUnit))
+            if currentUnit != ownerHero then
+                call BotLogWithPlayer(heroOwner, "Evaluating Trailing Ally target: " + GetUnitName(currentUnit))
+            endif
 
             // --- VALIDATION LAYER ---
             if tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
@@ -920,7 +922,7 @@ library AIUtils requires KeyUtils
             elseif bShouldCheckOtherUnitBlockingTargetUnit and IsThereOtherUnitBlockingBetweenUnits(ownerHero, currentUnit, tolerance) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
             elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
-                call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance") 
+                // call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance") 
             elseif bestTarget == null then
                 set bestTarget = currentUnit
                 call BotLogWithPlayer(heroOwner, "Selected trailing ally target: " + GetUnitName(currentUnit))
@@ -2749,7 +2751,7 @@ library AIUtils requires KeyUtils
                 call owner.botLog("(MeatHook) owner track progress: " + I2S(GetHeroTrackProgress(owner.hero)) + ", target track progress: " + I2S(GetHeroTrackProgress(targetUnit)))
                 return targetUnit
             endif
-            call owner.botLog("No target found for leading enemy or trailing ally for ability " + abil.getName())
+            // call owner.botLog("No target found for leading enemy or trailing ally for ability " + abil.getName())
             return null
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_HOLY_LIGHT then
             set targetUnit = FindHolyLightAllyTargetInRange(owner.hero, abil.castRange, abil.expectedDamage)

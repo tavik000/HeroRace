@@ -425,4 +425,12 @@ library KeyUtils
         endif
     endfunction
 
+    function IsDayTime takes nothing returns boolean
+        return GetTimeOfDay() >= 6.0 and GetTimeOfDay() < 18.0
+    endfunction
+
+    function IsNightTime takes nothing returns boolean
+        return not IsDayTime()
+    endfunction
+
 endlibrary

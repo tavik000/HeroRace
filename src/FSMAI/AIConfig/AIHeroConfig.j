@@ -318,10 +318,11 @@ library AIHeroConfig
 
         // VengefulSpirit
         set heroTypeId = 'N00I'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A07N')  // MagicMissile
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A06G')  // WaveOfTerror
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A07A')  // NetherSwap
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.25)
 
         // Add more hero configurations here...

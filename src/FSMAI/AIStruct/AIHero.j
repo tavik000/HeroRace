@@ -515,6 +515,21 @@ struct AIHero
         call this.updateWaypointAfterAnyKindOfTeleport()
     endmethod
 
+    method onBeTargetedByBomberSelfDestruct takes boolean isMegaBomber returns nothing
+        local AIAbility shadowmeldAbil = 0
+        if not isMegaBomber then
+            if IsNightTime() then
+                set shadowmeldAbil = combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
+                if shadowmeldAbil != 0 then
+                    call shadowmeldAbil.markAsReadyToCast()
+                    call this.botLog("Marked Shadowmeld ability as ready to cast due to being targeted by Bomber Self-Destruct.")
+                endif
+            endif
+        else
+            // TODO
+        endif
+    endmethod
+
     method getBlockingUnitAround takes real detectRadius, boolean bCheckBehind returns unit
         local group blockingUnitGroup = CreateGroup()
         local unit u // for enumerating units

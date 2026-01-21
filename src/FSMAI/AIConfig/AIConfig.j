@@ -93,6 +93,7 @@ globals
     constant integer CAST_INSTANT_JUMP = 13
     constant integer CAST_INSTANT_COMBO_TARGET_NOT_CC = 14
     constant integer CAST_INSTANT_ANIMATE_DEAD = 15
+    constant integer CAST_INSTANT_SELF_SHADOWMELD = 16
 
 
     constant integer CAST_POINT_ENEMY_FRONT = 20

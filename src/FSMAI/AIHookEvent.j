@@ -35,5 +35,12 @@ library AIHookEvent requires AIUtils
         endif
     endfunction
 
+    function OnAIHeroBeTargetedByBomberSelfDestruct takes unit u, boolean isMegaBomber returns nothing
+        local AIHero aiHero = GetAIHeroFromUnit(u)
+        if aiHero != null then
+            call aiHero.onBeTargetedByBomberSelfDestruct(isMegaBomber)
+        endif
+    endfunction
+
 
 endlibrary

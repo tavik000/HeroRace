@@ -350,6 +350,8 @@ struct AIAbility
             else
                 set this.bIsReadyToCast = false
             endif
+        elseif this.castType == CAST_INSTANT_SELF_SHADOWMELD then
+            // will be set when being targeted by other ability, or bomber self-destruct
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
             if this.findTargetType == FIND_TARGET_TYPE_NONE then
                 call this.botLogError("Ability find target type is FIND_TARGET_TYPE_NONE, cannot prepare ability: " + GetObjectName(this.abilityId))
@@ -655,6 +657,9 @@ struct AIAbility
             call this.castInstant()
             return true
         elseif this.castType == CAST_INSTANT_JUMP then
+            call this.castInstant()
+            return true
+        elseif this.castType == CAST_INSTANT_SELF_SHADOWMELD then
             call this.castInstant()
             return true
         elseif this.castType == CAST_POINT_ENEMY_FRONT then
