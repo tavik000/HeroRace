@@ -465,7 +465,9 @@ library AIUtils requires KeyUtils
         local real uy = GetUnitY(aiHero.hero)
         if wpi >= 8 then
             if RectContainsCoords(gg_rct_HazardSlowSpikeArea, ux, uy) then
-                return true
+                if not RectContainsCoords(gg_rct_AIWayPointArea08, ux, uy) then
+                    return true
+                endif
             endif
         endif
         return false
@@ -478,7 +480,9 @@ library AIUtils requires KeyUtils
         if IsTriggerEnabled(gg_trg_FastSpike) then
             if wpi >= 10 then
                 if RectContainsCoords(gg_rct_HazardFastSpikeArea, ux, uy) then
-                    return true
+                    if not RectContainsCoords(gg_rct_AIWayPointArea10, ux, uy) then
+                        return true
+                    endif
                 endif
             endif
         endif
@@ -550,6 +554,48 @@ library AIUtils requires KeyUtils
             return false
         endif
         return true
+    endfunction
+
+    function GetNonAIAbilityProjectileSpeed takes integer abilId returns real
+        if abilId == 'A01K' then // Firebolt
+            return 800.0
+        elseif abilId == 'A0D9' then // IceGun
+            return 1700.0
+        elseif abilId == 'A00C' then // Thunderbolt
+            return 1000.0
+        elseif abilId == 'A02J' then // ThunderAxe
+            return 1000.0
+        elseif abilId == 'A02C' then // ChaosArrow
+            return 1000.0
+        elseif abilId == 'A040' then // Ensnare
+            return 1600.0
+        elseif abilId == 'A05B' then // Deathcoil
+            return 800.0
+        elseif abilId == 'A0J3' then // ShackleShot
+            return 1500.0
+        elseif abilId == 'A07N' then // MagicMissile
+            return 1300.0
+        elseif abilId == 'A076' then // Impetus
+            return 1000.0
+        elseif abilId == 'A06E' then // FairyStrike(majia)
+            return 400.0
+        elseif abilId == 'A064' then // ShadowStrike
+            return 1200.0
+        elseif abilId == 'A085' then // PoisonStrike(majia)
+            return 1200.0
+        elseif abilId == 'A0A5' then // ThrowStone
+            return 1200.0
+        elseif abilId == 'A099' then // GoldBomb(majia)
+            return 1700.0
+        elseif abilId == 'A0A1' then // Firebolt(Troll)
+            return 900.0
+        else
+            return 0.0
+        endif
+    endfunction
+
+    function IsTargetUnitProjectileAbility takes integer abilId returns boolean
+        return GetNonAIAbilityProjectileSpeed(abilId) > 0.0
     endfunction
 
     function FindIllusionTargetInRange takes unit ownerHero, real range returns unit

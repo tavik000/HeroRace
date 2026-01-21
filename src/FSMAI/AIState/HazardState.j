@@ -17,10 +17,8 @@ struct HazardState extends AIState
         if IsInSlowSpikeHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_SLOW_SPIKE
             if owner.currentWaypointIndex > 8 then
-                if not RectContainsCoords(gg_rct_AIWayPointArea08, ux, uy) then
-                    call owner.setWaypointIndex(8) // Reset to before Slow Spike Hazard
-                    call this.botLog("Resetting waypoint index to 8 for Slow Spike Hazard")
-                endif
+                call owner.setWaypointIndex(8) // Reset to before Slow Spike Hazard
+                call this.botLog("Resetting waypoint index to 8 for Slow Spike Hazard")
             endif
             call this.botLog("Detected Slow Spike Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Slow Spike Zone")
@@ -28,10 +26,8 @@ struct HazardState extends AIState
         elseif IsInFastSpikeHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_FAST_SPIKE
             if owner.currentWaypointIndex > 10 then
-                if not RectContainsCoords(gg_rct_AIWayPointArea10, ux, uy) then
-                    call owner.setWaypointIndex(10) // Reset to before Fast Spike Hazard
-                    call this.botLog("Resetting waypoint index to 10 for Fast Spike Hazard")
-                endif
+                call owner.setWaypointIndex(10) // Reset to before Fast Spike Hazard
+                call this.botLog("Resetting waypoint index to 10 for Fast Spike Hazard")
             endif
             call this.botLog("Detected Fast Spike Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Fast Spike Zone")

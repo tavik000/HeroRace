@@ -402,16 +402,6 @@ library KeyUtils
         return IsUnitType(u, UNIT_TYPE_UNDEAD)
     endfunction
 
-    function GetRandomEnemyPlayer takes unit u returns player
-        local integer playerId = GetRandomInt(0, bj_MAX_PLAYERS - 1)
-        loop
-            exitwhen IsPlayerEnemy(GetOwningPlayer(u), Player(playerId))
-            set playerId = ModI(playerId + 1, bj_MAX_PLAYERS)
-        endloop
-        return Player(playerId)
-    endfunction
-
-
     // Destructable
     function EnumDestructablesInCircle takes real radius, location loc, code actionFunc returns nothing
         local rect r

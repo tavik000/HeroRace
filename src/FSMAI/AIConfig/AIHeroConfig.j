@@ -220,52 +220,67 @@ library AIHeroConfig
 
         // DruidOfTheClaw
         set heroTypeId = 'N00K'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A07M')  // Cyclone
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A066')  // StormSwarm
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A06T')  // TempestAssault
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.25)
 
         // Chimera
         set heroTypeId = 'N02N'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A0HU')  // DualBreath
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A0HV')  // IcePath
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0HY')  // Macropyre
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.7)
 
         // KeeperOfTheGrove
         set heroTypeId = 'E004'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A06F')  // EntanglingRoots
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A07D')  // ForceOfNature
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A06Q')  // Tranquility
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
 
         // PriestessOfTheMoon
         set heroTypeId = 'E005'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A074')  // Jump
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A06Y')  // SacredArrow
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A06L')  // Starfall
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.0)
 
         // Luna
         set heroTypeId = 'E00J'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 5)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A02K')  // LucentBeam
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A02L')  // MoonGlaive
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A0I0')  // MoonlightShadow
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'A04U')  // Eclipse
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 4, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.6)
 
         // Warden
         set heroTypeId = 'E008'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 3)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A06A')  // FanOfKnives
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A06X')  // Blink
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A064')  // ShadowStrike
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.5)
+
+        // VengefulSpirit
+        set heroTypeId = 'N00I'
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A07N')  // MagicMissile
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A06G')  // WaveOfTerror
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A07A')  // NetherSwap
+        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
+        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.25)
 
         // FireLord
         set heroTypeId = 'N010'
@@ -316,14 +331,7 @@ library AIHeroConfig
         call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A02D')  // PrimalSplit
         call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.4)
 
-        // VengefulSpirit
-        set heroTypeId = 'N00I'
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_COUNT_KEY, 4)
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 0, 'A07N')  // MagicMissile
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 1, 'A06G')  // WaveOfTerror
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 2, 'A07A')  // NetherSwap
-        call SaveInteger(HeroConfigTable, heroTypeId, HERO_ABILITY_ID_BASE_KEY + 3, 'Ashm')  // Shadowmeld
-        call SaveReal(HeroConfigTable, heroTypeId, HERO_CAST_POINT_KEY, 0.25)
+    
 
         // Add more hero configurations here...
         // Template:

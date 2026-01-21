@@ -202,7 +202,7 @@ struct AIHero
         local integer i = 0
         local boolean hasReadyAbility = false
         local boolean hasReadyItem = false
-        local player randomEnemyPlayer = GetRandomEnemyPlayer(this.hero)
+        local player randomEnemyPlayer = Player(11)
 
         if IsUnitInvisible(this.hero, randomEnemyPlayer) then
             // call this.botLog("Cannot enter combat, hero is invisible.")
@@ -475,9 +475,12 @@ struct AIHero
         call this.combatData.addItem(itm, itemId, baseCooldown, castRange, effectiveRadius, requiredCastTime, manaCost, this.hero, bIsPassive, castType, findTargetType)
     endmethod
 
-    method onBeTargetedByEnemyAbility takes integer abilityId returns nothing
+    method onBeTargetedByEnemyAbility takes unit caster, integer abilityId returns nothing
         local AIItem selfDefenseItem
         local AIAbility selfDefenseAbility
+        local AIAbility shadowmeldAbil
+        local real distanceToEnemyCaster = 0.0
+
         // call this.botLog("Hero is being targeted by enemy ability: " + GetObjectName(abilityId))
         set selfDefenseItem = this.combatData.getAnySelfDefenseItem()
         if selfDefenseItem != 0 then
@@ -489,7 +492,26 @@ struct AIHero
         endif
         set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
         if selfDefenseAbility != 0 then
-            call selfDefenseAbility.markAsReadyToCast()
+            if not selfDefenseAbility.bIsReadyToCast then
+                call this.botLog("Marking self-defense ability as ready to cast: " + selfDefenseAbility.orderString)
+                call selfDefenseAbility.markAsReadyToCast()
+                return
+            endif
+        endif
+
+        if IsNightTime() then
+            set shadowmeldAbil = this.combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
+            if shadowmeldAbil != 0 then
+                if not shadowmeldAbil.bIsReadyToCast then
+                    if IsTargetUnitProjectileAbility(abilityId) then
+                        set distanceToEnemyCaster = DistanceBetweenUnits(this.hero, caster)
+                        if distanceToEnemyCaster > GetNonAIAbilityProjectileSpeed(abilityId) * 1.0 then
+                            call shadowmeldAbil.markAsReadyToCast()
+                            call this.botLog("Marking Shadowmeld ability as ready to cast due to being targeted by projectile ability: " + GetObjectName(abilityId))
+                        endif
+                    endif
+                endif
+            endif
         endif
     endmethod
 
@@ -507,7 +529,11 @@ struct AIHero
         endif
         set selfDefenseAbility = this.combatData.getAnySelfDefenseAbility()
         if selfDefenseAbility != 0 then
-            call selfDefenseAbility.markAsReadyToCast()
+            if not selfDefenseAbility.bIsReadyToCast then
+                call this.botLog("Marking self-defense ability as ready to cast: " + selfDefenseAbility.orderString)
+                call selfDefenseAbility.markAsReadyToCast()
+                return
+            endif
         endif
     endmethod
 
@@ -519,14 +545,16 @@ struct AIHero
         local AIAbility shadowmeldAbil = 0
         if not isMegaBomber then
             if IsNightTime() then
-                set shadowmeldAbil = combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
+                set shadowmeldAbil = this.combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
                 if shadowmeldAbil != 0 then
-                    call shadowmeldAbil.markAsReadyToCast()
-                    call this.botLog("Marked Shadowmeld ability as ready to cast due to being targeted by Bomber Self-Destruct.")
+                    if not shadowmeldAbil.bIsReadyToCast then
+                        call shadowmeldAbil.markAsReadyToCast()
+                        call this.botLog("Marked Shadowmeld ability as ready to cast due to being targeted by Bomber Self-Destruct.")
+                    endif
                 endif
             endif
         else
-            // TODO
+            // TODO Mega Bomber Logic
         endif
     endmethod
 

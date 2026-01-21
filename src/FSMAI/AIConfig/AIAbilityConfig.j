@@ -1404,7 +1404,7 @@ library AIAbilityConfig
         call SaveReal(AbilityDataTable, currentAbilityId, EFFECTIVE_RADIUS_KEY, 0.0)
         call SaveInteger(AbilityDataTable, currentAbilityId, CAST_TYPE_KEY, CAST_INSTANT_SELF_SHADOWMELD)
         call SaveInteger(AbilityDataTable, currentAbilityId, FIND_TARGET_TYPE_KEY, FIND_TARGET_TYPE_NONE)
-        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
+        call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 0)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 0.0)
         call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 1.0)

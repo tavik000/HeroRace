@@ -14,10 +14,10 @@ library AIHookEvent requires AIUtils
         endif
     endfunction
 
-    function OnAIHeroBeTargetedByEnemyAbility takes unit u, integer abilityId returns nothing
+    function OnAIHeroBeTargetedByEnemyAbility takes unit u, unit caster, integer abilityId returns nothing
         local AIHero aiHero = GetAIHeroFromUnit(u)
         if aiHero != null then
-            call aiHero.onBeTargetedByEnemyAbility(abilityId)
+            call aiHero.onBeTargetedByEnemyAbility(caster, abilityId)
         endif
     endfunction
 
