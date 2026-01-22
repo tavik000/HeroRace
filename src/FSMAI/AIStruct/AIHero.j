@@ -101,7 +101,19 @@ struct AIHero
     endmethod
 
     method setWaypointIndex takes integer newIndex returns nothing
+        local boolean hasNearbyEnemy = false
+        if newIndex == 12 then
+            if IsStoneManStable() then
+                set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+                if hasNearbyEnemy then
+                    set this.currentWaypointIndex = 121 // Go to Stone wait area
+                    call this.botLog("Stone Man is stable, going to wait area before Net Hazard, WPI: " + I2S(this.currentWaypointIndex))
+                    return
+                endif
+            endif
+        endif
         set this.currentWaypointIndex = newIndex
+        call this.botLog("Setting WPI to: " + I2S(newIndex))
     endmethod
 
     method updateWaypointAfterAnyKindOfTeleport takes nothing returns nothing
@@ -337,7 +349,7 @@ struct AIHero
         endif
 
         if IsInOrangeFishWaitArea(this) then
-            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
             if IsOrangeFishStable() and hasNearbyEnemy then
                 return true
             endif

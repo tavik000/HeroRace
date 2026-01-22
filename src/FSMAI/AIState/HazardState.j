@@ -37,8 +37,14 @@ struct HazardState extends AIState
         elseif IsInNetHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_NET
             if owner.currentWaypointIndex > 12 then
-                call owner.setWaypointIndex(12) // Reset to before Net Hazard
-                call this.botLog("Resetting waypoint index to 12 for Net Hazard")
+                set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+                if IsStoneManStable() and hasNearbyEnemy then
+                    call owner.setWaypointIndex(121) // Go to Stone wait area
+                    call this.botLog("Stone Man is stable, going to wait area before Net Hazard")
+                else
+                    call owner.setWaypointIndex(12) // Reset to before Net Hazard
+                    call this.botLog("Resetting waypoint index to 12 for Net Hazard")
+                endif
             endif
             call this.botLog("Detected Net Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Net Zone")
@@ -49,7 +55,7 @@ struct HazardState extends AIState
             call owner.setDebugTextTagContent("Hazard: Spider Net Zone")
             call owner.setDebugTextTagColorPreset("ORANGE")
         elseif IsInOrangeFishWaitArea(owner) then
-            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
             if IsOrangeFishStable() and hasNearbyEnemy then
                 set this.hazardType = HAZARD_TYPE_ORANGE_FISH
                 call IssueImmediateOrder(owner.hero, "stop")
@@ -294,7 +300,6 @@ struct HazardState extends AIState
             call owner.setWaypointIndex(12)
         endif
 
-
         if not IsTriggerEnabled(gg_trg_Net01) then
             call this.botLog("Net trigger is disabled, skipping hazard handling")
             call owner.setDebugTextTagContent("Hazard: Net Trigger Disabled")
@@ -343,6 +348,15 @@ struct HazardState extends AIState
         
         if owner.tryEnterCombat() then
             return
+        endif
+
+        // Special handling for Stone man waiting area at waypoint 121
+        if owner.currentWaypointIndex == 121 then
+            if not IsStoneManStable() then
+                call owner.setWaypointIndex(12) // Reset to before Net Hazard
+                call owner.moveToNextWaypoint()
+                return
+            endif
         endif
 
         // No more net around, keep moving to next waypoint
@@ -445,7 +459,7 @@ struct HazardState extends AIState
             return
         endif
 
-        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
 
         if not hasNearbyEnemy then
             call this.botLog("No nearby enemies detected, exiting Orange Fish hazard state")

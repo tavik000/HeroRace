@@ -88,6 +88,7 @@ library AIStateMachine requires KeyUtils, AIUtils
         set WaypointAreas[10] = gg_rct_AIWayPointArea10 // After Fast Spike Hazard
         set WaypointAreas[11] = gg_rct_AIWayPointArea11 // Before Net Hazard
         set WaypointAreas[12] = gg_rct_AIWayPointArea12 // After Net Hazard
+        set WaypointAreas[121] = gg_rct_AIHazardStoneManWaitArea
         set WaypointAreas[13] = gg_rct_AIWayPointArea13 // Before Spider Net Hazard
         set WaypointAreas[131] = gg_rct_AIWayPointAreaCrossTree // Before Spider Net Hazard
         set WaypointAreas[14] = gg_rct_Finish

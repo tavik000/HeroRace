@@ -120,6 +120,16 @@ struct RunState extends AIState
             return
         endif
 
+        // Special handling for Stone man waiting area at waypoint 121
+        if owner.currentWaypointIndex == 121 then
+            if not IsStoneManStable() then
+                call owner.setWaypointIndex(12) // Reset to before Net Hazard
+                call owner.moveToNextWaypoint()
+                call this.botLog("Stone Man became unstable, resetting to before Net Hazard")
+                return
+            endif
+        endif
+
         if currentOrder == 0 then
             // Hero is idle (no current order) - reissue move command to current waypoint
 

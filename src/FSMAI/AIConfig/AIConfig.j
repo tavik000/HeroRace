@@ -29,8 +29,7 @@ globals
     constant integer HAZARD_TYPE_SPIDER_NET = 4
     constant integer HAZARD_TYPE_ORANGE_FISH = 5
 
-    // Orange Fish Hazard Settings
-    constant real HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS = 1500.0
+    constant real HAZARD_NEAR_ENEMY_DETECT_RADIUS = 1500.0
         
     // Slow Spike Hazard Settings 
     constant real SLOW_SPIKE_SPEED = 155.0

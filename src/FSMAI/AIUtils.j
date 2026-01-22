@@ -539,16 +539,34 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function IsStoneManStable takes nothing returns boolean
+        local integer stoneManCurrentOrder = 0
+        local unit stoneManUnit = udg_Monster[8]
+        local boolean isStoneManFullMana = GetUnitManaPercent(stoneManUnit) >= 99.0
+        if not IsUnitValid(stoneManUnit) then
+            return false
+        endif
+        if not isStoneManFullMana then
+            return false
+        endif
+        set stoneManCurrentOrder = GetUnitCurrentOrder(stoneManUnit)
+        if stoneManCurrentOrder != 0 then
+            return false
+        endif
+        return true
+    endfunction
+
     function IsOrangeFishStable takes nothing returns boolean
         local integer fishCurrentOrder = 0
-        local boolean isFishFullMana = GetUnitManaPercent(udg_Monster[2]) >= 99.0
-        if not IsUnitValid(udg_Monster[2]) then
+        local unit fishUnit = udg_Monster[2]
+        local boolean isFishFullMana = GetUnitManaPercent(fishUnit) >= 99.0
+        if not IsUnitValid(fishUnit) then
             return false
         endif
         if not isFishFullMana then
             return false
         endif
-        set fishCurrentOrder = GetUnitCurrentOrder(udg_Monster[2])
+        set fishCurrentOrder = GetUnitCurrentOrder(fishUnit)
         if fishCurrentOrder != 0 then
             return false
         endif
