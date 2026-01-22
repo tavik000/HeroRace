@@ -147,6 +147,42 @@ library AIUtils requires KeyUtils
         return resultUnit
     endfunction
 
+    function GetLocusUnitInRange takes unit refUnit, real detectRadius, integer locusUnitTypeId returns unit
+        local group locusGroup = CreateGroup()
+        local unit u
+        local real heroX = GetUnitX(refUnit)
+        local real heroY = GetUnitY(refUnit)
+        local unit resultUnit = null
+        local boolexpr filter = Filter(function AntiLeak)
+        local real closestDistance = MAX_RANGE
+        local real currentTargetDistance
+            
+        // Detect locus unit must use GroupEnumUnitsOfPlayer for Player(11)
+        call GroupEnumUnitsOfPlayer(locusGroup, Player(11), filter) 
+        loop
+            set u = FirstOfGroup(locusGroup)
+            exitwhen u == null
+
+            call GroupRemoveUnit(locusGroup, u)
+            if GetUnitAbilityLevel(u, 'Aloc') > 0 then
+                if GetUnitTypeId(u) == locusUnitTypeId then
+                    if IsUnitInRangeXY(u, heroX, heroY, detectRadius) then
+                        set currentTargetDistance = DistanceBetweenXY(heroX, heroY, GetUnitX(u), GetUnitY(u))
+                        if currentTargetDistance < closestDistance then
+                            set closestDistance = currentTargetDistance
+                            set resultUnit = u
+                        endif
+                    endif
+                endif
+            endif
+        endloop
+        
+        call DestroyGroup(locusGroup)
+        set locusGroup = null
+            
+        return resultUnit
+    endfunction
+
     function FilterSuitablePickUpItem takes nothing returns nothing
         local item itm = GetEnumItem()
         local real dist = DistanceBetweenXY(tempFoundItemX, tempFoundItemY, GetItemX(itm), GetItemY(itm))
