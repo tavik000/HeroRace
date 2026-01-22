@@ -11,6 +11,8 @@ struct HazardState extends AIState
     method onEnter takes nothing returns nothing
         local real ux = GetUnitX(owner.hero)
         local real uy = GetUnitY(owner.hero)
+        local boolean hasNearbyEnemy = false
+
         call this.botLog("Entering Hazard State")
         
         // Determine hazard type based on current location
@@ -46,6 +48,17 @@ struct HazardState extends AIState
             call this.botLog("Detected Spider Net Hazard Zone")
             call owner.setDebugTextTagContent("Hazard: Spider Net Zone")
             call owner.setDebugTextTagColorPreset("ORANGE")
+        elseif IsInOrangeFishWaitArea(owner) then
+            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            if IsOrangeFishStable() and hasNearbyEnemy then
+                set this.hazardType = HAZARD_TYPE_ORANGE_FISH
+                call IssueImmediateOrder(owner.hero, "stop")
+                call this.botLog("Detected Orange Fish Hazard Zone")
+                call owner.setDebugTextTagContent("Hazard: Orange Fish Zone")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+            else
+                call this.botLogError("Orange Fish Hazard Zone detected but conditions not met!")
+            endif
         else
             // Other hazard types can be added here
             call this.botLogError("Unknown hazard type detected!")
@@ -80,6 +93,8 @@ struct HazardState extends AIState
             call this.onNetHazardZoneUpdate()
         elseif this.hazardType == HAZARD_TYPE_SPIDER_NET then
             call this.onSpiderNetHazardZoneUpdate()
+        elseif this.hazardType == HAZARD_TYPE_ORANGE_FISH then
+            call this.onOrangeFishHazardZoneUpdate()
         else
             call this.botLogError("Unknown hazard type in update!")
         endif
@@ -404,12 +419,66 @@ struct HazardState extends AIState
 
         // No more spider net around, keep moving to next waypoint
         call owner.moveToNextWaypoint()
+    endmethod
+
+    method moveToRandomPointInOrangeFishZone takes nothing returns nothing
+        local rect orangeZone = gg_rct_AIHazardOrangeFishWaitArea
+        local real x
+        local real y
+        set x = GetRandomReal(GetRectMinX(orangeZone), GetRectMaxX(orangeZone))
+        set y = GetRandomReal(GetRectMinY(orangeZone), GetRectMaxY(orangeZone))
+
+        call IssuePointOrder(owner.hero, "move", x, y)
+    endmethod
+
+    method onOrangeFishHazardZoneUpdate takes nothing returns nothing
+        local boolean hasNearbyEnemy = false
+
+        if not IsInOrangeFishWaitArea(owner) then
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        if not IsOrangeFishStable() then
+            call this.botLog("Orange Fish is not stable, exiting hazard state")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+
+        if not hasNearbyEnemy then
+            call this.botLog("No nearby enemies detected, exiting Orange Fish hazard state")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        if IsUnitInvulnerableOrMagicImmune(owner.hero) then
+            call this.botLog("Hero is invulnerable or magic immune, skipping Orange Fish hazard handling")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        if owner.tryEnterCombat() then
+            return
+        endif
+
+        if owner.TryEnterGiveItemState() then
+            return 
+        endif
+
+        if owner.TryEnterPickupItemState() then
+            return
+        endif
+
+        call this.moveToRandomPointInOrangeFishZone()
 
     endmethod
 
+
     method onExit takes nothing returns nothing
-        call this.botLog("Exiting Slow Spike Hazard State")
-        call owner.setDebugTextTagContent("Hazard: Slow Spike Exiting")
+        call this.botLog("Exiting Hazard State")
+        call owner.setDebugTextTagContent("Hazard: Exiting")
         call owner.setDebugTextTagColorPreset("ORANGE")
     endmethod
 

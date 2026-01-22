@@ -87,6 +87,10 @@ struct CombatState extends AIState
             call owner.setDebugTextTagColorPreset("RED")
             return
         endif
+
+        if this.owner.tryEnterHazardState() then
+            return
+        endif
             
         // Return to run state after combat
         call owner.changeState(RunState.create())

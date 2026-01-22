@@ -523,6 +523,15 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function IsInOrangeFishWaitArea takes AIHero aiHero returns boolean
+        local real heroX = GetUnitX(aiHero.hero)
+        local real heroY = GetUnitY(aiHero.hero)
+        if RectContainsCoords(gg_rct_AIHazardOrangeFishWaitArea, heroX, heroY) then
+            return true
+        endif
+        return false
+    endfunction
+
     function IsCurrentGoalWaypoint takes AIHero aiHero returns boolean
         if aiHero.currentWaypointIndex == GoalWaypointIndex then
             return true
@@ -530,26 +539,42 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function IsOrangeFishStable takes nothing returns boolean
+        local integer fishCurrentOrder = 0
+        local boolean isFishFullMana = GetUnitManaPercent(udg_Monster[2]) >= 99.0
+        if not IsUnitValid(udg_Monster[2]) then
+            return false
+        endif
+        if not isFishFullMana then
+            return false
+        endif
+        set fishCurrentOrder = GetUnitCurrentOrder(udg_Monster[2])
+        if fishCurrentOrder != 0 then
+            return false
+        endif
+        return true
+    endfunction
+
     function IsThreeFishHazardStable takes nothing returns boolean
         local integer fishCurrentOrder = 0
-        if not IsUnitValid(gg_unit_n00V_0038) then
+        if not IsUnitValid(udg_Monster[3]) then
             return false
         endif
-        if not IsUnitValid(gg_unit_n00X_0036) then
+        if not IsUnitValid(udg_Monster[4]) then
             return false
         endif
-        if not IsUnitValid(gg_unit_n00X_0037) then
+        if not IsUnitValid(udg_Monster[5]) then
             return false
         endif
-        set fishCurrentOrder = GetUnitCurrentOrder(gg_unit_n00V_0038)
+        set fishCurrentOrder = GetUnitCurrentOrder(udg_Monster[3])
         if fishCurrentOrder != 0 then
             return false
         endif
-        set fishCurrentOrder = GetUnitCurrentOrder(gg_unit_n00X_0036)
+        set fishCurrentOrder = GetUnitCurrentOrder(udg_Monster[4])
         if fishCurrentOrder != 0 then
             return false
         endif
-        set fishCurrentOrder = GetUnitCurrentOrder(gg_unit_n00X_0037)
+        set fishCurrentOrder = GetUnitCurrentOrder(udg_Monster[5])
         if fishCurrentOrder != 0 then
             return false
         endif

@@ -314,6 +314,8 @@ struct AIHero
     endmethod
         
     method shouldEnterHazardState takes nothing returns boolean
+        local boolean hasNearbyEnemy = false
+
         if this.difficulty < DIFF_HARD then
             return false
         endif
@@ -334,11 +336,17 @@ struct AIHero
             return true
         endif
 
+        if IsInOrangeFishWaitArea(this) then
+            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_ORANGE_FISH_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            if IsOrangeFishStable() and hasNearbyEnemy then
+                return true
+            endif
+        endif
+
         return false
     endmethod
 
     method tryEnterHazardState takes nothing returns boolean
-
         if not IsUnitValid(this.hero) then
             return false
         endif
