@@ -2530,7 +2530,44 @@ library AIUtils requires KeyUtils
         else
             return false
         endif
+    endfunction
 
+    function EnumNearDestructableFissure takes nothing returns nothing
+        local destructable fissure = GetEnumDestructable()
+        local integer destructableTypeId = GetDestructableTypeId(fissure)
+        local real fissureDist = DistanceBetweenDestructableAndUnit(fissure, tempHeroUnit)
+
+        // filter only fissures
+        if destructableTypeId != 'B001' then 
+            return
+        endif
+        if GetDestructableLife(fissure) <= 0.0 then
+            return
+        endif
+        if fissureDist < tempNearestFissureDist then
+            set tempNearestFissureDist = fissureDist
+            set tempFissure = fissure
+        endif
+    endfunction
+
+    function FindNearestFissureOfUnit takes unit sourceUnit, real range returns destructable
+        local location sourceLoc = Location(GetUnitX(sourceUnit), GetUnitY(sourceUnit))
+        local destructable nearestFissure = null
+      
+        set tempHeroUnit = sourceUnit
+        set tempFissure = null
+        set tempNearestFissureDist = MAX_RANGE
+
+        call EnumDestructablesInCircle(range, sourceLoc, function EnumNearDestructableFissure)
+        set nearestFissure = tempFissure
+
+        // Clean up
+        set tempHeroUnit = null
+        set tempFissure = null
+        set tempNearestFissureDist = MAX_RANGE
+        call RemoveLocation(sourceLoc)
+        set sourceLoc = null
+        return nearestFissure
     endfunction
 
     function EnumNearDestructableTrees takes nothing returns nothing

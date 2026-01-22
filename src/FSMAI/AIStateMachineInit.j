@@ -17,6 +17,8 @@ globals
     AIItem tempAIItem = 0
     destructable tempTree = null
     real tempNearestTreeDist = MAX_RANGE
+    destructable tempFissure = null
+    real tempNearestFissureDist = MAX_RANGE
 
     // Temporary variables for item search
     item tempFoundItem = null

@@ -130,6 +130,19 @@ struct RunState extends AIState
             endif
         endif
 
+        if owner.currentWaypointIndex == 4 then
+            if RectContainsCoords(gg_rct_AICheckFissureArea, heroX, heroY) then
+                if IsFissureFront(1000.0) then
+                    call this.botLog("Fissure detected in front, waiting before proceeding")
+                    // stop
+                    call IssueImmediateOrder(owner.hero, "stop")
+                    call owner.setDebugTextTagContent("Run: Fissure Detected - Waiting")
+                    call owner.setDebugTextTagColorPreset("YELLOW")
+                    return
+                endif
+            endif
+        endif
+
         if currentOrder == 0 then
             // Hero is idle (no current order) - reissue move command to current waypoint
 
@@ -160,7 +173,7 @@ struct RunState extends AIState
             call owner.setDebugTextTagColorPreset("GREEN")
             call owner.moveToNextWaypoint()
         endif
-            
+
         if owner.tryEnterHazardState() then
             return
         endif
@@ -193,6 +206,24 @@ struct RunState extends AIState
         endif
 
         set currentWaypointArea = null
+    endmethod
+
+    method IsFissureFront takes real detectRadius returns boolean
+        local destructable fissure = FindNearestFissureOfUnit(owner.hero, detectRadius)
+        local real fissureX = 0.0
+        local real fissureY = 0.0
+        local real heroX = GetUnitX(owner.hero)
+        local real heroY = GetUnitY(owner.hero)
+
+        if fissure != null then
+            set fissureX = GetDestructableX(fissure)
+            set fissureY = GetDestructableY(fissure)
+            if fissureX > heroX then
+                return true
+            else
+            endif
+        endif
+        return false
     endmethod
 
     method onExit takes nothing returns nothing
