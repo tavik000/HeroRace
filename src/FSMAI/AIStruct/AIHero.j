@@ -239,7 +239,7 @@ struct AIHero
         endif
 
         if not IsHeroGoaled(this.hero) then
-            if this.currentState.stateID == STATE_HAZARD or IsCurrentGoalWaypoint(this) then
+            if this.currentState.stateID == STATE_HAZARD or IsCurrentGoalWaypoint(this) or this.currentState.stateID == STATE_DEAD then
                 set searchRadius = PICKUP_ITEM_RANGE_SMALL
             else
                 set searchRadius = PICKUP_ITEM_RANGE_NORMAL
