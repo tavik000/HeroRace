@@ -262,7 +262,7 @@ struct AIAbility
             set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
-            if targetUnitCount > 1 then
+            if targetUnitCount >= 2 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = targetUnitCount >= 2
@@ -277,7 +277,7 @@ struct AIAbility
             // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
             set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALL)
-            if targetUnitCount > 0 then
+            if targetUnitCount >= 2 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " heroes around for ability: " + GetObjectName(this.abilityId))
             endif
             set this.bIsReadyToCast = targetUnitCount >= 2

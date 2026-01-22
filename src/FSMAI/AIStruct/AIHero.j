@@ -549,6 +549,7 @@ struct AIHero
 
     method onBeTargetedByBomberSelfDestruct takes boolean isMegaBomber returns nothing
         local AIAbility shadowmeldAbil = 0
+        local unit nearbyEnemyUnit = null
         if not isMegaBomber then
             if IsNightTime() then
                 set shadowmeldAbil = this.combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
@@ -560,7 +561,11 @@ struct AIHero
                 endif
             endif
         else
-            // TODO Mega Bomber Logic
+            // Mega Bomber, follow an enemy nearby if possible
+            set nearbyEnemyUnit = FindBackOrCloseTargetInRange(this.hero, 1000.0, 150.0, false, false, FIND_TEAM_TYPE_ENEMIES, 0, 0)
+            if nearbyEnemyUnit != null then
+                call this.changeState(FollowState.create(nearbyEnemyUnit, 20.0, 0, true))
+            endif
         endif
     endmethod
 
