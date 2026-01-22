@@ -143,16 +143,6 @@ struct RunState extends AIState
             endif
         endif
 
-        // Has Rupture debuff, stop and wait
-        if UnitHasBuffBJ(owner.hero, 'B01E') and not IsCurrentGoalWaypoint(owner) then 
-            call this.botLog("Rupture debuff detected, waiting before proceeding")
-            // stop
-            call IssueImmediateOrder(owner.hero, "holdposition")
-            call owner.setDebugTextTagContent("Run: Rupture Detected - Waiting")
-            call owner.setDebugTextTagColorPreset("YELLOW")
-            return
-        endif
-
         if currentOrder == 0 then
             // Hero is idle (no current order) - reissue move command to current waypoint
 
@@ -212,6 +202,16 @@ struct RunState extends AIState
             call this.botLog("Going through 3 Fishes Hazard at waypoint 6")
             call owner.setDebugTextTagContent("Run: Through 3 Fishes Hazard")
             call owner.setDebugTextTagColorPreset("GREEN")
+            return
+        endif
+
+        // Has Rupture debuff, stop and wait
+        if UnitHasBuffBJ(owner.hero, 'B01E') and not IsCurrentGoalWaypoint(owner) then 
+            call this.botLog("Rupture debuff detected, waiting before proceeding")
+            // stop
+            call IssueImmediateOrder(owner.hero, "holdposition")
+            call owner.setDebugTextTagContent("Run: Rupture Detected - Waiting")
+            call owner.setDebugTextTagColorPreset("YELLOW")
             return
         endif
 
