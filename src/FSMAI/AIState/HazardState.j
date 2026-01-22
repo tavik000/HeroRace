@@ -65,6 +65,17 @@ struct HazardState extends AIState
             else
                 call this.botLogError("Orange Fish Hazard Zone detected but conditions not met!")
             endif
+        elseif IsInPurpleFishWaitArea(owner) then
+            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            if IsPurpleFishStable() and hasNearbyEnemy then
+                set this.hazardType = HAZARD_TYPE_PURPLE_FISH
+                call IssueImmediateOrder(owner.hero, "stop")
+                call this.botLog("Detected Purple Fish Hazard Zone")
+                call owner.setDebugTextTagContent("Hazard: Purple Fish Zone")
+                call owner.setDebugTextTagColorPreset("ORANGE")
+            else
+                call this.botLogError("Purple Fish Hazard Zone detected but conditions not met!")
+            endif
         else
             // Other hazard types can be added here
             call this.botLogError("Unknown hazard type detected!")
@@ -101,6 +112,8 @@ struct HazardState extends AIState
             call this.onSpiderNetHazardZoneUpdate()
         elseif this.hazardType == HAZARD_TYPE_ORANGE_FISH then
             call this.onOrangeFishHazardZoneUpdate()
+        elseif this.hazardType == HAZARD_TYPE_PURPLE_FISH then
+            call this.onPurpleFishHazardZoneUpdate()
         else
             call this.botLogError("Unknown hazard type in update!")
         endif
@@ -486,7 +499,58 @@ struct HazardState extends AIState
         endif
 
         call this.moveToRandomPointInOrangeFishZone()
+    endmethod
 
+    method moveToRandomPointInPurpleFishZone takes nothing returns nothing
+        local rect purpleFishWaitZone = gg_rct_AIWayPointArea13
+        local real x
+        local real y
+        set x = GetRandomReal(GetRectMinX(purpleFishWaitZone), GetRectMaxX(purpleFishWaitZone))
+        set y = GetRandomReal(GetRectMinY(purpleFishWaitZone), GetRectMaxY(purpleFishWaitZone))
+        call IssuePointOrder(owner.hero, "move", x, y)
+    endmethod
+
+    method onPurpleFishHazardZoneUpdate takes nothing returns nothing
+        local boolean hasNearbyEnemy = false
+
+        if not IsInPurpleFishWaitArea(owner) then
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        if not IsPurpleFishStable() then
+            call this.botLog("Purple Fish is not stable, exiting hazard state")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+
+        if not hasNearbyEnemy then
+            call this.botLog("No nearby enemies detected, exiting Purple Fish hazard state")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        if IsUnitInvulnerableOrMagicImmune(owner.hero) then
+            call this.botLog("Hero is invulnerable or magic immune, skipping Purple Fish hazard handling")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        if owner.tryEnterCombat() then
+            return
+        endif
+
+        if owner.TryEnterGiveItemState() then
+            return 
+        endif
+
+        if owner.TryEnterPickupItemState() then
+            return
+        endif
+
+        call this.moveToRandomPointInPurpleFishZone()
     endmethod
 
 

@@ -532,6 +532,15 @@ library AIUtils requires KeyUtils
         return false
     endfunction
 
+    function IsInPurpleFishWaitArea takes AIHero aiHero returns boolean
+        local real heroX = GetUnitX(aiHero.hero)
+        local real heroY = GetUnitY(aiHero.hero)
+        if RectContainsCoords(gg_rct_AIWayPointArea13, heroX, heroY) then
+            return true
+        endif
+        return false
+    endfunction
+
     function IsCurrentGoalWaypoint takes AIHero aiHero returns boolean
         if aiHero.currentWaypointIndex == GoalWaypointIndex then
             return true
@@ -551,6 +560,23 @@ library AIUtils requires KeyUtils
         endif
         set stoneManCurrentOrder = GetUnitCurrentOrder(stoneManUnit)
         if stoneManCurrentOrder != 0 then
+            return false
+        endif
+        return true
+    endfunction
+
+    function IsPurpleFishStable takes nothing returns boolean
+        local integer fishCurrentOrder = 0
+        local unit fishUnit = udg_Monster[9]
+        local boolean isFishFullMana = GetUnitManaPercent(fishUnit) >= 99.0
+        if not IsUnitValid(fishUnit) then
+            return false
+        endif
+        if not isFishFullMana then
+            return false
+        endif
+        set fishCurrentOrder = GetUnitCurrentOrder(fishUnit)
+        if fishCurrentOrder != 0 then
             return false
         endif
         return true

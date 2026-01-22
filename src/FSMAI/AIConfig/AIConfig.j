@@ -28,6 +28,7 @@ globals
     constant integer HAZARD_TYPE_NET = 3
     constant integer HAZARD_TYPE_SPIDER_NET = 4
     constant integer HAZARD_TYPE_ORANGE_FISH = 5
+    constant integer HAZARD_TYPE_PURPLE_FISH = 6
 
     constant real HAZARD_NEAR_ENEMY_DETECT_RADIUS = 1500.0
         

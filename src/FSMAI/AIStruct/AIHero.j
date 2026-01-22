@@ -355,6 +355,13 @@ struct AIHero
             endif
         endif
 
+        if IsInPurpleFishWaitArea(this) then
+            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            if IsPurpleFishStable() and hasNearbyEnemy then
+                return true
+            endif
+        endif
+
         return false
     endmethod
 
