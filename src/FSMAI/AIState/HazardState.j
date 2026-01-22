@@ -286,7 +286,7 @@ struct HazardState extends AIState
         if udg_bShouldBotGoFastSpike then
             set bIsGoingThroughFastSpike = true
             call this.botLog("Fast Spike hazard - going through quickly")
-            call owner.setDebugTextTagContent("Hazard: Fast Spike - Going Through")
+            call owner.setDebugTextTagContent("Hazard: Fast Spike - Going")
             call owner.setDebugTextTagColorPreset("ORANGE")
             call owner.moveToNextWaypoint()
         else
