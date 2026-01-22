@@ -26,6 +26,10 @@ struct DeadState extends AIState
 
         call this.applyDifficultyModifiersOnRevival()
 
+        if owner.TryEnterPickupItemState() then
+            return
+        endif
+
         call owner.changeState(RunState.create())
     endmethod
 
