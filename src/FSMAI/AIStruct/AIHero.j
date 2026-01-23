@@ -773,7 +773,7 @@ struct AIHero
     endmethod
 
     method applyCrazyDifficultyModifiers takes nothing returns nothing
-        local real speedBoost = 5.0
+        local real speedBoost = 10.0
 
         // Increase move speed
         call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
@@ -785,7 +785,7 @@ struct AIHero
     endmethod
 
     method applyNightmareDifficultyModifiers takes nothing returns nothing
-        local real speedBoost = 15.0
+        local real speedBoost = 25.0
 
         // Increase move speed
         call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
@@ -794,7 +794,7 @@ struct AIHero
         // +400 HP
         call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
         call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
-        call this.botLog("Applied Nightmare difficulty modifiers: +15 move speed and +400 HP")
+        call this.botLog("Applied Nightmare difficulty modifiers: +25 move speed and +400 HP")
     endmethod
 
     // =====================================================
