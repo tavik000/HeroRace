@@ -8,11 +8,27 @@ struct HeroCombatData
 
     static method create takes AIHero inOwner returns thistype
         local thistype this = thistype.allocate()
+
         set this.owner = inOwner
         set this.abilityCount = 0
         set this.comboExpectedDamage = 0.0
         set this.comboOverkillThresholdPercent = 0.3 // Default to 30% of combo damage
+
         return this
+    endmethod
+
+    method addDefaultItem takes nothing returns nothing
+        local integer i = 0
+        local item heroItemHandle = null
+        // Check current item and add to combat data
+        loop
+            exitwhen i >= MAX_ITEM_PER_HERO
+            set heroItemHandle = UnitItemInSlot(owner.hero, i)
+            if heroItemHandle != null then
+                call this.owner.onGetItem(heroItemHandle)
+            endif
+            set i = i + 1
+        endloop
     endmethod
         
     method addAbilityById takes integer abilityId returns nothing

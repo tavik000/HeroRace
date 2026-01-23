@@ -67,6 +67,8 @@ struct AIHero
         // Store unit to AIHero mapping
         call SaveInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0, this)
 
+        call this.combatData.addDefaultItem()
+
         // Nerf or Buff hero based on difficulty
         if inDifficulty == DIFF_EASY then
             call this.applyEasyDifficultyModifiers()
