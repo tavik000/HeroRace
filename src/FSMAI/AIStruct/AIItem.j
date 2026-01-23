@@ -330,7 +330,8 @@ struct AIItem
                         endif
                     endif
                 endif
-                call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit))
+                call this.botLog("Prepared meat hook front point target unit: " + GetUnitName(this.readyTargetUnit) + ", owner TrackProgress: " + I2S(GetHeroTrackProgress(this.ownerHero)) + ", target TrackProgress: " + I2S(GetHeroTrackProgress(this.readyTargetUnit)))
+
             endif
             set this.bIsReadyToUse = this.readyTargetUnit != null
         elseif this.castType == CAST_POINT_BLINK then

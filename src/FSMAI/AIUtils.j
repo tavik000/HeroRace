@@ -943,13 +943,13 @@ library AIUtils requires KeyUtils
             exitwhen currentUnit == null
             call GroupRemoveUnit(unitsBetween, currentUnit)
 
-            call BotLog("Checking unit in betweenXY: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
             elseif not IsUnitValid(currentUnit) then
             elseif currentUnit == sourceUnit or currentUnit == targetUnit then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
             else
+                call BotLog("Checking unit in betweenXY: " + GetUnitName(currentUnit))
                 if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
                     // Found blocking unit
                     call DestroyGroup(unitsBetween)
@@ -997,12 +997,12 @@ library AIUtils requires KeyUtils
             exitwhen currentUnit == null
             call GroupRemoveUnit(unitsBetween, currentUnit)
 
-            call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between units: " + GetUnitName(currentUnit))
 
             if IsUnitType(currentUnit, UNIT_TYPE_FLYING) then
             elseif not IsUnitValid(currentUnit) then
             elseif IsUnitType(currentUnit, UNIT_TYPE_STRUCTURE) then
             elseif currentUnit != sourceUnit and currentUnit != targetUnit then
+                call BotLogWithPlayer(GetOwningPlayer(sourceUnit), "Checking unit in between units: " + GetUnitName(currentUnit))
                 if IsPointOnLineSegment(sx, sy, tx, ty, GetUnitX(currentUnit), GetUnitY(currentUnit), tolerance) then
                     // Found blocking unit
                     call DestroyGroup(unitsBetween)

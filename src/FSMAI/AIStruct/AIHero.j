@@ -724,22 +724,22 @@ struct AIHero
         if canGoBackward then
             if AngleDiff(heroToNextWaypointAngle, targetUnitToHeroAngle) <= 135.0 then
                 set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
-                call this.botLog("Initial avoidAngle (forward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
+                // call this.botLog("Initial avoidAngle (forward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
             else
                 set avoidAngle = GetMiddleAngle(NormalizeAngle(heroToNextWaypointAngle + 180.0), targetUnitToHeroAngle)
-                call this.botLog("Initial avoidAngle (backward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
+                // call this.botLog("Initial avoidAngle (backward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
             endif
         else
             set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, targetUnitToHeroAngle)
-            call this.botLog("Initial avoidAngle (backward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
+            // call this.botLog("Initial avoidAngle (backward): " + R2S(avoidAngle) + ", heroToNextWaypointAngle: " + R2S(heroToNextWaypointAngle) + ", targetUnitToHeroAngle: " + R2S(targetUnitToHeroAngle))
             if bLeanTowardWaypoint then
                 set avoidAngle = GetMiddleAngle(heroToNextWaypointAngle, avoidAngle)
-                call this.botLog("Leaning 2x toward waypoint, new avoidAngle: " + R2S(avoidAngle))
+                // call this.botLog("Leaning 2x toward waypoint, new avoidAngle: " + R2S(avoidAngle))
             endif
         endif
 
         call this.botLog("Avoiding target unit behind: " + GetUnitName(targetUnit))
-        call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
+        // call this.botLog("Calculated avoidAngle: " + R2S(avoidAngle))
         set moveX = heroX + moveDistance * Cos(avoidAngle * bj_DEGTORAD)
         set moveY = heroY + moveDistance * Sin(avoidAngle * bj_DEGTORAD)
 
@@ -785,7 +785,7 @@ struct AIHero
     endmethod
 
     method applyNightmareDifficultyModifiers takes nothing returns nothing
-        local real speedBoost = 25.0
+        local real speedBoost = 35.0
 
         // Increase move speed
         call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
