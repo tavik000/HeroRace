@@ -20,9 +20,58 @@ struct CombatState extends AIState
         local boolean isCastOvertime = currentTime > (owner.lastStartCastTime + owner.castPt + TURN_TIME + owner.currentRequiredCastTime)
         local boolean isCastFailed = owner.isCasting and isCastOvertime
         local integer currentOrder = GetUnitCurrentOrder(owner.hero)
+        local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+        local real heroX = GetUnitX(owner.hero)
+        local real heroY = GetUnitY(owner.hero)
 
         call owner.setDebugTextTagContent("Combat: Updating")
         call owner.setDebugTextTagColorPreset("RED")
+
+        // Check if hero has reached the current waypoint area
+        if owner.currentWaypointIndex <= GoalWaypointIndex then
+            if RectContainsCoords(currentWaypointArea, heroX, heroY) then
+                call this.botLog("Reached waypoint " + I2S(owner.currentWaypointIndex))
+                call owner.setDebugTextTagContent("Combat: Reached Waypoint " + I2S(owner.currentWaypointIndex))
+                call owner.setDebugTextTagColorPreset("RED")
+
+                // Special handling for crossing sea at waypoint 3: Left of Upper Strait
+                if owner.currentWaypointIndex == 3 then
+                    if owner.shouldCrossSeaOrTree() then
+                        // Upper strait - crossing sea
+                        call this.botLog("Going to crossing sea area after waypoint 3")
+                        call owner.setDebugTextTagContent("Combat: Crossing Sea Area")
+                        call owner.setDebugTextTagColorPreset("RED")
+
+                        call owner.setWaypointIndex(31) // Cross Sea Area
+                        call owner.moveToNextWaypoint()
+                        return
+                    endif
+                endif
+
+                if owner.currentWaypointIndex == 13 then
+                    // Before final waypoint 
+                    if owner.shouldCrossSeaOrTree() then
+                        call owner.setWaypointIndex(131) // Cross Tree Area
+                        call owner.moveToNextWaypoint()
+                        return
+                    endif
+                endif
+
+                if owner.currentWaypointIndex == GoalWaypointIndex then
+                    call this.botLog("Reached final waypoint")
+                    call owner.changeState(GoaledState.create())
+                    return
+                else
+                    // Move to next waypoint
+                    call owner.setWaypointIndex(owner.currentWaypointIndex + 1)
+                endif
+                
+                // Move to the new waypoint
+                call owner.moveToNextWaypoint()
+                return
+
+            endif
+        endif
 
         if owner.eatingTree != null then
             if currentOrder == 0 then
