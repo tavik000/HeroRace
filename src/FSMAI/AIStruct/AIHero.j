@@ -66,9 +66,6 @@ struct AIHero
             
         // Store unit to AIHero mapping
         call SaveInteger(udg_UnitAIHeroMap, GetHandleId(this.hero), 0, this)
-        if udg_bEnableBotTextTag then
-            call this.createDebugTextTag()
-        endif
 
         // Nerf or Buff hero based on difficulty
         if inDifficulty == DIFF_EASY then
@@ -81,6 +78,10 @@ struct AIHero
             call this.applyCrazyDifficultyModifiers()
         elseif inDifficulty == DIFF_NIGHTMARE then
             call this.applyNightmareDifficultyModifiers()
+        endif
+
+        if udg_bEnableBotTextTag then
+            call this.createDebugTextTag()
         endif
 
         return this

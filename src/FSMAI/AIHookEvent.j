@@ -63,5 +63,20 @@ library AIHookEvent requires AIUtils
         endif
     endfunction
 
+    function OnTurnOnAIHeroBotTextTag takes nothing returns nothing
+        local AIHero aiHero = 0
+        local integer i = 0
+        local player p = null
+
+        loop
+            exitwhen i >= bj_MAX_PLAYERS
+            set p = Player(i)
+            set aiHero = GetAIHeroByPlayer(p)
+            if aiHero != null then
+                call aiHero.createDebugTextTag()
+            endif
+            set i = i + 1
+        endloop
+    endfunction
 
 endlibrary
