@@ -9,6 +9,8 @@ function Trig_AIDamageBoostActions takes nothing returns nothing
     local real extraDamage = 0.0
     local AIHero aiHero
     local integer difficulty
+    local integer targetId
+    local integer sourceId
 
     if sourcePlayer == Player(11) then
         return
@@ -47,9 +49,21 @@ function Trig_AIDamageBoostActions takes nothing returns nothing
     endif
     set difficulty = aiHero.difficulty
     if difficulty >= DIFF_CRAZY then
+
+        // Prevent recursion: check if this target already got extra damage from this damageSource
+        set targetId = GetHandleId(targetUnit)
+        set sourceId = GetHandleId(damageSource)
+        if LoadBoolean(g_htDamageBoost, targetId, sourceId) then
+            return
+        endif
+        call SaveBoolean(g_htDamageBoost, targetId, sourceId, true)
+
         set extraDamage = eventDamage * GetExtraDamagePercentage(difficulty)
         call TriggerSleepAction(0.0) // 1-frame delay
         call UnitDamageTarget(damageSource, targetUnit, extraDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, null)
+
+        // Clear the recursion flag immediately so next damage events can run
+        call SaveBoolean(g_htDamageBoost, targetId, sourceId, false)
     endif
 
 endfunction
