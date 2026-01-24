@@ -26,14 +26,14 @@ endfunction
 
 function FindSummonAttackTargetUnit takes AIHero summonerAIHero, unit summonUnit, real expectedDamage returns unit
     local unit attackTarget = null
-    set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, 1500.0, expectedDamage, false, false, 0, 0)
+    set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, 1500.0, expectedDamage, false, false, true, 0, 0)
 
     if attackTarget == null then
-        set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, 2000.0, expectedDamage, false, false, 0, 0)
+        set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, 2000.0, expectedDamage, false, false, true, 0, 0)
         if attackTarget == null then
-            set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, 4000.0, expectedDamage, false, false, 0, 0)
+            set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, 4000.0, expectedDamage, false, false, true, 0, 0)
             if attackTarget == null then
-                set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, MAX_RANGE, expectedDamage, false, false, 0, 0)
+                set attackTarget = FindLowHealthEnemyTargetInRange(summonerAIHero, summonUnit, MAX_RANGE, expectedDamage, false, false, true, 0, 0)
             endif
         endif
     endif

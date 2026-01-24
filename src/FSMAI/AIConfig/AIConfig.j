@@ -77,6 +77,7 @@ globals
     constant real TURN_TIME = 0.2 
     constant real MAX_RANGE = 300000.0
 
+    constant real MAX_ARMOR = 1000.0
     
 
     // Ability AI cast types

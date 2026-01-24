@@ -136,6 +136,10 @@ library KeyUtils
         return GetUnitStateSwap(ConvertUnitState(0x15), u)
     endfunction
 
+    function GetUnitArmor takes unit u returns real
+        return GetUnitStateSwap( ConvertUnitState(0x20), u)
+    endfunction
+
     // Stun or Paralysis (Cannot move)
     function IsUnitStun takes unit u returns boolean
         // Stun buffs

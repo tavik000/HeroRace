@@ -2179,7 +2179,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLowHealthEnemyTargetInRange takes AIHero owner, unit overrideCenterUnit, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, AIAbility abil, AIItem itm returns unit
+    function FindLowHealthEnemyTargetInRange takes AIHero owner, unit overrideCenterUnit, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, boolean bExcludeHighArmor,AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -2198,7 +2198,7 @@ library AIUtils requires KeyUtils
             call GroupEnumUnitsInRange(enemies, GetUnitX(owner.hero), GetUnitY(owner.hero), range, Filter(function FilterValidVisibleTeamHeroes))
         endif
 
-        // Not Allowed Target: MagicImmune, customFilter, above expectedDamage(if isLowHealthOnly), above HP threshold(if shouldAvoidOverKill)
+        // Not Allowed Target: MagicImmune, customFilter, above expectedDamage(if isLowHealthOnly), above HP threshold(if shouldAvoidOverKill), high armor(if bExcludeHighArmor)
         // Priority:                                                                                     
         // 1. Ungoaled Hero
         // 2. Killable
@@ -2220,6 +2220,7 @@ library AIUtils requires KeyUtils
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
             elseif isLowHealthOnly and GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) > expectedDamage then
             elseif shouldAvoidOverKill and GetUnitStateSwap(UNIT_STATE_LIFE, currentUnit) < lowHpThreshold then
+            elseif bExcludeHighArmor and GetUnitArmor(currentUnit) >= MAX_ARMOR then
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else
@@ -2881,17 +2882,17 @@ library AIUtils requires KeyUtils
                 call owner.botLog("Found healthy running enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH then
-            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, false, abil, 0)
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, false, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_ONLY then
-            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, true, abil, 0)
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, false, true, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health only enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
         elseif abil.findTargetType == FIND_TARGET_TYPE_ENEMY_LOW_HEALTH_AVOID_OVERKILL then
-            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, true, false, abil, 0)
+            set targetUnit = FindLowHealthEnemyTargetInRange(owner, null, abil.castRange, abil.expectedDamage, true, false, false, abil, 0)
             if targetUnit != null then
                 call owner.botLog("Found low health enemy target for ability, result: " + GetUnitName(targetUnit))
             endif
