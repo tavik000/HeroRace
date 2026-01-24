@@ -105,6 +105,9 @@ struct AIHero
 
     method setWaypointIndex takes integer newIndex returns nothing
         local boolean hasNearbyEnemy = false
+        if this.currentWaypointIndex == newIndex then
+            return
+        endif
         if newIndex == 12 then
             if IsStoneManStable() then
                 set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0

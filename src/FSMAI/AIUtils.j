@@ -2946,7 +2946,6 @@ library AIUtils requires KeyUtils
             endif
 
             if targetUnit == null then
-                call owner.botLog("No valid target found for combo ability.")
                 return null
             endif
 
