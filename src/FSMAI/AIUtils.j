@@ -707,6 +707,10 @@ library AIUtils requires KeyUtils
         return (GetUnitTypeId(summonUnit) == 'h00P')
     endfunction
 
+    function AISummonIsUnitLavaSpawn takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01L')
+    endfunction
+
     function AISummonIsUnitGrizzly takes unit summonUnit returns boolean
         return (GetUnitTypeId(summonUnit) == 'n01E')
     endfunction
@@ -1257,6 +1261,7 @@ library AIUtils requires KeyUtils
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is invulnerable or magic immune")
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif tempAIItem != 0 and not tempAIItem.customFilter(currentUnit) then
+            elseif not IsUnitValid(currentUnit) then
             elseif not IsHeroGoaled(ownerHero) and IsUnitBehindUnit(currentUnit, ownerHero) then
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is behind the owner hero")
             elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
@@ -2632,6 +2637,9 @@ library AIUtils requires KeyUtils
                     set bestTarget = currentUnit
                     exitwhen true
                 elseif AISummonIsUnitTreant(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitLavaSpawn(currentUnit) then
                     set bestTarget = currentUnit
                     exitwhen true
                 endif
