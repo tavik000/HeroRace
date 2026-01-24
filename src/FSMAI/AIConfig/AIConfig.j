@@ -148,6 +148,7 @@ globals
     constant integer FIND_TARGET_TYPE_ALL_ENEMY_LEADING_OR_ALLY_TRAILING = 54 
     constant integer FIND_TARGET_TYPE_ALL_HOLY_LIGHT = 55 
     constant integer FIND_TARGET_TYPE_ALL_DEATH_COIL = 56
+    constant integer FIND_TARGET_TYPE_ALL_ENEMY_SUMMON_OR_ALLY_CC = 57
 
 
     constant integer FIND_TEAM_TYPE_NONE = 0

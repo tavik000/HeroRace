@@ -703,6 +703,50 @@ library AIUtils requires KeyUtils
         return GetNonAIAbilityProjectileSpeed(abilId) > 0.0
     endfunction
 
+    function AISummonIsUnitWaterElemental takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'h00P')
+    endfunction
+
+    function AISummonIsUnitGrizzly takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01E')
+    endfunction
+
+    function AISummonIsUnitQuillBeast takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01P')
+    endfunction
+
+    function AISummonIsUnitInferno takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n009')
+    endfunction
+
+    function AISummonIsUnitSpiritWolf takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'o00C')
+    endfunction
+
+    function AISummonIsUnitTreant takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'e00A')
+    endfunction
+
+    function AISummonIsUnitDoomGuard takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01R')
+    endfunction
+
+    function AISummonIsUnitCarrionBeetle takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'u008')
+    endfunction
+
+    function AISummonIsUnitEarthPanda takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01M')
+    endfunction
+
+    function AISummonIsUnitWindPanda takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01N')
+    endfunction
+
+    function AISummonIsUnitFirePanda takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'n01O')
+    endfunction
+
     function FindIllusionTargetInRange takes unit ownerHero, real range returns unit
         local group targets = CreateGroup()
         local unit currentUnit = null
@@ -2179,7 +2223,7 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function FindLowHealthEnemyTargetInRange takes AIHero owner, unit overrideCenterUnit, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, boolean bExcludeHighArmor,AIAbility abil, AIItem itm returns unit
+    function FindLowHealthEnemyTargetInRange takes AIHero owner, unit overrideCenterUnit, real range, real expectedDamage, boolean shouldAvoidOverKill, boolean isLowHealthOnly, boolean bExcludeHighArmor, AIAbility abil, AIItem itm returns unit
         local group enemies = CreateGroup()
         local unit currentUnit = null
         local unit bestTarget = null
@@ -2552,6 +2596,60 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindDispelSummonTargetInRange takes unit owner, real range, integer findTeamType, AIAbility abil returns unit
+        local group targets = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+
+        // Set temp variables for filter function
+        set tempHeroOwner = GetOwningPlayer(owner)
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = owner
+        set tempAIAbility = abil
+        call GroupEnumUnitsInRange(targets, GetUnitX(owner), GetUnitY(owner), range, Filter(function FilterValidVisibleTeamUnits))
+
+        // Not Allowed Target: Invulnerable/Magic Immune, customFilter, Non-summon unit
+
+        loop
+            set currentUnit = FirstOfGroup(targets)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(targets, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
+            elseif bestTarget == null then
+                if AISummonIsUnitWaterElemental(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitGrizzly(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitSpiritWolf(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitQuillBeast(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitTreant(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(targets)
+        set targets = null
+        set currentUnit = null
+        set tempAIAbility = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function IsDestructableInFrontOfUnit takes destructable tree, unit heroUnit returns boolean
         local real heroX = GetUnitX(heroUnit)
         local real heroY = GetUnitY(heroUnit)
@@ -2841,6 +2939,8 @@ library AIUtils requires KeyUtils
                 if targetUnit != null then
                     call owner.botLog("Found Death Coil ally target for ability, result: " + GetUnitName(targetUnit))
                 endif
+            elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_SUMMON_OR_ALLY_CC then
+                // Not to find target for this type
             else
                 call owner.botLogError("Unsupported ability find target type for non-smart finding: " + I2S(abil.findTargetType))
             endif
@@ -2973,6 +3073,11 @@ library AIUtils requires KeyUtils
             set targetUnit = FindDeathCoilAllyTargetInRange(owner.hero, abil.castRange, abil.expectedDamage)
             if targetUnit != null then
                 call owner.botLog("Found Death Coil ally target for ability, result: " + GetUnitName(targetUnit))
+            endif
+        elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_SUMMON_OR_ALLY_CC then
+            set targetUnit = FindDispelSummonTargetInRange(owner.hero, abil.castRange, FIND_TEAM_TYPE_ENEMIES, abil)
+            if targetUnit == null then
+                set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
             endif
         else
             call owner.botLogError("Unsupported ability find target type: " + I2S(abil.findTargetType))

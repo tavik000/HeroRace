@@ -40,46 +40,6 @@ function FindSummonAttackTargetUnit takes AIHero summonerAIHero, unit summonUnit
     return attackTarget
 endfunction
 
-function AISummonIsUnitGrizzly takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n01E')
-endfunction
-
-function AISummonIsUnitQuillBeast takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n01P')
-endfunction
-
-function AISummonIsUnitInferno takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n009')
-endfunction
-
-function AISummonIsUnitSpiritWolf takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'o00C')
-endfunction
-
-function AISummonIsUnitTreant takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'e00A')
-endfunction
-
-function AISummonIsUnitDoomGuard takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n01R')
-endfunction
-
-function AISummonIsUnitCarrionBeetle takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'u008')
-endfunction
-
-function AISummonIsUnitEarthPanda takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n01M')
-endfunction
-
-function AISummonIsUnitWindPanda takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n01N')
-endfunction
-
-function AISummonIsUnitFirePanda takes unit summonUnit returns boolean
-    return (GetUnitTypeId(summonUnit) == 'n01O')
-endfunction
-
 function AISummonIsBlinkCooldownReady takes unit summonUnit, real blinkCooldown, timer attackTargetTimer returns boolean
     local real currentTime = TimerGetElapsed(gameTimer)
     local real lastBlinkCastTime = LoadReal(udg_SummonAttackTargetTimerMap, GetHandleId(attackTargetTimer), SUMMON_KEY_BLINK_LAST_CAST_TIME)
@@ -157,6 +117,7 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
     local real distanceToSummoner = 0.0
     local integer currentOrder = GetUnitCurrentOrder(summonUnit)
     local unit ccAllyTarget = null
+    local unit dispelSummonTarget = null
     local item itemToAttackOnTargetDied = null
     local real itemSearchRadius = 600.0
     local real itemOfAllyAroundRadius = 700.0
@@ -274,14 +235,23 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
             endif
         endif
         if AISummonIsDispelCooldownReady(summonUnit, SUMMON_DISPEL_CD, currentTimer) then
-            // Check if any allied unit around is CCed
-            set ccAllyTarget = FindCCedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ALLIES, false, 0, 0)
-            if ccAllyTarget != null then
-                call IssuePointOrder(summonUnit, "dispel", GetUnitX(ccAllyTarget), GetUnitY(ccAllyTarget))
+            set dispelSummonTarget = FindDispelSummonTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ENEMIES, 0)
+            if dispelSummonTarget != null then
+                call IssuePointOrder(summonUnit, "dispel", GetUnitX(dispelSummonTarget), GetUnitY(dispelSummonTarget))
                 call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
                 call PolledWait(0.5)
                 call IssueTargetOrder(summonUnit, "attack", attackTarget)
-                call BotLog("Summoned Doom Guard using Dispel on CCed ally: " + GetUnitName(ccAllyTarget))
+                call BotLog("Summoned Doom Guard using Dispel on summon: " + GetUnitName(dispelSummonTarget))
+            else
+                // Check if any allied unit around is CCed
+                set ccAllyTarget = FindCCedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ALLIES, false, 0, 0)
+                if ccAllyTarget != null then
+                    call IssuePointOrder(summonUnit, "dispel", GetUnitX(ccAllyTarget), GetUnitY(ccAllyTarget))
+                    call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                    call PolledWait(0.5)
+                    call IssueTargetOrder(summonUnit, "attack", attackTarget)
+                    call BotLog("Summoned Doom Guard using Dispel on CCed ally: " + GetUnitName(ccAllyTarget))
+                endif
             endif
         endif
     endif
@@ -289,13 +259,22 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
     if AISummonIsUnitWindPanda(summonUnit) then
         if AISummonIsDispelCooldownReady(summonUnit, SUMMON_DISPEL_CD, currentTimer) then
             // Check if any allied unit around is CCed
-            set ccAllyTarget = FindCCedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ALLIES, false, 0, 0)
-            if ccAllyTarget != null then
-                call IssuePointOrder(summonUnit, "dispel", GetUnitX(ccAllyTarget), GetUnitY(ccAllyTarget))
+            set dispelSummonTarget = FindDispelSummonTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ENEMIES, 0)
+            if dispelSummonTarget != null then
+                call IssuePointOrder(summonUnit, "dispel", GetUnitX(dispelSummonTarget), GetUnitY(dispelSummonTarget))
                 call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
                 call PolledWait(0.5)
                 call IssueTargetOrder(summonUnit, "attack", attackTarget)
-                call BotLog("Summoned Wind Panda using Dispel on CCed ally: " + GetUnitName(ccAllyTarget))
+                call BotLog("Summoned Wind Panda using Dispel on summon: " + GetUnitName(dispelSummonTarget))
+            else
+                set ccAllyTarget = FindCCedTargetInRange(summonUnit, MAX_RANGE, FIND_TEAM_TYPE_ALLIES, false, 0, 0)
+                if ccAllyTarget != null then
+                    call IssuePointOrder(summonUnit, "dispel", GetUnitX(ccAllyTarget), GetUnitY(ccAllyTarget))
+                    call SaveReal(udg_SummonAttackTargetTimerMap, GetHandleId(currentTimer), SUMMON_KEY_DISPEL_LAST_CAST_TIME, TimerGetElapsed(gameTimer))
+                    call PolledWait(0.5)
+                    call IssueTargetOrder(summonUnit, "attack", attackTarget)
+                    call BotLog("Summoned Wind Panda using Dispel on CCed ally: " + GetUnitName(ccAllyTarget))
+                endif
             endif
         endif
     endif
