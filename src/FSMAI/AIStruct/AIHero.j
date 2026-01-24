@@ -323,6 +323,10 @@ struct AIHero
             return false
         endif
 
+        if GetUnitLifePercent(targetUnit) < FORCE_USE_ITEM_HP_PERCENTAGE_THRESHOLD then
+            return false
+        endif
+
         set this.givingItem = itmToGive
         call this.changeState(GiveItemState.create(targetUnit))
         return true
