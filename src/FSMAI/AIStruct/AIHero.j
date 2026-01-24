@@ -125,24 +125,6 @@ struct AIHero
         local integer previousIndex = this.currentWaypointIndex
         local integer newWaypointIndex
 
-        // cross sea special case handling
-        if previousIndex == 31 then
-            set previousIndex = 3
-        endif
-        if previousIndex == 131 then
-            set previousIndex = 13
-        endif
-
-        set newWaypointIndex = GetNearestForwardWaypointIndex(previousIndex - 1, teleportX, teleportY)
-
-        call this.botLog("Updating waypoint after any kind of teleport. Current Index: " + I2S(this.currentWaypointIndex) + ", New Index: " + I2S(newWaypointIndex))
-        
-        if newWaypointIndex > this.currentWaypointIndex then
-            set this.currentWaypointIndex = newWaypointIndex
-            call this.moveToNextWaypoint()
-            call this.botLog("Updated waypoint after teleport to index: " + I2S(newWaypointIndex))
-        endif
-
         // update track progress, if close to TopRight rather than BotRight, set to 1, otherwise set to 2
         if teleportX <= - 20596.0 and teleportY >= 18822.0 then
             // belong to top left area, no need to update
@@ -156,6 +138,26 @@ struct AIHero
             call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 2)
             call this.botLog("Updated track progression to 2 (Bottom Right side)")
         endif
+
+        // cross sea special case handling
+        if previousIndex == 31 then
+            set previousIndex = 3
+        endif
+        if previousIndex == 131 then
+            set previousIndex = 13
+        endif
+
+        // update waypoint index based on new position
+        set newWaypointIndex = GetNearestForwardWaypointIndex(this.hero, previousIndex - 1, teleportX, teleportY)
+
+        call this.botLog("Updating waypoint after any kind of teleport. Current Index: " + I2S(this.currentWaypointIndex) + ", New Index: " + I2S(newWaypointIndex))
+        
+        if newWaypointIndex > this.currentWaypointIndex then
+            set this.currentWaypointIndex = newWaypointIndex
+            call this.moveToNextWaypoint()
+            call this.botLog("Updated waypoint after teleport to index: " + I2S(newWaypointIndex))
+        endif
+
 
     endmethod
 

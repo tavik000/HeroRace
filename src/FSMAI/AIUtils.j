@@ -2690,23 +2690,45 @@ library AIUtils requires KeyUtils
     endfunction
 
     // Get nearest forward waypoint index after teleport
-    function GetNearestForwardWaypointIndex takes integer currentIndex, real x, real y returns integer
+    function GetNearestForwardWaypointIndex takes unit updateUnit, integer currentIndex, real x, real y returns integer
         local integer i = currentIndex + 1
         local integer bestIndex = currentIndex
-        local real bestDistance = 999999.0
-        local real distance
+        local real bestDistance = MAX_RANGE
+        local real waypointDistanceToHero
+        local real waypointDistanceToNextTrackPoint
+        local real heroDistanceToNextTrackPoint
         local real waypointX
         local real waypointY
+        local integer currentTrackProgress = GetHeroTrackProgress(updateUnit)
+        local real nextTrackProgressPointX
+        local real nextTrackProgressPointY
         
+        if currentTrackProgress == 0 then
+            set nextTrackProgressPointX = TopRightAreaCenterX
+            set nextTrackProgressPointY = TopRightAreaCenterY
+        elseif currentTrackProgress == 1 then
+            set nextTrackProgressPointX = BotRightAreaCenterX
+            set nextTrackProgressPointY = BotRightAreaCenterY
+        elseif currentTrackProgress == 2 then
+            set nextTrackProgressPointX = GoalX
+            set nextTrackProgressPointY = GoalY
+        else
+            call BotLogError("Unknown Track Progress value: " + I2S(currentTrackProgress))
+            return GoalWaypointIndex
+        endif
+
         loop
             exitwhen i > GoalWaypointIndex
             set waypointX = GetRectCenterX(WaypointAreas[i])
             set waypointY = GetRectCenterY(WaypointAreas[i])
-            set distance = SquareRoot((x - waypointX) * (x - waypointX) + (y - waypointY) * (y - waypointY))
-            
-            if distance < bestDistance then
-                set bestDistance = distance
-                set bestIndex = i + 1
+            set waypointDistanceToHero = SquareRoot((x - waypointX) * (x - waypointX) + (y - waypointY) * (y - waypointY))
+            set waypointDistanceToNextTrackPoint = DistanceBetweenXY(waypointX, waypointY, nextTrackProgressPointX, nextTrackProgressPointY)
+            set heroDistanceToNextTrackPoint = DistanceBetweenXY(x, y, nextTrackProgressPointX, nextTrackProgressPointY)   
+            if waypointDistanceToNextTrackPoint < heroDistanceToNextTrackPoint then
+                if waypointDistanceToHero < bestDistance then
+                    set bestDistance = waypointDistanceToHero
+                    set bestIndex = i + 1
+                endif
             endif
             
             set i = i + 1
