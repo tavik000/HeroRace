@@ -795,10 +795,18 @@ struct AIItem
     endmethod
 
     method botLog takes string msg returns nothing
+        if not IsUnitValid(this.ownerHero) then
+            call BotLog("Owner hero is not valid for item log: " + msg)
+            return
+        endif
         call BotLogWithPlayer(GetOwningPlayer(this.ownerHero), msg)
     endmethod
 
     method botLogError takes string msg returns nothing
+        if not IsUnitValid(this.ownerHero) then
+            call BotLogError("Owner hero is not valid for item error log: " + msg)
+            return
+        endif
         call BotLogErrorWithPlayer(GetOwningPlayer(this.ownerHero), msg)
     endmethod
 endstruct

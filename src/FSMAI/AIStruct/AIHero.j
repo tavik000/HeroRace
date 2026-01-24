@@ -885,11 +885,19 @@ struct AIHero
     endmethod
 
     method botLog takes string msg returns nothing
-        call BotLogWithPlayer(GetOwningPlayer(this.hero), msg)
+        if IsUnitValid(this.hero) then
+            call BotLogWithPlayer(GetOwningPlayer(this.hero), msg)
+        else
+            call BotLog(msg)
+        endif
     endmethod
         
     method botLogError takes string msg returns nothing
-        call BotLogErrorWithPlayer(GetOwningPlayer(this.hero), msg)
+        if IsUnitValid(this.hero) then
+            call BotLogErrorWithPlayer(GetOwningPlayer(this.hero), msg)
+        else
+            call BotLogError(msg)
+        endif
     endmethod
 
     // =====================================================

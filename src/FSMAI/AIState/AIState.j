@@ -3,10 +3,18 @@ struct AIState
     AIHero owner
         
     method botLog takes string msg returns nothing
+        if not IsUnitValid(owner.hero) then
+            call BotLog(msg)
+            return
+        endif
         call BotLogWithPlayer(GetOwningPlayer(owner.hero), msg)
     endmethod
         
     method botLogError takes string msg returns nothing
+        if not IsUnitValid(owner.hero) then
+            call BotLogError(msg)
+            return
+        endif
         call BotLogErrorWithPlayer(GetOwningPlayer(owner.hero), msg)
     endmethod
         
@@ -15,7 +23,7 @@ struct AIState
     endmethod
 
     stub method onUpdate takes nothing returns nothing
-    // Placeholder for timer callbackj
+    // Placeholder for timer callback
     endmethod
 
     stub method onExit takes nothing returns nothing
