@@ -222,9 +222,9 @@ struct AIHero
         local integer i = 0
         local boolean hasReadyAbility = false
         local boolean hasReadyItem = false
-        local player randomEnemyPlayer = Player(11)
+        local player playerNeutralAggressive = Player(PLAYER_NEUTRAL_AGGRESSIVE)
 
-        if IsUnitInvisible(this.hero, randomEnemyPlayer) then
+        if IsUnitInvisible(this.hero, playerNeutralAggressive) then
             // call this.botLog("Cannot enter combat, hero is invisible.")
             call this.setDebugTextTagContent("Run: Invisible")
             call this.setDebugTextTagColorPreset("YELLOW")
