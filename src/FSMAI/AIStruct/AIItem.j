@@ -528,6 +528,7 @@ struct AIItem
                 if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
                     set this.readyTargetUnit = null
                     set this.bIsReadyToUse = false
+                    set this.ownerAIHero.isMovingForCast = false
                     return false
                 endif
                 // Follow target unit
@@ -762,6 +763,7 @@ struct AIItem
                 return true
             else
                 if DistanceBetweenUnits(this.ownerHero, targetUnit) > this.effectiveRadius * 2.0 then
+                    set this.ownerAIHero.isMovingForCast = false
                     return false
                 endif
                 // Follow target unit
