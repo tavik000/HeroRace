@@ -543,6 +543,12 @@ library AIUtils requires KeyUtils
         local real heroX = GetUnitX(aiHero.hero)
         local real heroY = GetUnitY(aiHero.hero)
         local integer wpi = aiHero.currentWaypointIndex
+
+        if RectContainsCoords(gg_rct_AIHazardSpiderNetTopRightArea, heroX, heroY) then
+            // exclude top right corner to prevent stuck
+            return false
+        endif
+
         if RectContainsCoords(gg_rct_HazardSpiderNetArea, heroX, heroY) then
             // before finish area
             if wpi == 14 then
