@@ -2815,26 +2815,30 @@ library AIUtils requires KeyUtils
         local integer currentTrackProgress = GetHeroTrackProgress(updateUnit)
         local real nextTrackProgressPointX
         local real nextTrackProgressPointY
+        local integer progressMaxIndex = 0
         
         if currentTrackProgress == 0 then
             set nextTrackProgressPointX = TopRightAreaCenterX
             set nextTrackProgressPointY = TopRightAreaCenterY
+            set progressMaxIndex = 4
         elseif currentTrackProgress == 1 then
             set nextTrackProgressPointX = BotRightAreaCenterX
             set nextTrackProgressPointY = BotRightAreaCenterY
+            set progressMaxIndex = 9
         elseif currentTrackProgress == 2 then
             set nextTrackProgressPointX = GoalX
             set nextTrackProgressPointY = GoalY
+            set progressMaxIndex = GoalWaypointIndex
         else
             call BotLogError("Unknown Track Progress value: " + I2S(currentTrackProgress))
             return GoalWaypointIndex
         endif
 
         loop
-            exitwhen i > GoalWaypointIndex
+            exitwhen i > progressMaxIndex
             set waypointX = GetRectCenterX(WaypointAreas[i])
             set waypointY = GetRectCenterY(WaypointAreas[i])
-            set waypointDistanceToHero = SquareRoot((x - waypointX) * (x - waypointX) + (y - waypointY) * (y - waypointY))
+            set waypointDistanceToHero = DistanceBetweenXY(waypointX, waypointY, x, y)
             set waypointDistanceToNextTrackPoint = DistanceBetweenXY(waypointX, waypointY, nextTrackProgressPointX, nextTrackProgressPointY)
             set heroDistanceToNextTrackPoint = DistanceBetweenXY(x, y, nextTrackProgressPointX, nextTrackProgressPointY)   
             if waypointDistanceToNextTrackPoint < heroDistanceToNextTrackPoint then
@@ -2847,7 +2851,7 @@ library AIUtils requires KeyUtils
             set i = i + 1
         endloop
         
-        return IMinBJ(bestIndex, GoalWaypointIndex)
+        return IMinBJ(bestIndex, progressMaxIndex)
     endfunction
 
     function FindNearestTreeInRange takes unit sourceUnit, real range returns destructable

@@ -132,14 +132,14 @@ struct AIHero
         if teleportX <= - 20596.0 and teleportY >= 18822.0 then
             // belong to top left area, no need to update
             call this.botLog("Teleport in Top Left area, no track progression update needed.")
-            return
-        endif
-        if DistanceBetweenXY(teleportX, teleportY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(teleportX, teleportY, BotRightAreaCenterX, BotRightAreaCenterY) then
-            call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 1)
-            call this.botLog("Updated track progression to 1 (Top Right side)")
         else
-            call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 2)
-            call this.botLog("Updated track progression to 2 (Bottom Right side)")
+            if DistanceBetweenXY(teleportX, teleportY, TopRightAreaCenterX, TopRightAreaCenterY) < DistanceBetweenXY(teleportX, teleportY, BotRightAreaCenterX, BotRightAreaCenterY) then
+                call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 1)
+                call this.botLog("Updated track progression to 1 (Top Right side)")
+            else
+                call SaveInteger(udg_HeroTrackProgressionMap, GetHandleId(this.hero), S2I("trackProgress"), 2)
+                call this.botLog("Updated track progression to 2 (Bottom Right side)")
+            endif
         endif
 
         // cross sea special case handling
