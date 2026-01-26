@@ -131,9 +131,15 @@ struct CombatState extends AIState
         endif
 
         if this.owner.isMovingForCast then
-            call this.botLog("Moving for cast, skipping update")
-            call owner.setDebugTextTagContent("Combat: Moving for Cast")
-            call owner.setDebugTextTagColorPreset("RED")
+            if currentOrder == 0 then
+                set owner.isMovingForCast = false
+                call this.botLog("Order lost while moving for cast, changing to Run State")
+                call owner.changeState(RunState.create())
+            else
+                call this.botLog("Moving for cast, skipping update")
+                call owner.setDebugTextTagContent("Combat: Moving for Cast")
+                call owner.setDebugTextTagColorPreset("RED")
+            endif
             return
         endif
 
