@@ -60,7 +60,7 @@ function Trig_AIDamageBoostActions takes nothing returns nothing
 
         set extraDamage = eventDamage * GetExtraDamagePercentage(difficulty)
         call TriggerSleepAction(0.0) // 1-frame delay
-        call UnitDamageTarget(damageSource, targetUnit, extraDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_NORMAL, null)
+        call UnitDamageTarget(damageSource, targetUnit, extraDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_MAGIC, null)
 
         // Clear the recursion flag immediately so next damage events can run
         call SaveBoolean(g_htDamageBoost, targetId, sourceId, false)
