@@ -169,6 +169,12 @@ struct AIHero
         local real x
         local real y
 
+        // Got ThunderAxe become neutral passive
+        if IsUnitOwnedByPlayer(this.hero, Player(PLAYER_NEUTRAL_PASSIVE)) then
+            call this.botLog("Hero is owned by Neutral Passive when moving to next waypoint, skipping movement.")
+            return
+        endif
+
         set currentWaypointArea = WaypointAreas[currentWaypointIndex]
         set x = GetRandomReal(GetRectMinX(currentWaypointArea), GetRectMaxX(currentWaypointArea))
         set y = GetRandomReal(GetRectMinY(currentWaypointArea), GetRectMaxY(currentWaypointArea))

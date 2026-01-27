@@ -19,6 +19,12 @@ struct GiveItemState extends AIState
             return
         endif
 
+        // Got ThunderAxe become neutral passive
+        if IsUnitOwnedByPlayer(owner.hero, Player(PLAYER_NEUTRAL_PASSIVE)) then
+            call this.botLog("Hero is owned by Neutral Passive when entering Give Item State, transitioning to Run State")
+            return
+        endif
+
         // Give the item
         if this.isOwningItem(owner.givingItem) then
             call UnitDropItemTarget(owner.hero, owner.givingItem, this.targetUnit)
@@ -39,6 +45,18 @@ struct GiveItemState extends AIState
 
         if not IsUnitValid(this.targetUnit) then
             call this.botLog("Target unit: " + GetUnitName(this.targetUnit) + " is no longer valid, transitioning to Run State")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
+        // Got ThunderAxe become neutral passive
+        if IsUnitOwnedByPlayer(owner.hero, Player(PLAYER_NEUTRAL_PASSIVE)) then
+            call this.botLog("Hero is owned by Neutral Passive when entering Give Item State, transitioning to Run State")
+            return
+        endif
+
+        if IsUnitEnemy(this.targetUnit, GetOwningPlayer(owner.hero)) then
+            call this.botLog("Target unit: " + GetUnitName(this.targetUnit) + " is an enemy, transitioning to Run State")
             call owner.changeState(RunState.create())
             return
         endif
