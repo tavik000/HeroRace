@@ -308,6 +308,7 @@ function Trig_AISummonActions takes nothing returns nothing
     local real distanceToAttackTarget = 0.0
     local timer attackTargetTimer = null
     local real distanceToSummoner = 0.0
+    local integer illusionRandomAction = 0
 
     if IsUnitWard(summonUnit) then
         return
@@ -332,7 +333,38 @@ function Trig_AISummonActions takes nothing returns nothing
     // Illusion hero, just move to goal point
     if IsUnitIllusionBJ(summonUnit) then
         if IsHeroUnitId(GetUnitTypeId(summonUnit)) then
-            call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+            set illusionRandomAction = GetRandomInt(1, 3)
+            if illusionRandomAction == 1 then
+                // move to goal point
+                call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+                return
+            elseif illusionRandomAction == 2 then
+                // follow behind target
+                set attackTarget = FindBackOrCloseTargetInRange(summonUnit, 1000.0, 300.0, false, true, FIND_TEAM_TYPE_ENEMIES, 0, 0)
+                if attackTarget != null then
+                    call IssueTargetOrder(summonUnit, "move", attackTarget)
+                    return
+                endif
+                call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+                return
+            else
+                call PolledWait(GetRandomReal(0.25, 2.0))
+                set illusionRandomAction = GetRandomInt(1, 2)
+                if illusionRandomAction == 1 then
+                    // move to goal point
+                    call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+                    return
+                else
+                    // follow behind target
+                    set attackTarget = FindBackOrCloseTargetInRange(summonUnit, 1000.0, 300.0, false, true, FIND_TEAM_TYPE_ENEMIES, 0, 0)
+                    if attackTarget != null then
+                        call IssueTargetOrder(summonUnit, "move", attackTarget)
+                        return
+                    endif
+                    call IssuePointOrder(summonUnit, "move", GoalX, GoalY)
+                    return
+                endif
+            endif
             return
         endif
     endif
