@@ -2607,6 +2607,59 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
+    function FindBloodLustSummonTargetInRange takes unit owner, real range, integer findTeamType returns unit
+        local group targets = CreateGroup()
+        local unit currentUnit = null
+        local unit bestTarget = null
+
+        // Set temp variables for filter function
+        set tempHeroOwner = GetOwningPlayer(owner)
+        set tempFindTeamType = findTeamType
+        set tempHeroUnit = owner
+        set tempAIAbility = 0
+        call GroupEnumUnitsInRange(targets, GetUnitX(owner), GetUnitY(owner), range, Filter(function FilterValidVisibleTeamUnits))
+
+        // Not Allowed Target: Invulnerable/Magic Immune, Non-summon unit
+
+        loop
+            set currentUnit = FirstOfGroup(targets)
+            exitwhen currentUnit == null
+            call GroupRemoveUnit(targets, currentUnit)
+
+            // --- VALIDATION LAYER ---
+            if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+            elseif bestTarget == null then
+                if AISummonIsUnitGrizzly(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitSpiritWolf(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitLavaSpawn(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitWaterElemental(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitDoomGuard(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                endif
+            endif
+        endloop
+
+        // Clean up
+        call DestroyGroup(targets)
+        set targets = null
+        set currentUnit = null
+        set tempAIAbility = 0
+        set tempHeroUnit = null
+        set tempHeroOwner = null
+        set tempFindTeamType = FIND_TEAM_TYPE_NONE
+
+        return bestTarget
+    endfunction
+
     function FindDispelSummonTargetInRange takes unit owner, real range, integer findTeamType, AIAbility abil returns unit
         local group targets = CreateGroup()
         local unit currentUnit = null
@@ -3109,6 +3162,13 @@ library AIUtils requires KeyUtils
         local real heroY = GetUnitY(owner.hero)
 
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            if itm.itemId == 'I010' then // BloodLust
+                set targetUnit = FindBloodLustSummonTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALLIES)
+                if targetUnit != null then
+                    call owner.botLog("Force using BloodLust item on summon ally: " + GetUnitName(targetUnit))
+                    return targetUnit
+                endif
+            endif
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, false, 0)
             if targetUnit != null then
                 call owner.botLog("Found ally hero target for speed-up item, result: " + GetUnitName(targetUnit))
@@ -3225,6 +3285,14 @@ library AIUtils requires KeyUtils
     function FindForceToUseTargetUnitForItem takes AIHero owner, AIItem itm returns unit
         local unit targetUnit = null
         if itm.findTargetType == FIND_TARGET_TYPE_ALLY_SPEED_UP then
+            if itm.itemId == 'I010' then // BloodLust
+                set targetUnit = FindBloodLustSummonTargetInRange(owner.hero, itm.castRange, FIND_TEAM_TYPE_ALLIES)
+                if targetUnit != null then
+                    call owner.botLog("Force using BloodLust item on summon ally: " + GetUnitName(targetUnit))
+                    return targetUnit
+                endif
+            endif
+
             set targetUnit = FindSpeedUpAllyTargetInRange(owner.hero, itm.castRange, false, 0)
             if targetUnit == null then
                 set targetUnit = owner.hero
