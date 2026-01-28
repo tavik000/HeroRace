@@ -129,6 +129,7 @@ struct HazardState extends AIState
         local boolean hasSlowSpikeBehind = false
         local unit slowSpikeUnit = null
         local rect currentWaypointArea
+        local integer currentOrder = GetUnitCurrentOrder(owner.hero)
 
         set currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
             
@@ -147,6 +148,9 @@ struct HazardState extends AIState
             call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
             call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")
             call owner.setDebugTextTagColorPreset("ORANGE")
+            if currentOrder == 0 then
+                call owner.moveToNextWaypoint()
+            endif
             return
         endif
 
@@ -307,6 +311,7 @@ struct HazardState extends AIState
         local boolean hasNetBehind = false
         local unit netUnit = null
         local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
+        local integer currentOrder = GetUnitCurrentOrder(owner.hero)
 
         if owner.currentWaypointIndex < 12 then
             call this.botLogError("Waypoint index less than 12 in Net Hazard Zone, correcting to 12")
@@ -332,6 +337,9 @@ struct HazardState extends AIState
             call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
             call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")
             call owner.setDebugTextTagColorPreset("ORANGE")
+            if currentOrder == 0 then
+                call owner.moveToNextWaypoint()
+            endif
             return
         endif
 
@@ -387,6 +395,7 @@ struct HazardState extends AIState
         local unit netUnit = null
         local rect currentWaypointArea = WaypointAreas[owner.currentWaypointIndex]
         local boolean isNetInvisible = false
+        local integer currentOrder = GetUnitCurrentOrder(owner.hero)
 
         // Check if hero has reached the current waypoint area
         if not IsInSpiderNetHazardZone(owner) then
@@ -407,6 +416,9 @@ struct HazardState extends AIState
             call this.botLog("Hero is invulnerable or magic immune, skipping spike avoidance")
             call owner.setDebugTextTagContent("Hazard: Magic Immune - No Dodge")
             call owner.setDebugTextTagColorPreset("ORANGE")
+            if currentOrder == 0 then
+                call owner.moveToNextWaypoint()
+            endif
             return
         endif
 
