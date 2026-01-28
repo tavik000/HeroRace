@@ -38,21 +38,25 @@ struct DeadState extends AIState
         // Apply difficulty-based modifiers on revival
         if owner.difficulty >= DIFF_CRAZY then
             if owner.difficulty == DIFF_NIGHTMARE then
+                // Increase extra damage
+                set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.05 // 5% extra damage on revival per death
                 // Increase move speed
                 set speedBonus = 10.0
                 call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
                 call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
                 // +200 HP
-                call UnitAddItemByIdSwapped( 'I00L', owner.hero ) 
-                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +10 Move Speed, +200 HP")
+                call UnitAddItemByIdSwapped('I00L', owner.hero) 
+                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +10 Move Speed, +200 HP, + 5% Extra Damage")
             else
-                // Increase move speed
+                // Increase extra damage
+                set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.02 // 2% extra damage on revival per death
+                 // Apply speed and HP bonus
                 set speedBonus = 5.0
                 call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
                 call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
                 // +100 HP
-                call UnitAddItemByIdSwapped( 'I02J', owner.hero )
-                call this.botLog("Applying Crazy difficulty modifiers on revival: +5 Move Speed, +100 HP")
+                call UnitAddItemByIdSwapped('I02J', owner.hero)
+                call this.botLog("Applying Crazy difficulty modifiers on revival: +5 Move Speed, +100 HP, + 2% Extra Damage")
             endif
         endif
     endmethod

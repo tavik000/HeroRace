@@ -57,8 +57,7 @@ function Trig_AIDamageBoostActions takes nothing returns nothing
             return
         endif
         call SaveBoolean(g_htDamageBoost, targetId, sourceId, true)
-
-        set extraDamage = eventDamage * GetExtraDamagePercentage(difficulty)
+        set extraDamage = eventDamage * (GetExtraDamagePercentage(difficulty) + aiHero.deadDamageBonusPercentage)
         call TriggerSleepAction(0.0) // 1-frame delay
         call UnitDamageTarget(damageSource, targetUnit, extraDamage, true, false, ATTACK_TYPE_NORMAL, DAMAGE_TYPE_MAGIC, null)
 

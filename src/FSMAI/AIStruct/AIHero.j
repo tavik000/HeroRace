@@ -24,6 +24,7 @@ struct AIHero
     real lastY
     integer idleReissueCount
     real lastIdleReissueTime
+    real deadDamageBonusPercentage
         
     // Constructor
     static method create takes unit u, integer inDifficulty returns thistype
@@ -52,6 +53,7 @@ struct AIHero
         set this.lastY = GetUnitY(u)
         set this.idleReissueCount = 0
         set this.lastIdleReissueTime = 0.0
+        set this.deadDamageBonusPercentage = 0.0
 
 
         // Initialize combat data
