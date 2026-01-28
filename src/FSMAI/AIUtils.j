@@ -1104,7 +1104,7 @@ library AIUtils requires KeyUtils
             set tolerance = abil.effectiveRadius
         endif
 
-        // Not Allowed Target: customFilter, not trailing, goaled hero, within min distance, blocked by other unit if applicable
+        // Not Allowed Target: customFilter, not trailing, goaled hero, within min distance, blocked by other unit if applicable, Self goaled and target is goal WPI
         // Priority Order:
         // 1 furthest
 
@@ -1128,6 +1128,8 @@ library AIUtils requires KeyUtils
                 call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is blocked by another unit")
             elseif DistanceBetweenUnits(ownerHero, currentUnit) < minDistance then
                 // call BotLogWithPlayer(heroOwner, "Target " + GetUnitName(currentUnit) + " is within min distance") 
+            elseif IsHeroGoaled(ownerHero) and RectContainsCoords(gg_rct_final, GetUnitX(currentUnit), GetUnitY(currentUnit)) then
+                call BotLogWithPlayer(heroOwner, "Skipping target " + GetUnitName(currentUnit) + " because owner hero is goaled and target is in final area")
             elseif bestTarget == null then
                 set bestTarget = currentUnit
                 call BotLogWithPlayer(heroOwner, "Selected trailing ally target: " + GetUnitName(currentUnit))
