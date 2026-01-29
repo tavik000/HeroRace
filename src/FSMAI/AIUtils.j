@@ -337,6 +337,22 @@ library AIUtils requires KeyUtils
         return true
     endfunction
 
+    function FilterValidVisibleNonMagicImmuneTeamHeroes takes nothing returns boolean
+        local unit filterUnit = GetFilterUnit()
+        
+        if not IsValidHeroTarget(filterUnit) then
+            set filterUnit = null
+            return false
+        endif
+
+        if IsUnitInvulnerableOrMagicImmune(filterUnit) then
+            set filterUnit = null
+            return false
+        endif
+     
+        return FilterValidVisibleTeamHeroes()
+    endfunction
+
     function GetHeroTrackProgress takes unit u returns integer
         return LoadInteger(udg_HeroTrackProgressionMap, GetHandleId(u), S2I("trackProgress"))
     endfunction
@@ -2059,7 +2075,11 @@ library AIUtils requires KeyUtils
         set tempAIAbility = 0
         set tempAIItem = 0
 
-        call GroupEnumUnitsInRange(heroGroup, GetUnitX(centerUnit), GetUnitY(centerUnit), radius, Filter(function FilterValidVisibleTeamHeroes))
+        if tempFindTeamType == FIND_TEAM_TYPE_ENEMIES then
+            call GroupEnumUnitsInRange(heroGroup, GetUnitX(centerUnit), GetUnitY(centerUnit), radius, Filter(function FilterValidVisibleNonMagicImmuneTeamHeroes))
+        else
+            call GroupEnumUnitsInRange(heroGroup, GetUnitX(centerUnit), GetUnitY(centerUnit), radius, Filter(function FilterValidVisibleTeamHeroes))
+        endif
 
         // Clean up temp variables
         set tempHeroUnit = null

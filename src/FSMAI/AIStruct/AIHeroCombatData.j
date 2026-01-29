@@ -310,7 +310,7 @@ struct HeroCombatData
         local integer i = currentComboIndex
         local AIAbility abil
             
-        // Check if combo abilities have their cooldowns ready (starting from currentComboIndex)
+        // Check if combo abilities have their cooldown ready (starting from currentComboIndex)
         loop
             set abil = this.getAbilityByComboIndex(i)
             // Reach end of combo sequence
@@ -542,8 +542,8 @@ struct HeroCombatData
             exitwhen i >= MAX_ITEM_PER_HERO
             set heroItem = this.items[i]
             if heroItem != 0 then
-                if heroItem.itemId == 'I02H' or heroItem.itemId == 'I00W' or heroItem.itemId == 'I01A' then
-                    // GiantBelt or Reincarnation or SpellShieldAmulet
+                if heroItem.itemId == 'I02H' or heroItem.itemId == 'I00W' or heroItem.itemId == 'I01A' or heroItem.itemId == 'I01B' then
+                    // GiantBelt or Reincarnation or SpellShieldAmulet or GrowingGrass
                 elseif heroItem.isPassive() and heroItem.isCooldownReady() then
                     return heroItem.itemHandle
                 endif
