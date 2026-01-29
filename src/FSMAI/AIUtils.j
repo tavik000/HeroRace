@@ -3149,7 +3149,7 @@ library AIUtils requires KeyUtils
         elseif abil.findTargetType == FIND_TARGET_TYPE_ALL_ENEMY_SUMMON_OR_ALLY_CC then
             set targetUnit = FindDispelSummonTargetInRange(owner.hero, abil.castRange, FIND_TEAM_TYPE_ENEMIES, abil)
             if targetUnit == null then
-                set targetUnit = FindRandomAllyHeroInRange(owner, abil.castRange, false, abil)
+                set targetUnit = FindCCedTargetInRange(owner.hero, abil.castRange, FIND_TEAM_TYPE_ALLIES, false, abil, 0)
             endif
         else
             call owner.botLogError("Unsupported ability find target type: " + I2S(abil.findTargetType))
