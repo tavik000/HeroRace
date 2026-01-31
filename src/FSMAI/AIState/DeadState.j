@@ -41,7 +41,7 @@ struct DeadState extends AIState
         if owner.difficulty >= DIFF_CRAZY then
             if owner.difficulty == DIFF_NIGHTMARE then
                 // Increase extra damage
-                set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.05 // 5% extra damage on revival per death
+                set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.1 // 10% extra damage on revival per death
                 // Increase move speed
                 if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed and GetUnitMoveSpeed(owner.hero) < maxSpeed then
                     set speedBonus = 10.0
@@ -50,10 +50,10 @@ struct DeadState extends AIState
                 endif
                 // +200 HP
                 call UnitAddItemByIdSwapped('I00L', owner.hero) 
-                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +10 Move Speed, +200 HP, + 5% Extra Damage")
+                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +10 Move Speed, +200 HP, + 10% Extra Damage")
             else
                 // Increase extra damage
-                set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.02 // 2% extra damage on revival per death
+                set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.05 // 5% extra damage on revival per death
                 // Apply speed and HP bonus
                 if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed and GetUnitMoveSpeed(owner.hero) < maxSpeed then
                     set speedBonus = 5.0
@@ -62,7 +62,7 @@ struct DeadState extends AIState
                 endif
                 // +100 HP
                 call UnitAddItemByIdSwapped('I02J', owner.hero)
-                call this.botLog("Applying Crazy difficulty modifiers on revival: +5 Move Speed, +100 HP, + 2% Extra Damage")
+                call this.botLog("Applying Crazy difficulty modifiers on revival: +5 Move Speed, +100 HP, + 5% Extra Damage")
             endif
         endif
     endmethod

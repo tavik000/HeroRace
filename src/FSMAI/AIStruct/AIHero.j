@@ -792,11 +792,11 @@ struct AIHero
     endmethod
 
     method applyCrazyDifficultyModifiers takes nothing returns nothing
-        local real speedBoost = 10.0
+        // local real speedBoost = 10.0
 
-        // Increase move speed
-        call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
-        call SetUnitMoveSpeed(this.hero, GetUnitMoveSpeed(this.hero) + speedBoost)
+        // // Increase move speed
+        // call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
+        // call SetUnitMoveSpeed(this.hero, GetUnitMoveSpeed(this.hero) + speedBoost)
 
         // +200 HP
         call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
@@ -804,11 +804,11 @@ struct AIHero
     endmethod
 
     method applyNightmareDifficultyModifiers takes nothing returns nothing
-        local real speedBoost = 35.0
+        // local real speedBoost = 35.0
 
-        // Increase move speed
-        call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
-        call SetUnitMoveSpeed(this.hero, GetUnitMoveSpeed(this.hero) + speedBoost)
+        // // Increase move speed
+        // call YDUserDataSet(unit, this.hero, "speed", real, (YDUserDataGet(unit, this.hero, "speed", real) + speedBoost))
+        // call SetUnitMoveSpeed(this.hero, GetUnitMoveSpeed(this.hero) + speedBoost)
 
         // +400 HP
         call UnitAddItemByIdSwapped( 'I00L', this.hero ) 
