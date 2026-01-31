@@ -1276,6 +1276,7 @@ library AIAbilityConfig
         call SaveInteger(AbilityDataTable, currentAbilityId, MANA_COST_KEY, 30)
         call SaveInteger(AbilityDataTable, currentAbilityId, COMBO_INDEX_KEY, 0)
         call SaveReal(AbilityDataTable, currentAbilityId, EXPECTED_DAMAGE_KEY, 400.0)
+        call SaveReal(AbilityDataTable, currentAbilityId, REQUIRED_CAST_TIME_KEY, 0.01) // prevent interrupt by moving
         set currentAbilityId = 'A07U' // Stampede(Centaur)
         call SaveReal(AbilityDataTable, currentAbilityId, BASE_COOLDOWN_KEY, 47.0)
         call SaveStr(AbilityDataTable, currentAbilityId, ORDER_STRING_KEY, "windwalk")

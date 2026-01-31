@@ -36,13 +36,14 @@ struct DeadState extends AIState
     method applyDifficultyModifiersOnRevival takes nothing returns nothing
         local real speedBonus = 0.0
         local real defaultMoveSpeed = GetUnitDefaultMoveSpeed(owner.hero)
+        local real maxSpeed = 400.0
         // Apply difficulty-based modifiers on revival
         if owner.difficulty >= DIFF_CRAZY then
             if owner.difficulty == DIFF_NIGHTMARE then
                 // Increase extra damage
                 set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.05 // 5% extra damage on revival per death
                 // Increase move speed
-                if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed then
+                if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed and GetUnitMoveSpeed(owner.hero) < maxSpeed then
                     set speedBonus = 10.0
                     call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
                     call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
@@ -54,7 +55,7 @@ struct DeadState extends AIState
                 // Increase extra damage
                 set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.02 // 2% extra damage on revival per death
                 // Apply speed and HP bonus
-                if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed then
+                if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed and GetUnitMoveSpeed(owner.hero) < maxSpeed then
                     set speedBonus = 5.0
                     call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
                     call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
