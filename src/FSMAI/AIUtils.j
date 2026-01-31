@@ -725,6 +725,18 @@ library AIUtils requires KeyUtils
         return GetNonAIAbilityProjectileSpeed(abilId) > 0.0
     endfunction
 
+    function AISummonIsUnitHealingWard takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'o00D')
+    endfunction
+
+    function AISummonIsUnitNetherworldWard takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'o00B')
+    endfunction
+
+    function AISummonIsUnitAnimatedDead takes unit summonUnit returns boolean
+        return UnitHasBuffBJ(summonUnit, 'BUan')    
+    endfunction
+
     function AISummonIsUnitWaterElemental takes unit summonUnit returns boolean
         return (GetUnitTypeId(summonUnit) == 'h00P')
     endfunction
@@ -2703,9 +2715,19 @@ library AIUtils requires KeyUtils
 
             // --- VALIDATION LAYER ---
             if IsUnitInvulnerableOrMagicImmune(currentUnit) then
+                if AISummonIsUnitAnimatedDead(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                endif
             elseif tempAIAbility != 0 and not tempAIAbility.customFilter(currentUnit) then
             elseif bestTarget == null then
-                if AISummonIsUnitWaterElemental(currentUnit) then
+                if AISummonIsUnitHealingWard(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitNetherworldWard(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitWaterElemental(currentUnit) then
                     set bestTarget = currentUnit
                     exitwhen true
                 elseif AISummonIsUnitGrizzly(currentUnit) then
