@@ -339,7 +339,7 @@ struct AIAbility
                 set this.bIsReadyToCast = false
                 return
             endif
-            if owner.currentWaypointIndex == 3 or owner.currentWaypointIndex == 13 then
+            if owner.currentWaypointIndex == 3 or owner.currentWaypointIndex == 13 or owner.currentWaypointIndex == 12 then
                 // save CD for crossing sea or tree
                 set this.bIsReadyToCast = false
                 return
@@ -453,7 +453,7 @@ struct AIAbility
                 set this.bIsReadyToCast = false
                 return
             endif
-            if owner.currentWaypointIndex == 3 or owner.currentWaypointIndex == 13 then
+            if owner.currentWaypointIndex == 3 or owner.currentWaypointIndex == 13 or owner.currentWaypointIndex == 12 then
                 // save CD for crossing sea or tree
                 set this.bIsReadyToCast = false
                 return
