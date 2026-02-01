@@ -733,6 +733,14 @@ library AIUtils requires KeyUtils
         return (GetUnitTypeId(summonUnit) == 'o00B')
     endfunction
 
+    function AISummonIsUnitInvisibilityWard takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'o00S')
+    endfunction
+
+    function AISummonIsUnitSpeedWard takes unit summonUnit returns boolean
+        return (GetUnitTypeId(summonUnit) == 'o00T')
+    endfunction
+
     function AISummonIsUnitAnimatedDead takes unit summonUnit returns boolean
         return UnitHasBuffBJ(summonUnit, 'BUan')    
     endfunction
@@ -2743,6 +2751,12 @@ library AIUtils requires KeyUtils
                     set bestTarget = currentUnit
                     exitwhen true
                 elseif AISummonIsUnitLavaSpawn(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitInvisibilityWard(currentUnit) then
+                    set bestTarget = currentUnit
+                    exitwhen true
+                elseif AISummonIsUnitSpeedWard(currentUnit) then
                     set bestTarget = currentUnit
                     exitwhen true
                 endif
