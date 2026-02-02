@@ -37,7 +37,7 @@ struct HazardState extends AIState
         elseif IsInNetHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_NET
             if owner.currentWaypointIndex > 12 then
-                set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+                set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, NET_HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
                 if IsStoneManStable() and hasNearbyEnemy then
                     call owner.setWaypointIndex(121) // Go to Stone wait area
                     call this.botLog("Stone Man is stable, going to wait area before Net Hazard")

@@ -31,6 +31,7 @@ globals
     constant integer HAZARD_TYPE_PURPLE_FISH = 6
 
     constant real HAZARD_NEAR_ENEMY_DETECT_RADIUS = 1500.0
+    constant real NET_HAZARD_NEAR_ENEMY_DETECT_RADIUS = 2000.0
         
     // Slow Spike Hazard Settings 
     constant real SLOW_SPIKE_SPEED = 155.0
