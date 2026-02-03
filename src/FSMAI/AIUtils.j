@@ -1579,7 +1579,7 @@ library AIUtils requires KeyUtils
         set tempAIItem = 0
         call GroupEnumUnitsInRange(targets, GetUnitX(ownerHero), GetUnitY(ownerHero), range, Filter(function FilterValidVisibleTeamHeroes))
 
-        // Not Allowed Target: magic immune, Ally HP above heal threshold, Undead enemy, Non-undead ally
+        // Not Allowed Target: magic immune, Ally HP above heal threshold, Undead enemy, Non-undead ally, Self
         // Priority Order:
         // 1. Allies
         // 2. Lowest Health
@@ -1596,6 +1596,7 @@ library AIUtils requires KeyUtils
             elseif IsUnitUndead(currentUnit) and IsUnitEnemy(currentUnit, heroOwner) then
             elseif not IsUnitUndead(currentUnit) and IsUnitAlly(currentUnit, heroOwner) then
             elseif GetUnitLifePercent(currentUnit) > HEAL_HP_PERCENTAGE_THRESHOLD and not IsUnitEnemy(currentUnit, heroOwner) then
+            elseif currentUnit == ownerHero then
             elseif bestTarget == null then
                 set bestTarget = currentUnit
             else

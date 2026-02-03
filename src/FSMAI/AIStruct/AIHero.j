@@ -528,6 +528,10 @@ struct AIHero
         local real distanceToEnemyCaster = 0.0
         local real projectileSpeed = 0.0
 
+        if not IsAIHardOrAbove(this.difficulty) then
+            return
+        endif
+
         if IsNightTime() then
             set shadowmeldAbil = this.combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
             if shadowmeldAbil != 0 then
@@ -597,6 +601,11 @@ struct AIHero
     method onBeTargetedByBomberSelfDestruct takes boolean isMegaBomber returns nothing
         local AIAbility shadowmeldAbil = 0
         local unit nearbyEnemyUnit = null
+
+        if not IsAIHardOrAbove(this.difficulty) then
+            return
+        endif
+
         if not isMegaBomber then
             if IsNightTime() then
                 set shadowmeldAbil = this.combatData.getAbilityOfCastType(CAST_INSTANT_SELF_SHADOWMELD)
