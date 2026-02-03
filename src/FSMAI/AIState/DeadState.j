@@ -44,13 +44,13 @@ struct DeadState extends AIState
                 set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.1 // 10% extra damage on revival per death
                 // Increase move speed
                 if GetUnitMoveSpeed(owner.hero) >= defaultMoveSpeed and GetUnitMoveSpeed(owner.hero) < maxSpeed then
-                    set speedBonus = 5.0
+                    set speedBonus = 4.0
                     call YDUserDataSet(unit, owner.hero, "speed", real, (YDUserDataGet(unit, owner.hero, "speed", real) + speedBonus))
                     call SetUnitMoveSpeed(owner.hero, GetUnitMoveSpeed(owner.hero) + speedBonus)
                 endif
                 // +200 HP
                 call UnitAddItemByIdSwapped('I00L', owner.hero) 
-                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +5 Move Speed, +200 HP, + 10% Extra Damage")
+                call this.botLog("Applying Crazy/Nightmare difficulty modifiers on revival: +4 Move Speed, +200 HP, + 10% Extra Damage")
             else
                 // Increase extra damage
                 set owner.deadDamageBonusPercentage = owner.deadDamageBonusPercentage + 0.07 // 7% extra damage on revival per death

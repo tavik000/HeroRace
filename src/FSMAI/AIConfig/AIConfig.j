@@ -68,7 +68,7 @@ globals
     constant real NIGHTMARE_CD_MULTIPLIER = 0.6 
 
     constant real CRAZY_EXTRA_DAMAGE_PERCENTAGE = 0.3 
-    constant real NIGHTMARE_EXTRA_DAMAGE_PERCENTAGE = 0.6
+    constant real NIGHTMARE_EXTRA_DAMAGE_PERCENTAGE = 0.5
 
     // Maximum abilities and items per hero
     constant integer MAX_ABILITIES_PER_HERO = 7
