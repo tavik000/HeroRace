@@ -62,13 +62,13 @@ globals
 
     // Combat settings
     constant real EASY_CD_MULTIPLIER = 2.5
-    constant real NORMAL_CD_MULTIPLIER = 1.0
+    constant real NORMAL_CD_MULTIPLIER = 1.3
     constant real HARD_CD_MULTIPLIER = 1.0
     constant real CRAZY_CD_MULTIPLIER = 1.0
     constant real NIGHTMARE_CD_MULTIPLIER = 0.6 
 
     constant real CRAZY_EXTRA_DAMAGE_PERCENTAGE = 0.3 
-    constant real NIGHTMARE_EXTRA_DAMAGE_PERCENTAGE = 0.5
+    constant real NIGHTMARE_EXTRA_DAMAGE_PERCENTAGE = 0.35
 
     // Maximum abilities and items per hero
     constant integer MAX_ABILITIES_PER_HERO = 7
