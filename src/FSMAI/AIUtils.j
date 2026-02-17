@@ -565,6 +565,11 @@ library AIUtils requires KeyUtils
             return false
         endif
 
+        if RectContainsCoords(gg_rct_AIHazardSpiderNetBotArea, heroX, heroY) then
+            // exclude bottom area to prevent stuck
+            return false
+        endif
+
         if RectContainsCoords(gg_rct_HazardSpiderNetArea, heroX, heroY) then
             // before finish area
             if wpi == 14 then

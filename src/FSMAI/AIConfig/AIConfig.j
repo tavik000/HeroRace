@@ -65,7 +65,7 @@ globals
     constant real NORMAL_CD_MULTIPLIER = 1.3
     constant real HARD_CD_MULTIPLIER = 1.0
     constant real CRAZY_CD_MULTIPLIER = 1.0
-    constant real NIGHTMARE_CD_MULTIPLIER = 0.85
+    constant real NIGHTMARE_CD_MULTIPLIER = 0.9
 
     constant real CRAZY_EXTRA_DAMAGE_PERCENTAGE = 0.3 
     constant real NIGHTMARE_EXTRA_DAMAGE_PERCENTAGE = 0.35
