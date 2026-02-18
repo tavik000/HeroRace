@@ -80,6 +80,14 @@ library AIUtils requires KeyUtils
         endif
     endfunction
 
+    function IsAINormalOrAbove takes integer difficulty returns boolean
+        if difficulty == DIFF_NORMAL or difficulty == DIFF_HARD or difficulty == DIFF_CRAZY or difficulty == DIFF_NIGHTMARE then
+            return true
+        else
+            return false
+        endif
+    endfunction
+
     function IsDifficultyApplyingCombo takes integer difficulty returns boolean
         return IsAIHardOrAbove(difficulty)
     endfunction

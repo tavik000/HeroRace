@@ -282,7 +282,7 @@ struct AIHero
     method shouldEnterPickupItemState takes nothing returns boolean
         local boolean bIsInventoryFull = IsUnitInventoryFull(this.hero)
 
-        if not IsAIHardOrAbove(this.difficulty) then
+        if not IsAINormalOrAbove(this.difficulty) then
             return false
         endif
 

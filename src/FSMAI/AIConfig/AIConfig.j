@@ -62,7 +62,7 @@ globals
 
     // Combat settings
     constant real EASY_CD_MULTIPLIER = 2.5
-    constant real NORMAL_CD_MULTIPLIER = 1.3
+    constant real NORMAL_CD_MULTIPLIER = 1.05
     constant real HARD_CD_MULTIPLIER = 1.0
     constant real CRAZY_CD_MULTIPLIER = 1.0
     constant real NIGHTMARE_CD_MULTIPLIER = 0.9
