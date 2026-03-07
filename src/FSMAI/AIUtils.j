@@ -2098,14 +2098,14 @@ library AIUtils requires KeyUtils
         return bestTarget
     endfunction
 
-    function GetHeroGroupAroundUnit takes unit centerUnit, real radius, integer findTeamType returns group
+    function GetHeroGroupAroundUnit takes unit ownerUnit, unit centerUnit, real radius, integer findTeamType returns group
         local group heroGroup = CreateGroup()
-        local player centerPlayer = GetOwningPlayer(centerUnit)
+        local player ownerPlayer = GetOwningPlayer(ownerUnit)
 
         // Set temp variables for filter function
-        set tempHeroOwner = centerPlayer
+        set tempHeroOwner = ownerPlayer
         set tempFindTeamType = findTeamType
-        set tempHeroUnit = centerUnit
+        set tempHeroUnit = ownerUnit
         set tempAIAbility = 0
         set tempAIItem = 0
 
@@ -2121,13 +2121,13 @@ library AIUtils requires KeyUtils
         set tempFindTeamType = FIND_TEAM_TYPE_NONE
         set tempAIAbility = 0
         set tempAIItem = 0
-        set centerPlayer = null
+        set ownerPlayer = null
 
         return heroGroup
     endfunction
 
-    function GetHealHeroCountAroundUnit takes unit centerUnit, real radius, integer findTeamType returns integer
-        local group heroGroup = GetHeroGroupAroundUnit(centerUnit, radius, findTeamType)
+    function GetHealHeroCountAroundUnit takes unit ownerUnit, unit centerUnit, real radius, integer findTeamType returns integer
+        local group heroGroup = GetHeroGroupAroundUnit(ownerUnit, centerUnit, radius, findTeamType)
         local integer count = 0
         local unit currentUnit = null
 
@@ -2147,8 +2147,8 @@ library AIUtils requires KeyUtils
         return count
     endfunction
 
-    function GetHeroCountAroundUnit takes unit centerUnit, real radius, integer findTeamType returns integer
-        local group heroGroup = GetHeroGroupAroundUnit(centerUnit, radius, findTeamType)
+    function GetHeroCountAroundUnit takes unit ownerUnit, unit centerUnit, real radius, integer findTeamType returns integer
+        local group heroGroup = GetHeroGroupAroundUnit(ownerUnit, centerUnit, radius, findTeamType)
         local integer count = CountUnitsInGroup(heroGroup)
         call DestroyGroup(heroGroup)
         set heroGroup = null
@@ -2475,7 +2475,8 @@ library AIUtils requires KeyUtils
             call GroupRemoveUnit(heroes, currentUnit)
 
             // Count how many heroes are around this currentUnit within crowdRange
-            set currentCount = GetHeroCountAroundUnit(currentUnit, crowdRange, findTeamType)
+            set currentCount = GetHeroCountAroundUnit(owner.hero, currentUnit, crowdRange, findTeamType)
+            call BotLog("Evaluating unit " + GetUnitName(currentUnit) + ": Count = " + I2S(currentCount) + ", Best Count = " + I2S(bestCount))
 
             // Determine if we should update the best unit
             if ShouldUpdateBestUnit(currentUnit, bestUnit, currentCount, bestCount) then
@@ -2495,7 +2496,7 @@ library AIUtils requires KeyUtils
     endfunction
 
     function FindPointAroundCrowdedHeroes takes AIHero owner, real rangeRadius, integer findTeamType returns location
-        local group allTargets = GetHeroGroupAroundUnit(owner.hero, MAX_RANGE, findTeamType)
+        local group allTargets = GetHeroGroupAroundUnit(owner.hero, owner.hero, MAX_RANGE, findTeamType)
         local unit array u
         local integer count = 0
         local integer i = 0
@@ -2636,10 +2637,12 @@ library AIUtils requires KeyUtils
                     // TIE on Goaled Status (Both Goaled or Both Ungoaled)
                     // 2. Most Nearby Allies Priority
                     // Count how many heroes are around this currentUnit within crowdRange
-                    set currentCount = GetHeroCountAroundUnit(currentUnit, crowdRange, findTeamType)
-                    if currentCount > GetHeroCountAroundUnit(bestTarget, crowdRange, findTeamType) then
+                    set currentCount = GetHeroCountAroundUnit(ownerHero, currentUnit, crowdRange, findTeamType)
+                    call BotLog("Evaluating unit " + GetUnitName(currentUnit) + ": Nearby Allies Count = " + I2S(currentCount) + ", Best Count = " + I2S(GetHeroCountAroundUnit(ownerHero, bestTarget, crowdRange, findTeamType)))
+                    if currentCount > GetHeroCountAroundUnit(ownerHero, bestTarget, crowdRange, findTeamType) then
+                        call BotLog("Current unit has more nearby allies. Updating best target.")
                         set bestTarget = currentUnit
-                    elseif currentCount < GetHeroCountAroundUnit(bestTarget, crowdRange, findTeamType) then
+                    elseif currentCount < GetHeroCountAroundUnit(ownerHero, bestTarget, crowdRange, findTeamType) then
                         // Keep bestTarget
                     else
                         // TIE on Nearby Allies Count

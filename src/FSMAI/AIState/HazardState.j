@@ -37,7 +37,7 @@ struct HazardState extends AIState
         elseif IsInNetHazardZone(owner) then
             set this.hazardType = HAZARD_TYPE_NET
             if owner.currentWaypointIndex > 12 then
-                set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, NET_HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+                set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, owner.hero, NET_HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
                 if IsStoneManStable() and hasNearbyEnemy then
                     call owner.setWaypointIndex(121) // Go to Stone wait area
                     call this.botLog("Stone Man is stable, going to wait area before Net Hazard")
@@ -55,7 +55,7 @@ struct HazardState extends AIState
             call owner.setDebugTextTagContent("Hazard: Spider Net Zone")
             call owner.setDebugTextTagColorPreset("ORANGE")
         elseif IsInOrangeFishWaitArea(owner) then
-            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
             if IsOrangeFishStable() and hasNearbyEnemy then
                 set this.hazardType = HAZARD_TYPE_ORANGE_FISH
                 call IssueImmediateOrder(owner.hero, "stop")
@@ -66,7 +66,7 @@ struct HazardState extends AIState
                 call this.botLogError("Orange Fish Hazard Zone detected but conditions not met!")
             endif
         elseif IsInPurpleFishWaitArea(owner) then
-            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
             if IsPurpleFishStable() and hasNearbyEnemy then
                 set this.hazardType = HAZARD_TYPE_PURPLE_FISH
                 call IssueImmediateOrder(owner.hero, "stop")
@@ -484,7 +484,7 @@ struct HazardState extends AIState
             return
         endif
 
-        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
 
         if not hasNearbyEnemy then
             call this.botLog("No nearby enemies detected, exiting Orange Fish hazard state")
@@ -536,7 +536,7 @@ struct HazardState extends AIState
             return
         endif
 
-        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+        set hasNearbyEnemy = GetHeroCountAroundUnit(owner.hero, owner.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
 
         if not hasNearbyEnemy then
             call this.botLog("No nearby enemies detected, exiting Purple Fish hazard state")

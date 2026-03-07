@@ -146,7 +146,7 @@ function OnAISummonRetargetTimerUpdate takes nothing returns nothing
                 exitwhen itemToAttackOnTargetDied == null
                 if itemToAttackOnTargetDied != null then
                     // check if ally around
-                    set allyCountOnItemAround = GetHeroCountAroundUnit(summonUnit, itemOfAllyAroundRadius, FIND_TEAM_TYPE_ALLIES)
+                    set allyCountOnItemAround = GetHeroCountAroundUnit(summonUnit, summonUnit, itemOfAllyAroundRadius, FIND_TEAM_TYPE_ALLIES)
                     exitwhen allyCountOnItemAround > 0
                     if allyCountOnItemAround == 0 then
                         // attack item

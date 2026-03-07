@@ -112,7 +112,7 @@ struct AIHero
         endif
         if newIndex == 12 then
             if IsStoneManStable() then
-                set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+                set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
                 if hasNearbyEnemy then
                     set this.currentWaypointIndex = 121 // Go to Stone wait area
                     call this.botLog("Stone Man is stable, going to wait area before Net Hazard, WPI: " + I2S(this.currentWaypointIndex))
@@ -369,14 +369,14 @@ struct AIHero
         endif
 
         if IsInOrangeFishWaitArea(this) then
-            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
             if IsOrangeFishStable() and hasNearbyEnemy then
                 return true
             endif
         endif
 
         if IsInPurpleFishWaitArea(this) then
-            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
+            set hasNearbyEnemy = GetHeroCountAroundUnit(this.hero, this.hero, HAZARD_NEAR_ENEMY_DETECT_RADIUS, FIND_TEAM_TYPE_ENEMIES) > 0
             if IsPurpleFishStable() and hasNearbyEnemy then
                 return true
             endif

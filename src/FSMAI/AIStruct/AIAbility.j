@@ -252,7 +252,7 @@ struct AIAbility
                 call this.botLog("Prepared target for CAST_INSTANT_BACK_ENEMY ability: " + GetObjectName(this.abilityId))
             endif
         elseif this.castType == CAST_INSTANT_ENEMY_CROWDED then
-            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             if targetUnitCount > 0 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
             endif
@@ -261,7 +261,7 @@ struct AIAbility
             set this.readyTargetUnit = FindTargetUnitForAbility(this.owner, this)
             set this.bIsReadyToCast = this.readyTargetUnit != null
         elseif this.castType == CAST_INSTANT_ALLY_CROWDED then
-            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
             if targetUnitCount >= 2 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
             endif
@@ -276,7 +276,7 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_SELF_DEFENSE_AND_CLEANSE then
             // will be set when being targeted by other ability, or taken damage
         elseif this.castType == CAST_INSTANT_ALL_CROWDED then
-            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALL)
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.ownerHero,this.effectiveRadius, FIND_TEAM_TYPE_ALL)
             if targetUnitCount >= 2 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " heroes around for ability: " + GetObjectName(this.abilityId))
             endif
@@ -284,7 +284,7 @@ struct AIAbility
         elseif this.castType == CAST_INSTANT_HEAL then
             set this.bIsReadyToCast = GetUnitLifePercent(this.ownerHero) <= HEAL_HP_PERCENTAGE_THRESHOLD
         elseif this.castType == CAST_INSTANT_HEAL_ALLY_CROWDED then
-            set targetUnitCount = GetHealHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
+            set targetUnitCount = GetHealHeroCountAroundUnit(this.ownerHero, this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ALLIES)
             if targetUnitCount >= 1 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " allied heroes around for ability: " + GetObjectName(this.abilityId))
                 set this.readyTargetUnit = this.ownerHero
@@ -376,7 +376,7 @@ struct AIAbility
             call RemoveLocation(this.readyTargetPoint)
             set this.bIsReadyToCast = (not IsNearlyZero(this.readyTargetPointX) and not IsNearlyZero(this.readyTargetPointY))
         elseif this.castType == CAST_POINT_SELF_BEHIND_ENEMY_CROWDED then
-            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
+            set targetUnitCount = GetHeroCountAroundUnit(this.ownerHero, this.ownerHero, this.effectiveRadius, FIND_TEAM_TYPE_ENEMIES)
             if targetUnitCount >= 2 then
                 call this.botLog("Found " + I2S(targetUnitCount) + " enemy heroes around for ability: " + GetObjectName(this.abilityId))
                 set this.readyTargetUnit = this.ownerHero
