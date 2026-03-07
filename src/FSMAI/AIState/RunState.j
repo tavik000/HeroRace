@@ -36,6 +36,13 @@ struct RunState extends AIState
             call owner.changeState(GoaledState.create())
             return
         endif
+
+        if udg_MatchOver then
+            call this.botLog("Match is over, skipping update")
+            call owner.setDebugTextTagContent("Run: Match Over")
+            call owner.setDebugTextTagColorPreset("GREEN")
+            return
+        endif
             
         // call this.botLog("Updating Run State, waypoint index: " + I2S(owner.currentWaypointIndex))
         call owner.setDebugTextTagContent("Run: Updating, WPI " + I2S(owner.currentWaypointIndex))

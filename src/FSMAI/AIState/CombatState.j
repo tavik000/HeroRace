@@ -27,6 +27,14 @@ struct CombatState extends AIState
         call owner.setDebugTextTagContent("Combat: Updating")
         call owner.setDebugTextTagColorPreset("RED")
 
+        if udg_MatchOver then
+            call this.botLog("Match is over, skipping update")
+            call owner.setDebugTextTagContent("Combat: Match Over")
+            call owner.setDebugTextTagColorPreset("RED")
+            call owner.changeState(RunState.create())
+            return
+        endif
+
         // Check if hero has reached the current waypoint area
         if owner.currentWaypointIndex <= GoalWaypointIndex then
             if RectContainsCoords(currentWaypointArea, heroX, heroY) then
