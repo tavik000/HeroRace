@@ -11,7 +11,9 @@ struct RunState extends AIState
         call owner.setDebugTextTagColorPreset("GREEN")
         set owner.idleReissueCount = 0
         if owner.isCasting then
-            call this.botLogError("Hero is casting when entering Run State, resetting casting state")
+            if not udg_MatchOver then
+                call this.botLogError("Hero is casting when entering Run State, resetting casting state")
+            endif
             set owner.isCasting = false
             return
         endif
